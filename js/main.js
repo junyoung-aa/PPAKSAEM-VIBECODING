@@ -32,10 +32,11 @@ async function loadPrograms() {
 }
 
 function getIcon(tags) {
-  if (tags.includes('PDF'))      return '📄';
-  if (tags.includes('배경화면'))  return '🖥️';
-  if (tags.includes('계획서'))    return '📋';
-  if (tags.includes('AI'))       return '🤖';
+  const t = tags || [];
+  if (t.includes('PDF'))      return '📄';
+  if (t.includes('배경화면'))  return '🖥️';
+  if (t.includes('계획서'))    return '📋';
+  if (t.includes('AI'))       return '🤖';
   return '✨';
 }
 
@@ -62,7 +63,7 @@ function renderCards(programs, container, type) {
         </div>
         <p class="card-description">${p.description}</p>
         <div class="card-tags">
-          ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          ${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}
         </div>
         ${type === 'completed'
           ? `<button
