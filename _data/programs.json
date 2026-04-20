@@ -15,6 +15,15 @@
       "order": 1
     },
     {
+      "id": "ai-pdf-splitter-chrome extension",
+      "title": "노트북LM용 AI 챕터 분할기",
+      "description": "노트북LM에서 PDF 선택 시 자동으로 챕터 분할 및 업로드까지 도와드립니다! 폴더 자체를 확장프로그램으로 선택하셔야 합니다.",
+      "status": "completed",
+      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?usp=dialog",
+      "thumbnail": "/images/lm-확장프로그램-사진.png",
+      "order": 2
+    },
+    {
       "id": "teacher-wallpaper",
       "title": "교사용 배경화면",
       "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
@@ -41,15 +50,6 @@
       "google_form_url": "",
       "thumbnail": "",
       "order": 4
-    },
-    {
-      "id": "ai-pdf-splitter-chrome extension",
-      "title": "노트북LM용 AI 챕터 분할기",
-      "description": "노트북LM에서 PDF 선택 시 자동으로 챕터 분할 및 업로드까지 도와드립니다! 폴더 자체를 확장프로그램으로 선택하셔야 합니다.",
-      "status": "completed",
-      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?usp=dialog",
-      "thumbnail": "/images/lm-확장프로그램-사진.png",
-      "order": 2
     }
   ],
   "feature_request_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeAIW3AgauIEe4GI2-n3FJRQNsfu7s3toy9Q59Ug9ITfXk38A/viewform?usp=dialog"
