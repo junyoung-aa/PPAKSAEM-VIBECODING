@@ -21,7 +21,12 @@
       "status": "completed",
       "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
       "thumbnail": "/images/lm-확장프로그램-사진.png",
-      "order": 2
+      "order": 2,
+      "tags": [
+        "노트북LM",
+        "크롬확장프로그램",
+        "PDF"
+      ]
     },
     {
       "id": "teacher-wallpaper",
