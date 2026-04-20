@@ -10,7 +10,7 @@
         "AI",
         "문서"
       ],
-      "google_form_url": "<iframe src=\"https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
+      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
       "thumbnail": "/images/pdf-분할기-사진.png",
       "order": 1
     },
@@ -19,7 +19,7 @@
       "title": "노트북LM용 AI 챕터 분할기",
       "description": "노트북LM에서 PDF 선택 시 자동으로 챕터 분할 및 업로드까지 도와드립니다! 폴더 자체를 확장프로그램으로 선택하셔야 합니다.",
       "status": "completed",
-      "google_form_url": "<iframe src=\"https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
+      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
       "thumbnail": "/images/lm-확장프로그램-사진.png",
       "order": 2
     },
@@ -33,7 +33,7 @@
         "대시보드",
         "생산성"
       ],
-      "google_form_url": "<iframe src=\"https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
+      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true\"",
       "thumbnail": "/images/스크린샷-2026-04-20-142511.png",
       "order": 3
     },
