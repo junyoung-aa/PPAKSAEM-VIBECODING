@@ -30,7 +30,7 @@
     },
     {
       "id": "teacher-wallpaper",
-      "title": "교사용 배경화면",
+      "title": "교사용 배경화면 대시보드",
       "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
       "status": "completed",
       "tags": [
