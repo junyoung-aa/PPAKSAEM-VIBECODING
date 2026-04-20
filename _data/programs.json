@@ -24,23 +24,23 @@
         "대시보드",
         "생산성"
       ],
-      "google_form_url": "GOOGLE_FORM_URL_HERE",
-      "thumbnail": "",
-      "order": 2
+      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?usp=dialog",
+      "thumbnail": "/images/스크린샷-2026-04-20-142511.png",
+      "order": 3
     },
     {
       "id": "plan-generator",
       "title": "계획서 생성기",
       "description": "작년에 작성한 계획서 파일을 업로드하면 AI가 올해 계획서를 자동으로 생성해줍니다. 반복 작업을 한 번에 해결하세요.",
-      "status": "completed",
+      "status": "in_development",
       "tags": [
         "AI",
         "문서",
         "계획서"
       ],
-      "google_form_url": "GOOGLE_FORM_URL_HERE",
+      "google_form_url": "",
       "thumbnail": "",
-      "order": 3
+      "order": 4
     }
   ],
   "feature_request_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeAIW3AgauIEe4GI2-n3FJRQNsfu7s3toy9Q59Ug9ITfXk38A/viewform?usp=dialog"
