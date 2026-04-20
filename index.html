@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>선생님을 위한 AI 프로그램</title>
+  <meta name="description" content="교사를 위해 AI로 만든 유용한 프로그램 모음입니다. 필요한 프로그램을 신청하거나 새로운 아이디어를 제안해 주세요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-badge">
+        <span>✦</span> 팍쌤의 바이브코딩 저장소
+      </div>
+      <h1 class="site-title">교사용 AI툴 모음</h1>
+      <p class="site-subtitle">
+        다양한 프로그램을 살펴보시고,<br>
+        신청하시면 메일로 보내드립니다.
+      </p>
+      <nav class="section-nav" aria-label="섹션 이동">
+        <a href="#completed">완성된 프로그램</a>
+        <a href="#in-development">개발 중</a>
+        <a href="#feature-request">기능 요청</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- SECTION 1: 완성된 프로그램 -->
+    <section class="programs-section" id="completed">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">완성된 프로그램</h2>
+        </div>
+        <div class="card-grid" id="completed-grid">
+          <!-- JS renders cards here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: 개발 중인 프로그램 -->
+    <section class="programs-section" id="in-development">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">개발 중인 프로그램</h2>
+        </div>
+        <div class="card-grid" id="in-development-grid">
+          <!-- JS renders cards here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: 기능 요청 -->
+    <section class="feature-request-section" id="feature-request">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">기능 요청</h2>
+        </div>
+        <p class="section-desc">
+          원하는 프로그램이 없으신가요?<br>
+          아이디어를 남겨주시면 검토 후 개발하겠습니다.
+        </p>
+        <div class="form-wrapper" id="feature-request-form">
+          <!-- JS injects iframe here -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <button class="modal-close" id="modal-close" aria-label="닫기">✕</button>
+      <h3 class="modal-title" id="modal-title"></h3>
+      <div class="modal-body">
+        <iframe
+          id="modal-iframe"
+          src=""
+          width="100%"
+          height="530"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="프로그램 신청 폼">
+          로딩 중...
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>팍쌤의 바이브코딩 저장소</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

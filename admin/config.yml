@@ -1,0 +1,60 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "programs_data"
+    label: "프로그램 관리"
+    files:
+      - name: "programs"
+        label: "프로그램 목록"
+        file: "_data/programs.json"
+        format: json
+        fields:
+          - name: "feature_request_form_url"
+            label: "기능 요청 구글 폼 URL"
+            widget: "string"
+            hint: "구글 폼 임베드 URL (?embedded=true 포함)"
+
+          - name: "programs"
+            label: "프로그램 목록"
+            widget: "list"
+            fields:
+              - name: "id"
+                label: "ID (영문, 고유값, 띄어쓰기 없이)"
+                widget: "string"
+              - name: "title"
+                label: "프로그램 이름"
+                widget: "string"
+              - name: "description"
+                label: "설명"
+                widget: "text"
+              - name: "status"
+                label: "상태"
+                widget: "select"
+                options:
+                  - { label: "완성", value: "completed" }
+                  - { label: "개발 중", value: "in_development" }
+              - name: "tags"
+                label: "태그"
+                widget: "list"
+                field:
+                  name: "tag"
+                  label: "태그"
+                  widget: "string"
+              - name: "google_form_url"
+                label: "신청 구글 폼 URL (완성 프로그램만)"
+                widget: "string"
+                required: false
+                hint: "?embedded=true 로 끝나야 합니다"
+              - name: "thumbnail"
+                label: "썸네일 이미지"
+                widget: "image"
+                required: false
+              - name: "order"
+                label: "표시 순서 (숫자가 작을수록 먼저)"
+                widget: "number"
+                value_type: "int"

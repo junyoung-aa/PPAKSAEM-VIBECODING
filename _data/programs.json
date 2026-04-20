@@ -1,0 +1,35 @@
+{
+  "programs": [
+    {
+      "id": "ai-pdf-splitter",
+      "title": "AI PDF 챕터 분할기",
+      "description": "PDF 내용을 AI가 분석하여 챕터별로 자동 분할해주는 프로그램입니다. 긴 PDF 문서를 챕터 단위로 나눠야 할 때 유용합니다.",
+      "status": "completed",
+      "tags": ["PDF", "AI", "문서"],
+      "google_form_url": "GOOGLE_FORM_URL_HERE",
+      "thumbnail": "",
+      "order": 1
+    },
+    {
+      "id": "teacher-wallpaper",
+      "title": "교사용 배경화면",
+      "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
+      "status": "completed",
+      "tags": ["배경화면", "대시보드", "생산성"],
+      "google_form_url": "GOOGLE_FORM_URL_HERE",
+      "thumbnail": "",
+      "order": 2
+    },
+    {
+      "id": "plan-generator",
+      "title": "계획서 생성기",
+      "description": "작년에 작성한 계획서 파일을 업로드하면 AI가 올해 계획서를 자동으로 생성해줍니다. 반복 작업을 한 번에 해결하세요.",
+      "status": "completed",
+      "tags": ["AI", "문서", "계획서"],
+      "google_form_url": "GOOGLE_FORM_URL_HERE",
+      "thumbnail": "",
+      "order": 3
+    }
+  ],
+  "feature_request_form_url": "FEATURE_REQUEST_FORM_URL_HERE"
+}
