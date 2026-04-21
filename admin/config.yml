@@ -2,6 +2,7 @@ backend:
   name: github
   repo: junyoung-aa/PPAKSAEM-VIBECODING
   branch: main
+  app_id: Ov23li89MmCK4KIhqPD9
 
 media_folder: "images"
 public_folder: "/images"
