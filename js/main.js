@@ -138,6 +138,22 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
 
+// ── Smooth Nav Scroll ──────────────────────────────────────────
+document.querySelectorAll('.section-nav a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+
+    // 활성 스타일
+    document.querySelectorAll('.section-nav a').forEach(a => a.classList.remove('is-active'));
+    link.classList.add('is-active');
+
+    // 부드럽게 스크롤
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
 // ── Ripple Effect ──────────────────────────────────────────────
 document.addEventListener('click', e => {
   const btn = e.target.closest('.btn-request');
