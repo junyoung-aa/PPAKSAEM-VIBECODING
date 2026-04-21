@@ -2,7 +2,7 @@ backend:
   name: github
   repo: junyoung-aa/PPAKSAEM-VIBECODING
   branch: main
-  app_id: Ov23li89MmCK4KIhqPD9
+  base_url: https://ppaksaem-cms-auth.jykwak1213.workers.dev
 
 media_folder: "images"
 public_folder: "/images"
