@@ -138,4 +138,37 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
 
-loadPrograms();
+// ── Ripple Effect ──────────────────────────────────────────────
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn-request');
+  if (!btn) return;
+  const ripple = document.createElement('span');
+  const rect   = btn.getBoundingClientRect();
+  const size   = Math.max(rect.width, rect.height);
+  ripple.className = 'ripple';
+  ripple.style.cssText = `
+    width: ${size}px; height: ${size}px;
+    left: ${e.clientX - rect.left - size / 2}px;
+    top:  ${e.clientY - rect.top  - size / 2}px;
+  `;
+  btn.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+});
+
+// ── Card Scroll Fade-in ─────────────────────────────────────────
+function observeCards() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('is-visible');
+        }, i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.program-card').forEach(card => observer.observe(card));
+}
+
+loadPrograms().then(() => observeCards());
