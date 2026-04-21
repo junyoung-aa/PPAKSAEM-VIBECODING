@@ -58,7 +58,7 @@ function renderCards(programs, container, type) {
         <div class="card-header">
           <h3 class="card-title">${p.title}</h3>
           <span class="status-badge status-badge--${p.status}">
-            ${p.status === 'completed' ? '완성' : '개발 중'}
+            ${p.status === 'completed' ? '배포중' : '개발 중'}
           </span>
         </div>
         <p class="card-description">${p.description}</p>
