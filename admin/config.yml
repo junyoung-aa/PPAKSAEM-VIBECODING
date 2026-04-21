@@ -50,6 +50,11 @@ collections:
                 widget: "string"
                 required: false
                 hint: "?embedded=true 로 끝나야 합니다"
+              - name: "download_url"
+                label: "다운로드 URL (exe/zip 등 직접 다운로드)"
+                widget: "string"
+                required: false
+                hint: "GitHub Releases 다운로드 링크"
               - name: "thumbnail"
                 label: "썸네일 이미지"
                 widget: "image"

@@ -66,12 +66,19 @@ function renderCards(programs, container, type) {
           ${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}
         </div>
         ${type === 'completed'
-          ? `<button
-               class="btn-request"
-               data-form-url="${p.google_form_url}"
-               data-title="${p.title}">
-               신청하기
-             </button>`
+          ? `<div class="card-actions">
+               ${p.download_url
+                 ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener">
+                      ⬇ 다운로드
+                    </a>`
+                 : ''}
+               <button
+                 class="btn-request"
+                 data-form-url="${p.google_form_url}"
+                 data-title="${p.title}">
+                 신청하기
+               </button>
+             </div>`
           : `<div class="coming-soon-bar">
                <span class="coming-soon-dot"></span>
                개발 중 · 완성 시 안내드립니다
