@@ -2,6 +2,22 @@
   "feature_request_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeAIW3AgauIEe4GI2-n3FJRQNsfu7s3toy9Q59Ug9ITfXk38A/viewform?embedded=true",
   "programs": [
     {
+      "id": "plan-generator",
+      "title": "계획서 생성기",
+      "description": "작년에 작성한 계획서 파일을 업로드하면 AI가 올해 계획서를 자동으로 생성해줍니다. 반복 작업을 한 번에 해결하세요.",
+      "status": "completed",
+      "tags": [
+        "AI",
+        "문서",
+        "계획서"
+      ],
+      "google_form_url": "",
+      "site_url": "https://ppaksaem-document-changer.hf.space/",
+      "download_url": "",
+      "thumbnail": "/images/pasted-image-1776852898121.png",
+      "order": 1
+    },
+    {
       "id": "ai-pdf-splitter",
       "title": "AI PDF 챕터 분할기",
       "description": "PDF 내용을 AI가 분석하여 챕터별로 자동 분할해주는 프로그램입니다. 긴 PDF 문서를 챕터 단위로 나눠야 할 때 유용합니다.",
@@ -12,10 +28,10 @@
         "문서"
       ],
       "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0/PDF-Splitter.exe",
       "site_url": "",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0/PDF-Splitter.exe",
       "thumbnail": "/images/pdf-분할기-사진.png",
-      "order": 1
+      "order": 2
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
@@ -28,10 +44,10 @@
         "PDF"
       ],
       "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0-extension/PDF.Extension.zip",
       "site_url": "",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0-extension/PDF.Extension.zip",
       "thumbnail": "/images/lm-확장프로그램-사진.png",
-      "order": 2
+      "order": 3
     },
     {
       "id": "teacher-wallpaper",
@@ -44,25 +60,9 @@
         "생산성"
       ],
       "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
-      "download_url": "",
       "site_url": "",
+      "download_url": "",
       "thumbnail": "/images/스크린샷-2026-04-20-142511.png",
-      "order": 3
-    },
-    {
-      "id": "plan-generator",
-      "title": "계획서 생성기",
-      "description": "작년에 작성한 계획서 파일을 업로드하면 AI가 올해 계획서를 자동으로 생성해줍니다. 반복 작업을 한 번에 해결하세요.",
-      "status": "in_development",
-      "tags": [
-        "AI",
-        "문서",
-        "계획서"
-      ],
-      "google_form_url": "",
-      "download_url": "",
-      "site_url": "",
-      "thumbnail": "",
       "order": 4
     }
   ]
