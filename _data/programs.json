@@ -3,8 +3,8 @@
   "programs": [
     {
       "id": "plan-generator",
-      "title": "계획서 생성기",
-      "description": "작년에 작성한 계획서 파일을 업로드하면 AI가 올해 계획서를 자동으로 생성해줍니다. 반복 작업을 한 번에 해결하세요.",
+      "title": "문서 생성기",
+      "description": "수정하고 싶은 파일을 업로드하고 요청하면 AI가 자동으로 수정해줍니다. \n레퍼런스 파일을 넣어 문서별 참고사항을 지시해도 좋아요.",
       "status": "completed",
       "tags": [
         "AI",
