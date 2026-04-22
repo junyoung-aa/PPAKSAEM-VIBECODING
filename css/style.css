@@ -274,6 +274,35 @@ body {
   margin-top: auto;
 }
 
+/* ── Site Link Button ── */
+.btn-site {
+  display: block;
+  width: 100%;
+  padding: 0.65rem;
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1.5px solid #93C5FD;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, color 0.15s, transform 0.12s ease, box-shadow 0.15s;
+}
+
+.btn-site:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+  transform: translateY(-1px);
+}
+
+.btn-site:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
 /* ── Download Button ── */
 .btn-download {
   display: block;

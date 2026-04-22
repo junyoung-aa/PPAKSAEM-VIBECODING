@@ -52,6 +52,11 @@ collections:
                 widget: "string"
                 required: false
                 hint: "?embedded=true 로 끝나야 합니다"
+              - name: "site_url"
+                label: "사이트 URL (웹에서 바로 실행되는 프로그램)"
+                widget: "string"
+                required: false
+                hint: "입력 시 카드에 '🔗 바로가기' 버튼이 생깁니다"
               - name: "download_url"
                 label: "다운로드 URL (exe/zip 등 직접 다운로드)"
                 widget: "string"

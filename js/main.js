@@ -67,16 +67,23 @@ function renderCards(programs, container, type) {
         </div>
         ${type === 'completed'
           ? `<div class="card-actions">
+               ${p.site_url
+                 ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener">
+                      🔗 바로가기
+                    </a>`
+                 : ''}
                ${p.download_url
                  ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener">
                       ⬇ 다운로드
                     </a>`
-                 : `<button
-                      class="btn-request"
-                      data-form-url="${p.google_form_url}"
-                      data-title="${p.title}">
-                      신청하기
-                    </button>`}
+                 : (!p.site_url
+                   ? `<button
+                        class="btn-request"
+                        data-form-url="${p.google_form_url}"
+                        data-title="${p.title}">
+                        신청하기
+                      </button>`
+                   : '')}
              </div>`
           : `<div class="coming-soon-bar">
                <span class="coming-soon-dot"></span>
