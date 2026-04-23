@@ -66,6 +66,15 @@ collections:
                 label: "썸네일 이미지"
                 widget: "image"
                 required: false
+              - name: "version"
+                label: "버전 (예: 1.0.0)"
+                widget: "string"
+                required: false
+              - name: "release_date"
+                label: "최종 배포일 (예: 2026-04-22)"
+                widget: "date"
+                required: false
+                format: "YYYY-MM-DD"
               - name: "order"
                 label: "표시 순서 (숫자가 작을수록 먼저)"
                 widget: "number"

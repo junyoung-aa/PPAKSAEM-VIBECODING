@@ -62,6 +62,11 @@ function renderCards(programs, container, type) {
           </span>
         </div>
         <p class="card-description">${p.description}</p>
+        ${(p.version || p.release_date) ? `
+        <div class="card-meta">
+          ${p.version    ? `<span class="card-meta-version">v${p.version}</span>` : ''}
+          ${p.release_date ? `<span class="card-meta-date">${p.release_date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1년 $2월 $3일')} 배포</span>` : ''}
+        </div>` : ''}
         <div class="card-tags">
           ${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}
         </div>
