@@ -72,7 +72,8 @@ collections:
                 required: false
               - name: "release_date"
                 label: "최종 배포일 (예: 2026-04-22)"
-                widget: "date"
+                widget: "datetime"
+                type: date
                 required: false
                 format: "YYYY-MM-DD"
               - name: "order"
