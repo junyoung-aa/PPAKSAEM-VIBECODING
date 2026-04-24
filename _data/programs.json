@@ -15,6 +15,8 @@
       "site_url": "https://ppaksaem-document-changer.hf.space/",
       "download_url": "",
       "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
+      "version": "",
+      "release_date": "",
       "order": 1
     },
     {
@@ -70,6 +72,24 @@
       "version": "1.0.0",
       "release_date": "2026-04-20",
       "order": 4
+    },
+    {
+      "id": "lecture-free",
+      "title": "연수 도우미",
+      "description": "원격연수 실행 시 다른 창에 가려져 있어도 재생이 유지되도록 도와줍니다.",
+      "status": "in_development",
+      "tags": [
+        "원격연수",
+        "크롬확장프로그램",
+        "편리함"
+      ],
+      "google_form_url": "",
+      "site_url": "",
+      "download_url": "",
+      "thumbnail": "",
+      "version": "",
+      "release_date": "",
+      "order": 5
     }
   ]
 }
