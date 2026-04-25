@@ -5,7 +5,7 @@
       "id": "plan-generator",
       "title": "문서 생성기",
       "description": "수정하고 싶은 파일을 업로드하고 요청하면 AI가 자동으로 수정해줍니다. \n레퍼런스 파일을 넣어 문서별 참고사항을 지시해도 좋아요.",
-      "status": "in_development",
+      "status": "completed",
       "tags": [
         "AI",
         "문서",
