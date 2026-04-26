@@ -1,4 +1,12 @@
 const DATA_URL = '/_data/programs.json';
+const TRACKER_URL = 'https://ppaksaem-click-tracker.jykwak1213.workers.dev';
+
+// 버튼 클릭 추적
+function trackClick(programId, buttonType) {
+  fetch(`${TRACKER_URL}/track?id=${encodeURIComponent(programId)}&button=${encodeURIComponent(buttonType)}`, {
+    method: 'POST'
+  }).catch(() => {}) // 실패해도 사용자 경험에 영향 없게
+}
 
 const completedGrid    = document.getElementById('completed-grid');
 const inDevGrid        = document.getElementById('in-development-grid');
@@ -74,16 +82,16 @@ function renderCards(programs, container, type) {
           ? `<div class="card-actions">
                ${(p.demo_url || p.guide_url) ? `
                <div class="btn-row">
-                 ${p.demo_url  ? `<a class="btn-demo"  href="${p.demo_url}"  target="_blank" rel="noopener">▶ 체험해보기</a>` : ''}
-                 ${p.guide_url ? `<a class="btn-guide" href="${p.guide_url}" target="_blank" rel="noopener">📖 가이드</a>` : ''}
+                 ${p.demo_url  ? `<a class="btn-demo"  href="${p.demo_url}"  target="_blank" rel="noopener" onclick="trackClick('${p.id}','demo')">▶ 체험해보기</a>` : ''}
+                 ${p.guide_url ? `<a class="btn-guide" href="${p.guide_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','guide')">📖 가이드</a>` : ''}
                </div>` : ''}
                ${p.site_url
-                 ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener">
+                 ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','site')">
                       🔗 바로가기
                     </a>`
                  : ''}
                ${p.download_url
-                 ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener">
+                 ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener" onclick="trackClick('${p.id}','download')">
                       ⬇ 다운로드
                     </a>`
                  : (!p.site_url
