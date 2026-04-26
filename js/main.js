@@ -91,7 +91,7 @@ function renderCards(programs, container, type) {
                  ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener">
                       ⬇ 다운로드
                     </a>`
-                 : (!p.site_url && !p.demo_url && !p.guide_url
+                 : (!p.site_url
                    ? `<button
                         class="btn-request"
                         data-form-url="${p.google_form_url}"
