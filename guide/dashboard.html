@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>교사용 대시보드 설정 가이드 — 팍쌤의 바이브코딩 저장소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#FAFAF9;--surface:#FFFFFF;--border:#E8E6E1;
+  --text:#1A1A1A;--muted:#6B6B6B;
+  --accent:#2563EB;--accent-h:#1D4ED8;
+  --chapter:#1a3a5a;
+  --radius:14px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+
+/* ── top bar ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.75rem;}
+.topbar-back{display:inline-flex;align-items:center;gap:.35rem;color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .15s;}
+.topbar-back:hover{color:var(--accent);}
+.topbar-title{font-size:.95rem;font-weight:600;color:var(--text);}
+.topbar-sep{color:var(--border);font-size:.9rem;}
+
+/* ── cover strip ── */
+.cover-strip{background:linear-gradient(135deg,#1a2a3a 0%,#2d4a6e 60%,#1a3a5a 100%);color:#fff;padding:3rem 1.5rem;text-align:center;}
+.cover-badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 16px;font-size:.78rem;letter-spacing:2px;color:rgba(255,255,255,.85);margin-bottom:1rem;}
+.cover-title{font-size:2rem;font-weight:900;letter-spacing:-1px;line-height:1.3;margin-bottom:.6rem;}
+.cover-sub{font-size:.95rem;color:rgba(255,255,255,.7);}
+
+/* ── chapter tabs ── */
+.tab-nav{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:.6rem 1.5rem;display:flex;gap:.4rem;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab-nav::-webkit-scrollbar{height:4px;}
+.tab-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.tab-btn{flex-shrink:0;padding:.4rem .85rem;border:1.5px solid var(--border);border-radius:999px;background:var(--surface);color:var(--muted);font-family:var(--font);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s ease;white-space:nowrap;}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ── content ── */
+.content{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.chapter{display:none;}
+.chapter.active{display:block;}
+
+/* ── chapter header ── */
+.chapter-header{background:linear-gradient(135deg,#1a3a5a,#2d5a8e);color:#fff;padding:1rem 1.25rem;border-radius:var(--radius-sm);margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;}
+.chapter-num{background:rgba(255,255,255,.2);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;flex-shrink:0;}
+.chapter-label{font-size:.7rem;color:rgba(255,255,255,.7);letter-spacing:1px;margin-bottom:2px;}
+.chapter-title{font-size:1.2rem;font-weight:800;line-height:1.2;}
+
+/* ── section heading ── */
+.section-title{font-size:1rem;font-weight:700;color:var(--chapter);margin:1.5rem 0 .75rem;padding-left:.75rem;border-left:4px solid #2d5a8e;}
+
+/* ── steps ── */
+.steps{list-style:none;padding:0;}
+.steps li{display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid #f0f0f0;}
+.steps li:last-child{border-bottom:none;}
+.step-num{background:var(--chapter);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:2px;}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;}
+
+/* ── bullets ── */
+.bullets{padding-left:1.25rem;margin:.4rem 0;}
+.bullets li{margin-bottom:.35rem;font-size:.9rem;}
+
+/* ── inline styles ── */
+.red{color:#d32f2f;font-weight:700;}
+.bold{font-weight:700;}
+.mono{font-family:'Consolas','D2Coding',monospace;background:#f5f5f5;padding:1px 5px;border-radius:3px;font-size:.85em;}
+
+/* ── boxes ── */
+.box{border-radius:var(--radius-sm);padding:.85rem 1rem;margin:.85rem 0;font-size:.88rem;line-height:1.7;}
+.box-warn{background:#fff8e1;border-left:4px solid #f9a825;}
+.box-tip{background:#e3f2fd;border-left:4px solid #1976d2;}
+.box-important{background:#fce4ec;border-left:4px solid #c62828;}
+.box-title{font-weight:700;margin-bottom:.25rem;}
+
+/* ── tables ── */
+.data-table{width:100%;border-collapse:collapse;margin:.65rem 0;font-size:.88rem;}
+.data-table th{background:var(--chapter);color:#fff;padding:.5rem .75rem;text-align:left;font-weight:700;}
+.data-table td{padding:.5rem .75rem;border-bottom:1px solid #e0e0e0;}
+.data-table tr:nth-child(even) td{background:#f8f9fa;}
+.data-table .col-ex{color:#555;}
+
+/* ── faq ── */
+.faq-item{margin-bottom:1.25rem;}
+.faq-q{font-weight:700;color:var(--chapter);margin-bottom:.25rem;font-size:.95rem;}
+.faq-q::before{content:'Q. ';}
+.faq-a{padding-left:1.25rem;font-size:.88rem;color:#333;}
+.faq-a::before{content:'A. ';font-weight:700;color:#2d5a8e;}
+
+/* ── images ── */
+.img-ss{margin:.85rem 0;text-align:center;}
+.img-ss img{max-width:100%;border-radius:var(--radius-sm);box-shadow:0 2px 10px rgba(0,0,0,.15);}
+
+/* ── body text ── */
+p{font-size:.9rem;margin-bottom:.5rem;}
+.mt8{margin-top:.5rem;} .mt16{margin-top:1rem;}
+
+/* ── footer ── */
+.guide-footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.8rem;max-width:760px;margin:0 auto;}
+
+/* ── responsive ── */
+@media(max-width:480px){
+  .cover-title{font-size:1.5rem;}
+  .tab-btn{font-size:.75rem;padding:.35rem .65rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-back" href="/">← 목록으로</a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">교사용 대시보드 설정 가이드</span>
+</div>
+
+<div class="cover-strip">
+  <div class="cover-badge">TEACHER DASHBOARD</div>
+  <div class="cover-title">교사용 대시보드<br>설정 가이드</div>
+  <div class="cover-sub">팍쌤의 바이브코딩 저장소 &nbsp;·&nbsp; ver 1.0</div>
+</div>
+
+<nav class="tab-nav" id="tabNav">
+  <button class="tab-btn active" data-ch="ch1">1장. 준비물</button>
+  <button class="tab-btn" data-ch="ch2">2장. Lively 설치</button>
+  <button class="tab-btn" data-ch="ch3">3장. 대시보드 실행</button>
+  <button class="tab-btn" data-ch="ch4">4장. 구글시트 설정</button>
+  <button class="tab-btn" data-ch="ch5">5장. Apps Script ★</button>
+  <button class="tab-btn" data-ch="ch6">6장. 대시보드 설정</button>
+  <button class="tab-btn" data-ch="ch7">7장. 설정 백업</button>
+  <button class="tab-btn" data-ch="ch8">8장. FAQ</button>
+</nav>
+
+<div class="content">
+
+<!-- ════════════════ 1장 ════════════════ -->
+<div class="chapter active" id="ch1">
+  <div class="chapter-header">
+    <div class="chapter-num">1</div>
+    <div>
+      <div class="chapter-label">CHAPTER 1</div>
+      <div class="chapter-title">준비물 확인</div>
+    </div>
+  </div>
+
+  <div class="box box-important mt8">
+    <div class="box-title">⚠️ 중요 — 파일 보관 위치</div>
+    <span class="red">제공된 파일 모두 같은 폴더에 보관</span>해 주세요. 설정 백업 파일도 나중에 같은 폴더에 저장됩니다.
+  </div>
+</div>
+
+<!-- ════════════════ 2장 ════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="chapter-header">
+    <div class="chapter-num">2</div>
+    <div>
+      <div class="chapter-label">CHAPTER 2</div>
+      <div class="chapter-title">Lively Wallpaper 설치</div>
+    </div>
+  </div>
+
+  <p>Lively Wallpaper는 HTML 파일을 바탕화면으로 실행해 주는 무료 앱입니다.</p>
+
+  <div class="section-title">설치 방법</div>
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content"><span class="mono">LWP_Setup.exe</span> 파일을 <span class="red">더블클릭</span>하여 실행합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content">설치 모드 선택 화면이 나타나면 <span class="red">'현재 사용자용으로 설치(추천)'</span>를 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/01.%20월페이퍼%20설치.png" alt="월페이퍼 설치 화면"/></div>
+
+  <ol class="steps" start="3">
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">이후 화면은 <span class="red">기본값 그대로</span> 두고 "Install" 버튼을 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-content">설치가 완료되면 Lively Wallpaper가 자동으로 실행됩니다. 작업표시줄 우측 하단(🔔 알림 영역)에 Lively 아이콘이 생기면 정상입니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/02.%20월페이퍼%20아이콘.png" alt="Lively 아이콘"/></div>
+
+  <div class="box box-tip mt8">
+    <div class="box-title">💡 이미 설치되어 있다면</div>
+    이미 Lively Wallpaper가 설치되어 있다면 이 장을 건너뛰고 3장으로 이동하세요.
+  </div>
+</div>
+
+<!-- ════════════════ 3장 ════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="chapter-header">
+    <div class="chapter-num">3</div>
+    <div>
+      <div class="chapter-label">CHAPTER 3</div>
+      <div class="chapter-title">대시보드 실행</div>
+    </div>
+  </div>
+
+  <p>Lively Wallpaper에 대시보드 HTML 파일을 등록합니다.</p>
+
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content">작업표시줄 우측 하단의 <span class="red">Lively 아이콘을 클릭</span>하여 Lively Wallpaper를 엽니다.</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content">Lively 화면 왼쪽 상단의 <span class="red">"+" 버튼</span> (배경화면 추가)을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/03-1.%20배경화면%20추가.png" alt="배경화면 추가 버튼"/></div>
+
+  <ol class="steps" start="3">
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">팝업 창에서 <span class="red">"파일에서 열기"</span> 또는 하단의 파일 탐색 버튼을 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-content">파일 탐색기에서 <span class="mono red">교사용 바탕화면 대시보드.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">5</div>
+      <div class="step-content">미리보기가 뜨면 <span class="red">"확인"</span>을 클릭합니다. 바탕화면에 대시보드가 표시됩니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/03-2.%20배경화면%20적용.png" alt="바탕화면 대시보드 표시"/></div>
+
+  <div class="box box-warn mt8">
+    <div class="box-title">⚠️ 처음 실행 시 경고 안내</div>
+    처음에는 날씨·급식 등 데이터가 비어 있는 것이 정상입니다. 6장에서 학교 정보를 설정하면 자동으로 채워집니다.
+  </div>
+
+  <div class="section-title mt16">3-1. Lively 권장 설정 (2가지)</div>
+  <p>대시보드를 편하게 사용하려면 Lively Wallpaper의 설정을 아래와 같이 조정하세요.<br>
+  Lively 앱을 열고 등록된 대시보드를 선택한 후, 오른쪽 아래 <span class="red">⚙ 설정(톱니바퀴) 아이콘</span>을 클릭하면 설정 패널이 열립니다.</p>
+
+  <p class="mt8"><span class="bold">① 마우스 클릭이 씹히는 경우 해결</span></p>
+  <p>설정 패널 <span class="red">[배경화면] 탭</span> → <span class="red">"응용 프로그램이 포커싱된 경우 마우스 상호 작용"</span></p>
+
+  <table class="data-table mt8">
+    <tr><th>상태</th><th>동작</th><th>권장</th></tr>
+    <tr>
+      <td><span class="bold red">☑ 체크</span></td>
+      <td>다른 앱이 포커싱된 상태에서도 대시보드 클릭 가능 → 씹힘 해결</td>
+      <td><span class="red">✔ 권장</span></td>
+    </tr>
+    <tr>
+      <td><span class="bold">☐ 체크 해제</span></td>
+      <td>다른 앱 사용 중에는 대시보드 클릭 불가 → 자주 씹힘</td>
+      <td></td>
+    </tr>
+  </table>
+
+  <div class="box box-tip mt8">
+    <div class="box-title">💡 참고</div>
+    체크 시 다른 창이 모두 최소화된 상태(바탕화면이 보이는 상태)에서 대시보드 버튼이 눌릴 수 있습니다. 이는 정상 동작입니다.
+  </div>
+
+  <div class="img-ss"><img src="/images/guide/03-3.%20마우스%20상호작용.png" alt="마우스 상호작용 설정"/></div>
+
+  <p class="mt16"><span class="bold">② 재시작 후에도 설정 유지</span></p>
+  <p>설정 패널 <span class="red">[배경화면] 탭</span> → <span class="red">웹 브라우저</span> 섹션 → <span class="red">"디스크 캐시"</span> 버튼</p>
+
+  <table class="data-table mt8">
+    <tr><th>상태</th><th>동작</th><th>권장</th></tr>
+    <tr>
+      <td><span class="bold red">활성화</span></td>
+      <td>브라우저 데이터(캐시·저장소)를 디스크에 보관 → PC 재시작 후에도 설정 유지</td>
+      <td><span class="red">✔ 권장</span></td>
+    </tr>
+    <tr>
+      <td><span class="bold">비활성화</span></td>
+      <td>메모리에만 저장 → 재시작 시 일부 설정이 초기화될 수 있음</td>
+      <td></td>
+    </tr>
+  </table>
+
+  <div class="box box-tip mt8">
+    <div class="box-title">💡 참고</div>
+    디스크 캐시를 켜도 <span class="red">7장의 백업 파일(대시보드_설정.json)</span>을 만들어두면 이중으로 보호됩니다. 둘 다 설정하는 것을 권장합니다.
+  </div>
+
+  <div class="img-ss"><img src="/images/guide/03-4.%20디스크캐시.png" alt="디스크 캐시 활성화"/></div>
+</div>
+
+<!-- ════════════════ 4장 ════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="chapter-header">
+    <div class="chapter-num">4</div>
+    <div>
+      <div class="chapter-label">CHAPTER 4</div>
+      <div class="chapter-title">구글 시트 설정</div>
+    </div>
+  </div>
+
+  <div class="section-title">4-1. 시트 사본 만들기</div>
+  <p>제공된 구글 시트 링크를 통해 본인의 구글 드라이브에 복사합니다.</p>
+
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content">제공된 <span class="red">구글 시트 링크</span>를 Chrome 브라우저에서 엽니다.</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content">상단 메뉴 <span class="red">파일 → 사본 만들기</span>를 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/04-1.%20사본만들기.png" alt="파일 사본 만들기"/></div>
+
+  <ol class="steps" start="3">
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">사본 이름을 원하는 대로 변경하고 <span class="red">"사본 만들기"</span>를 클릭합니다.<br>(예: "3학년 1반 대시보드")</div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-content">내 구글 드라이브에 시트가 생성됩니다. 이 시트가 앞으로 사용할 <span class="red">본인의 전용 시트</span>입니다.</div>
+    </li>
+  </ol>
+
+  <div class="box box-important mt8">
+    <div class="box-title">⚠️ 반드시 지켜야 할 사항</div>
+    아래 <span class="red">탭 이름은 절대 변경하지 마세요.</span> 탭 이름이 다르면 대시보드에서 데이터를 불러오지 못합니다.
+    <ul class="bullets mt8">
+      <li><span class="red mono">학생 명렬표</span></li>
+      <li><span class="red mono">내선번호</span></li>
+      <li><span class="red mono">누가기록</span></li>
+    </ul>
+  </div>
+
+  <div class="section-title mt16">4-2. 학생 명렬표 입력</div>
+  <p><span class="mono">학생 명렬표</span> 탭에 학생 정보를 입력합니다.</p>
+
+  <table class="data-table mt8">
+    <tr><th>A열 — 학년</th><th>B열 — 반</th><th>C열 — 번호</th><th>D열 — 이름</th><th>E열 — 성별</th></tr>
+    <tr><td class="col-ex">3</td><td class="col-ex">1</td><td class="col-ex">1</td><td class="col-ex">김철수</td><td class="col-ex">남</td></tr>
+    <tr><td class="col-ex">3</td><td class="col-ex">1</td><td class="col-ex">2</td><td class="col-ex">이영희</td><td class="col-ex">여</td></tr>
+    <tr><td class="col-ex">3</td><td class="col-ex">2</td><td class="col-ex">1</td><td class="col-ex">박민준</td><td class="col-ex">남</td></tr>
+  </table>
+
+  <div class="img-ss"><img src="/images/guide/04-2.%20학생명렬표%20입력.png" alt="학생 명렬표 입력 예시"/></div>
+
+  <div class="section-title mt16">4-3. 내선번호 입력</div>
+  <p><span class="mono">내선번호</span> 탭에 학교 내선번호를 입력합니다.</p>
+
+  <table class="data-table mt8">
+    <tr><th>A열 — 섹션</th><th>B열 — 색상</th><th>C열 — 이름</th><th>D열 — 내선번호</th></tr>
+    <tr><td class="col-ex">행정실</td><td class="col-ex">green</td><td class="col-ex">교장</td><td class="col-ex">2100</td></tr>
+    <tr><td class="col-ex">행정실</td><td class="col-ex">green</td><td class="col-ex">교감</td><td class="col-ex">2101</td></tr>
+    <tr><td class="col-ex">교무실</td><td class="col-ex">orange</td><td class="col-ex">교무부장</td><td class="col-ex">2102</td></tr>
+  </table>
+
+  <div class="box box-warn mt8">
+    <div class="box-title">⚠️ 색상값 주의</div>
+    B열 색상 값은 <span class="red">반드시 소문자 영어</span>로만 입력해야 합니다.<br>
+    사용 가능한 값: <span class="mono red">green</span> · <span class="mono red">orange</span> · <span class="mono red">purple</span> · <span class="mono red">yellow</span>
+  </div>
+
+  <div class="img-ss"><img src="/images/guide/04-3.%20내선번호입력.png" alt="내선번호 입력 예시"/></div>
+</div>
+
+<!-- ════════════════ 5장 ════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="chapter-header">
+    <div class="chapter-num">5</div>
+    <div>
+      <div class="chapter-label">CHAPTER 5 ★ 핵심 단계</div>
+      <div class="chapter-title">Apps Script 배포</div>
+    </div>
+  </div>
+
+  <p>구글 시트와 대시보드를 연결해주는 핵심 단계입니다. 단계별로 천천히 따라해 주세요.</p>
+
+  <div class="box box-tip">
+    <div class="box-title">💡 Apps Script란?</div>
+    구글이 제공하는 무료 서버 기능입니다. 대시보드가 구글 시트의 데이터(명렬표, 내선번호, 급식 기록 등)를 읽고 쓸 수 있게 해줍니다.
+  </div>
+
+  <div class="section-title">편집기 열기</div>
+
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content">구글 시트 상단 메뉴에서 <span class="red">확장 프로그램 → Apps Script</span>를 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-1.%20확장프로그램.png" alt="확장 프로그램 메뉴"/></div>
+
+  <div class="box box-tip mt8">
+    <div class="box-title">💡 코드는 이미 입력되어 있습니다</div>
+    Apps Script 편집기가 새 탭으로 열리면 <span class="red">코드가 이미 작성되어 있습니다.</span> 별도로 코드를 입력하거나 복사·붙여넣기 할 필요가 없습니다. 바로 아래 배포 단계로 이동하세요.
+  </div>
+
+  <div class="section-title mt16">배포하기</div>
+
+  <ol class="steps" start="2">
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content">오른쪽 위의 <span class="red">"배포"</span> 버튼을 클릭한 후, <span class="red">"새 배포"</span>를 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-2.%20배포.png" alt="새 배포 클릭"/></div>
+
+  <ol class="steps" start="3">
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">"새 배포" 창이 열립니다. 왼쪽 <span class="red">⚙ 아이콘을 클릭</span>한 후 <span class="red">"웹 앱"</span>을 선택합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-6.%20웹앱.png" alt="웹 앱 선택"/></div>
+
+  <ol class="steps" start="4">
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-content">아래 두 가지 설정을 확인합니다.<br>
+      &nbsp;&nbsp;• "다음 사용자로 실행" → <span class="red">나(본인 이메일 주소)</span><br>
+      &nbsp;&nbsp;• "액세스 권한" → <span class="red">모든 사용자</span></div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-7.%20설정.png" alt="배포 설정 화면"/></div>
+
+  <ol class="steps" start="5">
+    <li>
+      <div class="step-num">5</div>
+      <div class="step-content"><span class="red">"배포"</span> 버튼을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="section-title mt16">액세스 승인</div>
+
+  <ol class="steps" start="6">
+    <li>
+      <div class="step-num">6</div>
+      <div class="step-content"><span class="red">"액세스 승인"</span> 버튼이 나타나면 클릭합니다. 구글 계정 선택 창이 뜨면 <span class="red">본인 계정</span>을 선택합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-9.%20액세스승인.png" alt="액세스 승인"/></div>
+
+  <ol class="steps" start="7">
+    <li>
+      <div class="step-num">7</div>
+      <div class="step-content">"Google이 확인하지 않은 앱" 경고 화면이 나타납니다.<br>
+      <span class="red">왼쪽 하단 "고급"을 클릭</span>한 후, <span class="red">"[프로젝트명](으)로 이동"</span>을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-10.%20고급.png" alt="고급 클릭"/></div>
+  <div class="img-ss"><img src="/images/guide/05-10.%20이동.png" alt="프로젝트로 이동 클릭"/></div>
+
+  <div class="box box-warn">
+    <div class="box-title">⚠️ "고급" 버튼이 보이지 않는 경우</div>
+    상황에 따라 바로 허용 버튼이 보일 수 있습니다. 그 경우 8번으로 넘어가세요.
+  </div>
+
+  <ol class="steps" start="8">
+    <li>
+      <div class="step-num">8</div>
+      <div class="step-content">권한 요청 목록이 나타납니다. <span class="red">"허용"</span>을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-11.%20컨티뉴.png" alt="허용 클릭"/></div>
+
+  <div class="section-title mt16">URL 복사</div>
+
+  <ol class="steps" start="9">
+    <li>
+      <div class="step-num">9</div>
+      <div class="step-content">배포가 완료되면 <span class="red">"웹 앱 URL"</span>이 표시됩니다. <span class="red">URL 옆 복사 아이콘을 클릭</span>하여 복사합니다.<br>
+      <span class="mono" style="font-size:.82rem;">https://script.google.com/macros/s/…/exec</span> 형태의 주소입니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/05-12%20웹앱URL.png" alt="웹 앱 URL 복사"/></div>
+</div>
+
+<!-- ════════════════ 6장 ════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="chapter-header">
+    <div class="chapter-num">6</div>
+    <div>
+      <div class="chapter-label">CHAPTER 6</div>
+      <div class="chapter-title">대시보드 설정</div>
+    </div>
+  </div>
+
+  <p>대시보드 우측 상단의 <span class="red">⚙ 설정 버튼</span>을 클릭하면 설정 창이 열립니다.</p>
+
+  <div class="img-ss"><img src="/images/guide/06.%20설정버튼.png" alt="설정 버튼 위치"/></div>
+
+  <div class="section-title">6-1. 학교 정보 설정</div>
+  <p>설정 창에서 <span class="red">🏫 학교 정보</span> 탭을 클릭합니다.</p>
+
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content"><span class="red">🔎 내 학교 검색</span>에 학교명을 입력하고 "검색" 버튼을 클릭합니다.<br>(예: "능북초" 또는 "능북초등학교")</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content">검색 결과 목록에서 <span class="red">본인 학교를 클릭</span>합니다.<br>학교 이름, 날씨 지역이 자동으로 입력됩니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/06-1-1.%20학교검색.png" alt="학교 검색 결과"/></div>
+
+  <ol class="steps" start="3">
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">비조리교(직접 조리하지 않고 다른 학교에서 급식을 받는 경우)인 경우:<br>
+      <span class="red">🍽️ 급식 학교 검색</span>에서 급식을 제공하는 <span class="red">조리교 학교명</span>을 검색하여 선택합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-content"><span class="red">🏷️ 내 학년</span>에 담당 학년 숫자만 입력합니다. (예: 3학년이면 <span class="mono">3</span>)</div>
+    </li>
+    <li>
+      <div class="step-num">5</div>
+      <div class="step-content"><span class="red">💾 저장 및 새로고침</span> 버튼을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/06-1-2.%20학교정보저장.png" alt="학교 정보 저장"/></div>
+
+  <div class="section-title mt16">6-2. 구글시트 연동</div>
+  <p>설정 창에서 <span class="red">📊 구글시트 연동</span> 탭을 클릭합니다.</p>
+
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content"><span class="red">5장에서 복사한 Apps Script URL</span>을 입력칸에 붙여넣기(Ctrl+V) 합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content"><span class="red">💾 저장</span> 버튼을 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content"><span class="red">🔍 연동 진단</span> 버튼을 클릭하여 연결이 정상인지 확인합니다.<br><span class="red">"✅ 정상 연결"</span> 메시지가 표시되면 성공입니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/06-2.%20구글시트연동.png" alt="구글시트 연동 성공"/></div>
+
+  <div class="box box-warn mt8">
+    <div class="box-title">⚠️ 연동 실패가 표시되는 경우</div>
+    <ul class="bullets">
+      <li>URL이 정확한지 다시 확인해 주세요.</li>
+      <li>5장 배포 단계에서 "액세스 권한"을 <span class="red">"모든 사용자"</span>로 설정했는지 확인해 주세요.</li>
+      <li>구글 시트 탭 이름 (<span class="mono">학생 명렬표</span>)이 정확한지 확인해 주세요.</li>
+    </ul>
+  </div>
+
+  <div class="section-title mt16">6-3. 구글 캘린더 연동 (선택사항)</div>
+  <p>설정 창에서 <span class="red">📅 캘린더</span> 탭을 클릭합니다.</p>
+
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content">Chrome에서 구글 캘린더(calendar.google.com)를 열고 오른쪽 위 <span class="red">⚙ 설정</span>을 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content">왼쪽 목록에서 연동할 <span class="red">캘린더 이름</span>을 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">스크롤을 내려 <span class="red">"비공개 주소(iCal)"</span> 옆의 <span class="red">복사 아이콘</span>을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/06-3-1%20구글캘린더%20비공개주소.png" alt="구글 캘린더 비공개 주소 복사"/></div>
+
+  <ol class="steps" start="4">
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-content">대시보드 설정 → 📅 캘린더 탭에서 URL란에 붙여넣기, 이름 입력 후 <span class="red">"추가"</span> 클릭 → <span class="red">💾 저장 및 적용</span>을 클릭합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/06-3-2.%20캘린더%20저장.png" alt="캘린더 URL 저장"/></div>
+</div>
+
+<!-- ════════════════ 7장 ════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="chapter-header">
+    <div class="chapter-num">7</div>
+    <div>
+      <div class="chapter-label">CHAPTER 7</div>
+      <div class="chapter-title">설정 백업</div>
+    </div>
+  </div>
+
+  <p>설정을 완료한 후 반드시 백업 파일을 만들어 두세요. PC를 교체하거나 Lively를 재설치해도 설정이 자동으로 복구됩니다.</p>
+
+  <div class="section-title">백업 파일 만들기</div>
+  <ol class="steps">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-content">대시보드 ⚙ 설정 → <span class="red">💾 백업</span> 탭을 클릭합니다.</div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-content"><span class="red">"설정파일 내보내기"</span> 버튼을 클릭합니다. 파일이 자동으로 다운로드됩니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/07-1.%20JSON%20파일%20저장.png" alt="설정파일 내보내기"/></div>
+
+  <ol class="steps" start="3">
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-content">다운로드된 파일을 <span class="mono red">교사용 바탕화면 대시보드.html</span> 파일과 <span class="red">같은 폴더</span>에 저장합니다.</div>
+    </li>
+  </ol>
+
+  <div class="img-ss"><img src="/images/guide/07-2.%20JSON%20같은%20폴더%20저장.png" alt="같은 폴더에 파일 보관"/></div>
+
+  <div class="box box-tip mt8">
+    <div class="box-title">💡 자동 복구 효과</div>
+    <span class="red">대시보드_설정.json</span> 파일이 같은 폴더에 있으면, Lively 재설치 또는 PC 교체 후에도 <strong>모든 설정이 자동으로 복원</strong>됩니다.<br>
+    설정을 변경할 때마다 다시 내보내기 하면 항상 최신 상태를 유지할 수 있습니다.
+  </div>
+
+  <div class="box box-tip mt8">
+    <div class="box-title">💡 클라우드 자동 백업</div>
+    Apps Script URL이 등록되어 있으면 <strong>설정 변경 시 구글 시트에도 자동으로 백업</strong>됩니다. 새 PC에서 URL만 입력하면 모든 설정이 복원됩니다.
+  </div>
+</div>
+
+<!-- ════════════════ 8장 ════════════════ -->
+<div class="chapter" id="ch8">
+  <div class="chapter-header">
+    <div class="chapter-num">8</div>
+    <div>
+      <div class="chapter-label">CHAPTER 8</div>
+      <div class="chapter-title">자주 묻는 질문 (FAQ)</div>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">날씨와 급식이 안 나와요.</div>
+    <div class="faq-a">6-1 학교 정보 탭에서 학교 검색 후 <span class="red">저장</span>을 눌렀는지 확인해 주세요. 저장 없이 닫으면 적용되지 않습니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">명렬표·내선번호가 안 불러와져요.</div>
+    <div class="faq-a">설정 → 📊 구글시트 연동 탭에서 <span class="red">"🔍 연동 진단"</span>을 클릭해 오류 내용을 확인하세요. 구글 시트 탭 이름(<span class="red mono">학생 명렬표</span>, <span class="red mono">내선번호</span>)이 정확한지 확인하세요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Lively를 재시작했더니 설정이 초기화됐어요.</div>
+    <div class="faq-a">7장의 백업 절차를 따라 <span class="red mono">대시보드_설정.json</span> 파일을 HTML과 <span class="red">같은 폴더</span>에 저장해 두면 자동으로 복구됩니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Apps Script 배포 중 권한 화면이 안 나와요.</div>
+    <div class="faq-a">이미 이전에 권한을 부여한 경우에는 권한 화면이 다시 뜨지 않습니다. 정상입니다. URL이 생성되었다면 바로 사용 가능합니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">내선번호가 안 나와요.</div>
+    <div class="faq-a">구글 시트 <span class="mono">내선번호</span> 탭의 B열 색상 값을 확인하세요. <span class="red">반드시 소문자 영어</span>여야 합니다 (<span class="mono red">green</span>, <span class="mono red">orange</span>, <span class="mono red">purple</span>, <span class="mono red">yellow</span>).</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">학생 메모를 저장했는데 다음 날 사라졌어요.</div>
+    <div class="faq-a">메모는 <span class="red">날짜별로 저장</span>됩니다. 다음 날에는 새 날짜의 빈 메모가 표시됩니다. 이전 날짜 기록은 구글 시트 <span class="mono">누가기록</span> 탭에서 확인 가능합니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">급식을 받는 학교가 따로 있어요 (비조리교).</div>
+    <div class="faq-a">6-1 설정에서 <span class="red">🍽️ 급식 학교 검색</span>을 별도로 사용해 주세요. 급식을 조리·제공하는 학교를 검색하여 선택하면 그 학교의 급식이 표시됩니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">구글 캘린더 일정이 안 나와요.</div>
+    <div class="faq-a">구글 캘린더 설정에서 <span class="red">"비공개 주소(iCal)"</span>를 복사했는지 확인하세요. 일반 공유 주소와 다릅니다. 복사 후 대시보드에 저장 필요.</div>
+  </div>
+</div>
+
+</div><!-- .content -->
+
+<div class="guide-footer">
+  팍쌤의 교사용 대시보드 설정 가이드 &nbsp;·&nbsp; ver 1.0 &nbsp;·&nbsp; 2026<br>
+  <a href="/" style="color:var(--accent);">← 바이브코딩 저장소로 돌아가기</a>
+</div>
+
+<script>
+const tabs = document.querySelectorAll('.tab-btn');
+const chapters = document.querySelectorAll('.chapter');
+
+tabs.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.ch;
+    tabs.forEach(t => t.classList.remove('active'));
+    chapters.forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(target).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+});
+</script>
+</body>
+</html>

@@ -356,6 +356,63 @@ body {
   box-shadow: none;
 }
 
+/* ── Demo Button ── */
+.btn-demo {
+  display: block;
+  width: 100%;
+  padding: 0.65rem;
+  background: #7C3AED;
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, transform 0.12s ease, box-shadow 0.15s;
+}
+
+.btn-demo:hover {
+  background: #6D28D9;
+  box-shadow: 0 4px 12px rgba(124,58,237,0.35);
+  transform: translateY(-1px);
+}
+
+.btn-demo:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+/* ── Guide Button ── */
+.btn-guide {
+  display: block;
+  width: 100%;
+  padding: 0.65rem;
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1.5px solid #F59E0B;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, color 0.15s, transform 0.12s ease, box-shadow 0.15s;
+}
+
+.btn-guide:hover {
+  background: #F59E0B;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(245,158,11,0.35);
+  transform: translateY(-1px);
+}
+
+.btn-guide:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
 /* ── Request Button ── */
 .btn-request {
   display: block;
