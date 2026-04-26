@@ -72,16 +72,11 @@ function renderCards(programs, container, type) {
         </div>
         ${type === 'completed'
           ? `<div class="card-actions">
-               ${p.demo_url
-                 ? `<a class="btn-demo" href="${p.demo_url}" target="_blank" rel="noopener">
-                      ▶ 체험해보기
-                    </a>`
-                 : ''}
-               ${p.guide_url
-                 ? `<a class="btn-guide" href="${p.guide_url}" target="_blank" rel="noopener">
-                      📖 설치 및 사용 가이드
-                    </a>`
-                 : ''}
+               ${(p.demo_url || p.guide_url) ? `
+               <div class="btn-row">
+                 ${p.demo_url  ? `<a class="btn-demo"  href="${p.demo_url}"  target="_blank" rel="noopener">▶ 체험해보기</a>` : ''}
+                 ${p.guide_url ? `<a class="btn-guide" href="${p.guide_url}" target="_blank" rel="noopener">📖 가이드</a>` : ''}
+               </div>` : ''}
                ${p.site_url
                  ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener">
                       🔗 바로가기

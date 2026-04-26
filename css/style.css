@@ -356,6 +356,13 @@ body {
   box-shadow: none;
 }
 
+/* ── Button Row (2-column) ── */
+.btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
 /* ── Demo Button ── */
 .btn-demo {
   display: block;
