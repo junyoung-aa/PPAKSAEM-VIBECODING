@@ -80,28 +80,25 @@ function renderCards(programs, container, type) {
         </div>
         ${type === 'completed'
           ? `<div class="card-actions">
-               ${(p.demo_url || p.guide_url) ? `
+               ${(p.demo_url || p.guide_url || p.download_url) ? `
                <div class="btn-row">
-                 ${p.demo_url  ? `<a class="btn-demo"  href="${p.demo_url}"  target="_blank" rel="noopener" onclick="trackClick('${p.id}','demo')">▶ 체험해보기</a>` : ''}
-                 ${p.guide_url ? `<a class="btn-guide" href="${p.guide_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','guide')">📖 가이드</a>` : ''}
+                 ${p.demo_url     ? `<a class="btn-demo"     href="${p.demo_url}"     target="_blank" rel="noopener" onclick="trackClick('${p.id}','demo')">▶ 체험해보기</a>` : ''}
+                 ${p.guide_url    ? `<a class="btn-guide"    href="${p.guide_url}"    target="_blank" rel="noopener" onclick="trackClick('${p.id}','guide')">📖 가이드</a>` : ''}
+                 ${p.download_url ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener" onclick="trackClick('${p.id}','download')">⬇ 다운로드</a>` : ''}
                </div>` : ''}
                ${p.site_url
                  ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','site')">
                       🔗 바로가기
                     </a>`
                  : ''}
-               ${p.download_url
-                 ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener" onclick="trackClick('${p.id}','download')">
-                      ⬇ 다운로드
-                    </a>`
-                 : (!p.site_url
-                   ? `<button
-                        class="btn-request"
-                        data-form-url="${p.google_form_url}"
-                        data-title="${p.title}">
-                        신청하기
-                      </button>`
-                   : '')}
+               ${(!p.demo_url && !p.guide_url && !p.download_url && !p.site_url)
+                 ? `<button
+                      class="btn-request"
+                      data-form-url="${p.google_form_url}"
+                      data-title="${p.title}">
+                      신청하기
+                    </button>`
+                 : ''}
              </div>`
           : `<div class="coming-soon-bar">
                <span class="coming-soon-dot"></span>
