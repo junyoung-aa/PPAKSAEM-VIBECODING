@@ -15,9 +15,47 @@
       "site_url": "https://ppaksaem-document-changer.hf.space/",
       "download_url": "",
       "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
-      "version": "",
+      "version": "1.0.1",
       "release_date": "2026-04-24",
       "order": 1
+    },
+    {
+      "id": "Auto-Lecture",
+      "title": "연수 도우미",
+      "description": "원격연수 실행 시 창이 내려가 있거나, 다른 창에 가려져 있어도 멈추지 않고 재생이 유지되도록 도와줍니다.",
+      "status": "completed",
+      "tags": [
+        "원격연수",
+        "크롬 확장프로그램",
+        "편리함"
+      ],
+      "google_form_url": "",
+      "site_url": "",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/tag/v1.0.0_AutoLecture",
+      "thumbnail": "/images/스크린샷 2026-04-27 192701-1.png",
+      "version": "1.0.0",
+      "release_date": "2026-04-27",
+      "order": 2
+    },
+    {
+      "id": "teacher-wallpaper",
+      "title": "교사용 배경화면 대시보드",
+      "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
+      "status": "completed",
+      "tags": [
+        "배경화면",
+        "대시보드",
+        "생산성"
+      ],
+      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
+      "site_url": "",
+      "download_url": "",
+      "thumbnail": "/images/스크린샷-2026-04-20-142511.png",
+      "version": "1.0.0",
+      "release_date": "2026-04-26",
+      "order": 3,
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -35,7 +73,7 @@
       "thumbnail": "/images/pdf-분할기-사진.png",
       "version": "1.0.0",
       "release_date": "2026-04-20",
-      "order": 3
+      "order": 4
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
@@ -53,45 +91,7 @@
       "thumbnail": "/images/lm-확장프로그램-사진.png",
       "version": "1.0.0",
       "release_date": "2026-04-22",
-      "order": 4
-    },
-    {
-      "id": "teacher-wallpaper",
-      "title": "교사용 배경화면 대시보드",
-      "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
-      "status": "completed",
-      "tags": [
-        "배경화면",
-        "대시보드",
-        "생산성"
-      ],
-      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
-      "site_url": "",
-      "download_url": "",
-      "thumbnail": "/images/스크린샷-2026-04-20-142511.png",
-      "version": "1.0.0",
-      "release_date": "2026-04-20",
-      "order": 4,
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
-    },
-    {
-      "id": "Auto-Lecture",
-      "title": "연수 도우미",
-      "description": "원격연수 실행 시 창이 내려가 있거나, 다른 창에 가려져 있어도 멈추지 않고 재생이 유지되도록 도와줍니다.",
-      "status": "completed",
-      "tags": [
-        "원격연수",
-        "크롬 확장프로그램",
-        "편리함"
-      ],
-      "google_form_url": "",
-      "site_url": "",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/tag/v1.0.0_AutoLecture",
-      "thumbnail": "/images/스크린샷 2026-04-27 192701.png",
-      "version": "1.0",
-      "release_date": "2026-04-27",
-      "order": 2
+      "order": 5
     }
   ]
 }
