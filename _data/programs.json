@@ -31,7 +31,7 @@
       ],
       "google_form_url": "",
       "site_url": "",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/tag/v1.0.0_AutoLecture",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0_AutoLecture/Auto-Lecture_ver1.0.zip",
       "thumbnail": "/images/스크린샷 2026-04-27 192701-1.png",
       "version": "1.0.0",
       "release_date": "2026-04-27",
@@ -54,8 +54,8 @@
       "version": "1.0.0",
       "release_date": "2026-04-26",
       "order": 3,
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
