@@ -91,7 +91,7 @@ function renderCards(programs, container, type) {
                       🔗 바로가기
                     </a>`
                  : ''}
-               ${(!p.demo_url && !p.guide_url && !p.download_url && !p.site_url)
+               ${(!p.download_url && !p.site_url)
                  ? `<button
                       class="btn-request"
                       data-form-url="${p.google_form_url}"
