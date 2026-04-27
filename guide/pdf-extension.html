@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>노트북LM용 AI 챕터 분할기 설치 가이드 — 팍쌤의 바이브코딩 저장소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg: #F2F2F7;
+  --surface: #FFFFFF;
+  --border: #E5E5EA;
+  --text: #1C1C1E;
+  --sub: #8E8E93;
+  --accent: #7B6CF0;
+  --accent-dark: #4A3BB8;
+  --accent-soft: #F0EEFF;
+  --accent-em: #D8D0FF;
+  --yellow-soft: #FFFAEB;
+  --red-soft: #FFF1F0;
+  --font: 'Inter', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  --r: 16px;
+  --r-sm: 12px;
+}
+
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+/* topbar */
+.topbar { background: rgba(255,255,255,.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: .85rem 1.5rem; display: flex; align-items: center; gap: .5rem; position: sticky; top: 0; z-index: 200; }
+.topbar a { font-size: .82rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+.topbar a:hover { color: var(--accent-dark); }
+.topbar-sep { color: var(--border); font-size: .9rem; }
+.topbar-title { font-size: .82rem; font-weight: 600; color: var(--text); }
+
+/* cover */
+.cover { background: linear-gradient(160deg, #1A1640 0%, #5B4ECC 55%, #4A3DB8 100%); color: #fff; padding: 3rem 1.5rem 2.5rem; text-align: center; }
+.cover-chip { display: inline-flex; align-items: center; gap: .3rem; background: rgba(255,255,255,.18); border-radius: 999px; padding: .25rem .9rem; font-size: .72rem; font-weight: 700; letter-spacing: 1.5px; color: rgba(255,255,255,.9); margin-bottom: 1.1rem; }
+.cover-title { font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 900; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: .6rem; }
+.cover-sub { font-size: .85rem; color: rgba(255,255,255,.65); }
+
+/* tab nav */
+.tab-wrap { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.25rem; overflow-x: auto; scrollbar-width: none; position: sticky; top: 49px; z-index: 100; }
+.tab-wrap::-webkit-scrollbar { display: none; }
+.tab-nav { display: inline-flex; min-width: max-content; }
+.tab-btn { flex-shrink: 0; padding: .85rem .9rem .75rem; border: none; border-bottom: 2.5px solid transparent; background: none; color: var(--sub); font-family: var(--font); font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; margin-bottom: -1px; }
+.tab-btn:hover { color: var(--accent); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* layout */
+.content { max-width: 680px; margin: 0 auto; padding: 1.75rem 1.25rem 5rem; }
+.chapter { display: none; }
+.chapter.active { display: block; }
+
+/* chapter header */
+.ch-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.ch-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .95rem; font-weight: 800; flex-shrink: 0; }
+.ch-tag { font-size: .68rem; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: .15rem; }
+.ch-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -.5px; }
+
+/* groups */
+.group { background: var(--surface); border-radius: var(--r); overflow: hidden; margin-bottom: 1rem; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 2px 12px rgba(0,0,0,.05); }
+.group-label { font-size: .7rem; font-weight: 700; color: var(--sub); letter-spacing: 1.5px; text-transform: uppercase; padding: 1.1rem 1.25rem .4rem; }
+
+/* steps */
+.step { display: flex; gap: 1rem; padding: .9rem 1.25rem; align-items: flex-start; border-top: 1px solid var(--border); }
+.group > .step:first-of-type { border-top: none; }
+.step-num { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: #fff; font-size: .75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: .1rem; }
+.step-body { flex: 1; }
+.step-title { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+.step-text { font-size: .84rem; color: #3C3C43; line-height: 1.75; }
+
+/* inline */
+.em { font-weight: 700; background: var(--accent-em); color: var(--accent-dark); padding: 0 4px; border-radius: 4px; font-size: .9em; }
+.code { font-family: 'Consolas', 'SFMono-Regular', monospace; background: #F2F2F7; border: 1px solid #D1D1D6; color: #1C1C1E; padding: 1px 5px; border-radius: 5px; font-size: .82em; }
+
+/* notices */
+.notice { display: flex; gap: .7rem; align-items: flex-start; border-radius: var(--r-sm); padding: .85rem 1rem; margin: .75rem 0; font-size: .84rem; line-height: 1.75; }
+.notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
+.notice-title { font-weight: 700; margin-bottom: .15rem; }
+.notice-tip { background: var(--accent-soft); border: 1px solid var(--accent-em); }
+.notice-tip .notice-title { color: var(--accent-dark); }
+.notice-warn { background: var(--yellow-soft); border: 1px solid #FDE68A; }
+.notice-warn .notice-title { color: #7D4000; }
+.notice-danger { background: var(--red-soft); border: 1px solid #FFCCC7; }
+.notice-danger .notice-title { color: #C0392B; }
+
+/* images */
+.img-wrap { margin: 1rem 0; }
+.img-wrap img { width: 100%; border-radius: var(--r-sm); border: 1px solid var(--border); display: block; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+.img-wrap.img-half img { max-width: 420px; margin: 0 auto; }
+.img-cap { font-size: .73rem; color: var(--sub); margin-top: .35rem; text-align: center; }
+
+/* faq */
+.faq-group { background: var(--surface); border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 2px 12px rgba(0,0,0,.05); }
+.faq-item { border-top: 1px solid var(--border); }
+.faq-item:first-child { border-top: none; }
+.faq-btn { width: 100%; background: none; border: none; padding: 1rem 1.25rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; text-align: left; font-family: var(--font); transition: background .15s; }
+.faq-btn:hover { background: #F9F9F9; }
+.faq-q-badge { background: var(--accent); color: #fff; font-size: .68rem; font-weight: 800; width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.faq-q-text { font-size: .875rem; font-weight: 600; color: var(--text); flex: 1; }
+.faq-arrow { color: var(--sub); font-size: .7rem; flex-shrink: 0; transition: transform .2s; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a { display: none; padding: .15rem 1.25rem 1rem; font-size: .84rem; color: #3C3C43; line-height: 1.8; }
+.faq-item.open .faq-a { display: block; }
+
+/* misc */
+p { font-size: .875rem; color: #3C3C43; margin-bottom: .6rem; }
+.section-gap { margin-top: 1.5rem; }
+
+/* footer */
+footer { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; border-top: 1px solid var(--border); }
+footer p { font-size: .78rem; color: var(--sub); }
+footer a { font-size: .8rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+footer a:hover { color: var(--accent-dark); }
+
+@media (max-width: 600px) {
+  .cover { padding: 2.5rem 1.25rem 2rem; }
+  .content { padding: 1.25rem 1rem 5rem; }
+  footer { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/">← 목록으로</a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">노트북LM용 AI 챕터 분할기 설치 가이드</span>
+</div>
+
+<div class="cover">
+  <div class="cover-chip">🧩 CHROME EXTENSION</div>
+  <div class="cover-title">노트북LM용<br>AI 챕터 분할기<br>설치 가이드</div>
+  <div class="cover-sub">팍쌤의 바이브코딩 저장소 &nbsp;·&nbsp; ver 1.0</div>
+</div>
+
+<div class="tab-wrap">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-ch="ch1">1. 파일 준비</button>
+    <button class="tab-btn" data-ch="ch2">2. 확장 설치</button>
+    <button class="tab-btn" data-ch="ch3">3. API 키 발급</button>
+    <button class="tab-btn" data-ch="ch4">4. API 키 저장</button>
+    <button class="tab-btn" data-ch="ch5">5. 사용 방법</button>
+    <button class="tab-btn" data-ch="ch6">FAQ</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- 1장 -->
+<div class="chapter active" id="ch1">
+  <div class="ch-header">
+    <div class="ch-icon">1</div>
+    <div>
+      <div class="ch-tag">Chapter 1</div>
+      <div class="ch-title">파일 준비</div>
+    </div>
+  </div>
+
+  <p>확장 프로그램 파일을 다운로드하고 압축을 풀어야 합니다.</p>
+
+  <div class="group">
+    <div class="group-label">다운로드 및 압축 해제</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">다운로드</div>
+        <div class="step-text">목록 페이지에서 <span class="em">⬇ 다운로드</span> 버튼을 클릭하여 zip 파일을 받습니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">압축 해제</div>
+        <div class="step-text">다운로드된 zip 파일을 <span class="em">우클릭 → 모두 압축 풀기</span>를 선택합니다. 바탕화면이나 문서 폴더처럼 찾기 쉬운 곳에 압축 해제하세요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">파일 확인</div>
+        <div class="step-text">압축 해제 후 폴더 안에 <span class="code">manifest.json</span> 파일이 있으면 정상입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice notice-danger">
+    <div class="notice-icon">⚠️</div>
+    <div>
+      <div class="notice-title">폴더를 삭제하거나 이동하지 마세요</div>
+      압축 해제한 폴더는 크롬이 확장 프로그램으로 계속 참조합니다. 폴더를 이동하거나 삭제하면 확장이 비활성화됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- 2장 -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-icon">2</div>
+    <div>
+      <div class="ch-tag">Chapter 2</div>
+      <div class="ch-title">확장 프로그램 설치</div>
+    </div>
+  </div>
+
+  <p>크롬 웹스토어를 거치지 않은 확장 프로그램을 설치하려면 개발자 모드를 켜야 합니다.</p>
+
+  <div class="group">
+    <div class="group-label">개발자 모드 켜기</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">확장 프로그램 관리 열기</div>
+        <div class="step-text">크롬 주소창에 <span class="code">chrome://extensions</span>를 입력하고 Enter를 누릅니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">개발자 모드 활성화</div>
+        <div class="step-text">페이지 우측 상단의 <span class="em">개발자 모드</span> 토글을 <span class="em">켜짐(파란색)</span>으로 전환합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap">
+    <img src="/images/guide/pdf-ext-01-developer-mode.png" alt="개발자 모드 ON/OFF"/>
+    <div class="img-cap">왼쪽: 개발자 모드 OFF (기본) &nbsp;/&nbsp; 오른쪽: 개발자 모드 ON → 버튼 등장</div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">압축 해제 항목 로드</div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">압축해제 항목 로드 클릭</div>
+        <div class="step-text">개발자 모드 활성화 후 나타나는 <span class="em">"압축해제 항목 로드"</span> 버튼을 클릭합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">폴더 선택</div>
+        <div class="step-text">1장에서 압축 해제한 폴더를 선택합니다. 폴더 안으로 들어가지 말고 <span class="em">폴더 자체를 클릭</span>한 뒤 <span class="em">"폴더 선택"</span>을 누릅니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">설치 확인</div>
+        <div class="step-text">확장 프로그램 목록에 카드가 추가되면 설치 완료입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/pdf-ext-02-installed.png" alt="설치 완료 화면"/>
+    <div class="img-cap">설치 완료 화면</div>
+  </div>
+
+  <div class="notice notice-danger">
+    <div class="notice-icon">⚠️</div>
+    <div>
+      <div class="notice-title">폴더가 아닌 파일을 선택하면 오류 발생</div>
+      <span class="code">manifest.json</span> 파일 자체가 아니라, 해당 파일이 들어 있는 폴더 자체를 선택해야 합니다.
+    </div>
+  </div>
+</div>
+
+<!-- 3장 -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-icon">3</div>
+    <div>
+      <div class="ch-tag">Chapter 3</div>
+      <div class="ch-title">Gemini API 키 발급</div>
+    </div>
+  </div>
+
+  <p>이 확장 프로그램은 PDF를 AI로 분석하기 위해 <span class="em">Gemini API 키</span>가 필요합니다. Google에서 무료로 발급받을 수 있으며, 이 기기에만 저장됩니다.</p>
+
+  <div class="group">
+    <div class="group-label">API 키 만들기</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Google AI Studio 접속</div>
+        <div class="step-text">크롬에서 <span class="code">aistudio.google.com/apikey</span>에 접속합니다. Google 계정 로그인이 필요합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">API 키 만들기 클릭</div>
+        <div class="step-text">페이지 상단의 <span class="em">"API 키 만들기"</span> 버튼을 클릭합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap">
+    <img src="/images/guide/pdf-ext-03-api-list.png" alt="API 키 목록 페이지"/>
+    <div class="img-cap">"API 키 만들기" 버튼 위치</div>
+  </div>
+
+  <div class="group">
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">키 복사</div>
+        <div class="step-text">키가 생성되면 <span class="em">"키 복사"</span> 버튼을 클릭하여 복사합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/pdf-ext-04-api-copy.png" alt="API 키 복사"/>
+    <div class="img-cap">"키 복사" 클릭</div>
+  </div>
+
+  <div class="notice notice-danger">
+    <div class="notice-icon">🔒</div>
+    <div>
+      <div class="notice-title">API 키는 다른 사람과 공유하지 마세요</div>
+      이 키는 본인 Google 계정에 연결되어 있습니다. 다른 사람이 사용하면 본인 사용량이 차감됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- 4장 -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-icon">4</div>
+    <div>
+      <div class="ch-tag">Chapter 4</div>
+      <div class="ch-title">API 키 저장</div>
+    </div>
+  </div>
+
+  <p>확장 프로그램 설치 직후 설정 페이지가 자동으로 열립니다. 열리지 않으면 확장 아이콘을 클릭하여 설정 페이지로 이동하세요.</p>
+
+  <div class="group">
+    <div class="group-label">설정 페이지에서 저장</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">API 키 붙여넣기</div>
+        <div class="step-text">설정 페이지의 입력란에 복사한 키를 <span class="em">붙여넣기(Ctrl+V)</span>합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap">
+    <img src="/images/guide/pdf-ext-05-settings.png" alt="설정 페이지"/>
+    <div class="img-cap">API 키 입력란에 붙여넣기</div>
+  </div>
+
+  <div class="group">
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">저장 클릭</div>
+        <div class="step-text"><span class="em">"저장"</span> 버튼을 클릭하면 API 키가 이 기기에만 저장됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap">
+    <img src="/images/guide/pdf-ext-06-api-saved.png" alt="API 키 저장 완료"/>
+    <div class="img-cap">저장 완료 화면</div>
+  </div>
+
+  <div class="notice notice-tip">
+    <div class="notice-icon">💡</div>
+    <div>
+      <div class="notice-title">설정 페이지가 자동으로 열리지 않을 때</div>
+      크롬 주소창 오른쪽 <span class="em">퍼즐(🧩) 아이콘</span>을 클릭한 뒤 확장 이름 옆 핀 아이콘으로 고정하면, 아이콘 클릭 시 팝업에서 <span class="em">⚙️ Gemini API 키 설정</span>으로 바로 이동할 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- 5장 -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-icon">5</div>
+    <div>
+      <div class="ch-tag">Chapter 5</div>
+      <div class="ch-title">NotebookLM에서 사용하기</div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">PDF 챕터 분할 버튼 확인</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">NotebookLM 접속</div>
+        <div class="step-text"><span class="code">notebooklm.google.com</span>에 접속하고 노트북을 엽니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">버튼 확인</div>
+        <div class="step-text">"소스 추가" 버튼 옆에 <span class="em">📄 PDF 챕터 분할</span> 버튼이 자동으로 나타납니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/pdf-ext-07-button.png" alt="PDF 챕터 분할 버튼"/>
+    <div class="img-cap">"PDF 챕터 분할" 버튼 위치</div>
+  </div>
+
+  <div class="group section-gap">
+    <div class="group-label">PDF 업로드 및 분할</div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">버튼 클릭 후 PDF 업로드</div>
+        <div class="step-text"><span class="em">📄 PDF 챕터 분할</span> 버튼을 클릭하고 분할할 PDF 파일을 선택합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">AI 분석 및 자동 추가</div>
+        <div class="step-text">AI가 PDF의 챕터를 자동으로 분석하고, NotebookLM 소스에 챕터별로 나뉘어 추가됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice notice-tip">
+    <div class="notice-icon">💡</div>
+    <div>
+      <div class="notice-title">버튼이 보이지 않을 때</div>
+      NotebookLM 페이지를 <span class="em">새로고침(F5)</span>하거나, <span class="code">chrome://extensions</span>에서 확장 프로그램이 활성화되어 있는지 확인하세요.
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-icon" style="font-size:.75rem;letter-spacing:0">FAQ</div>
+    <div>
+      <div class="ch-tag">자주 묻는 질문</div>
+      <div class="ch-title">FAQ</div>
+    </div>
+  </div>
+
+  <div class="faq-group">
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">버튼이 NotebookLM에 나타나지 않아요.</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">NotebookLM 페이지를 새로고침(F5)해보세요. 그래도 보이지 않으면 <span class="code">chrome://extensions</span>에서 확장 프로그램이 켜져 있는지 확인하세요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">"AIza"로 시작하지 않는다는 오류가 나와요.</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">API 키를 다시 복사하여 설정 페이지에 붙여넣어 보세요. 앞뒤 공백이 없는지 확인하세요. Gemini API 키는 항상 <span class="code">AIza</span>로 시작합니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">설정 페이지가 자동으로 열리지 않아요.</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">퍼즐(🧩) 아이콘을 클릭하면 팝업에서 <span class="em">⚙️ Gemini API 키 설정</span> 버튼을 찾을 수 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">업데이트하면 다시 설치해야 하나요?</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">새 버전 zip을 받아 같은 폴더에 파일을 덮어쓴 뒤, <span class="code">chrome://extensions</span>에서 확장 카드의 <span class="em">새로고침(↺) 아이콘</span>을 클릭하면 재설치 없이 업데이트됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">API 키는 유료인가요?</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">Google AI Studio의 Gemini API는 무료 티어를 제공합니다. 일반적인 사용량에서는 비용이 발생하지 않습니다. 다만 대용량 PDF를 자주 처리하면 무료 한도를 초과할 수 있으니 Google AI Studio에서 사용량을 확인해 두세요.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <p>팍쌤의 노트북LM용 AI 챕터 분할기 설치 가이드 · ver 1.0 · 2026</p>
+  <a href="/">← 바이브코딩 저장소로 돌아가기</a>
+</footer>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.ch).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+document.querySelectorAll('.faq-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
