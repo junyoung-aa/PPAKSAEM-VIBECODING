@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>팍쌤의 바이브코딩 저장소</title>
   <meta name="description" content="교사를 위해 AI로 만든 유용한 프로그램 모음입니다. 필요한 프로그램을 신청하거나 새로운 아이디어를 제안해 주세요." />
-  <!-- OG / SNS 공유 썸네일 -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="팍쌤의 바이브코딩 저장소" />
-  <meta property="og:description" content="교사를 위해 AI로 만든 유용한 프로그램 모음입니다. 필요한 프로그램을 신청하거나 새로운 아이디어를 제안해 주세요." />
-  <meta property="og:image" content="https://ppaksaem-vibecoding.pages.dev/썸네일.png" />
-  <meta property="og:url" content="https://ppaksaem-vibecoding.pages.dev" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="팍쌤의 바이브코딩 저장소" />
-  <meta name="twitter:image" content="https://ppaksaem-vibecoding.pages.dev/썸네일.png" />
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="팍쌤의 바이브코딩 저장소" />
+  <meta property="og:description" content="교사를 위해 AI로 만든 유용한 프로그램 모음입니다." />
+  <meta property="og:image"       content="https://ppaksaem-vibecoding.pages.dev/썸네일.png" />
+  <meta property="og:url"         content="https://ppaksaem-vibecoding.pages.dev" />
+  <meta name="twitter:card"       content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -21,102 +18,229 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="site-header">
+  <!-- ══════════════ TOP NAV ══════════════ -->
+  <nav class="top-nav" aria-label="메인 내비게이션">
     <div class="container">
-      <div class="header-badge">
-        <span>✦</span> 선생님을 위한 AI Tool
+
+      <!-- 로고 -->
+      <a href="/" class="nav-logo">
+        <img src="/images/팍쌤의바이브코딩저장소로고(투명).png" alt="팍쌤의 바이브코딩 저장소" />
+      </a>
+
+      <!-- 페이지 탭 -->
+      <ul class="nav-pages" role="list">
+        <li>
+          <button class="nav-page-btn is-active" data-page="page-programs" type="button">
+            프로그램 소개
+          </button>
+        </li>
+        <li>
+          <button class="nav-page-btn" data-page="page-about" type="button">
+            만든이
+          </button>
+        </li>
+        <li>
+          <button class="nav-page-btn" data-page="page-feedback" type="button">
+            피드백
+          </button>
+        </li>
+      </ul>
+
+      <!-- CTA -->
+      <div class="nav-cta-wrap">
+        <button class="nav-cta" type="button" onclick="switchPage('page-feedback')">
+          피드백 보내기
+        </button>
       </div>
-      <h1 class="site-title">팍쌤의 바이브코딩 저장소</h1>
-      <p class="site-subtitle">
-        팍쌤이 직접 제작한 프로그램을 소개합니다!<br>
-        필요한 프로그램은 신청해주세요!
-      </p>
-      <nav class="section-nav" aria-label="섹션 이동">
-        <a href="#completed">배포중</a>
-        <a href="#in-development">개발중</a>
-        <a href="#feature-request">기능 요청</a>
-      </nav>
+
     </div>
-  </header>
+  </nav>
 
-  <main>
-    <!-- SECTION 1: 완성된 프로그램 -->
-    <section class="programs-section" id="completed">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">배포중</h2>
-        </div>
-        <div class="card-grid" id="completed-grid">
-          <!-- JS renders cards here -->
-        </div>
-      </div>
-    </section>
+  <!-- ══════════════ PAGE 1 — 프로그램 소개 ══════════════ -->
+  <div class="page-view is-active" id="page-programs">
 
-    <!-- SECTION 2: 개발 중인 프로그램 -->
-    <section class="programs-section" id="in-development">
+    <header class="site-header">
       <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">개발 중인 프로그램</h2>
+        <div class="header-badge">
+          <span>✦</span> 선생님을 위한 AI Tool
         </div>
-        <div class="card-grid" id="in-development-grid">
-          <!-- JS renders cards here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 3: 기능 요청 -->
-    <section class="feature-request-section" id="feature-request">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">기능 요청</h2>
-        </div>
-        <p class="section-desc">
-          원하는 프로그램이 없으신가요?<br>
-          아이디어를 남겨주시면 검토 후 개발하겠습니다.
+        <h1 class="site-title">팍쌤의 바이브코딩 저장소</h1>
+        <p class="site-subtitle">
+          팍쌤이 직접 제작한 프로그램을 소개합니다!<br>
+          필요한 프로그램은 피드백으로 신청해주세요!
         </p>
-        <div class="form-wrapper" id="feature-request-form">
-          <!-- JS injects iframe here -->
+        <nav class="section-nav" aria-label="섹션 이동">
+          <a href="#completed">배포중</a>
+          <a href="#in-development">개발중</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- 배포중 -->
+      <section class="programs-section" id="completed">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">배포중</h2>
+            <span class="section-count" id="completed-count"></span>
+          </div>
+          <div class="card-grid" id="completed-grid"></div>
+        </div>
+      </section>
+
+      <!-- 개발중 -->
+      <section class="programs-section" id="in-development">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">개발 중인 프로그램</h2>
+            <span class="section-count" id="in-dev-count"></span>
+          </div>
+          <div class="card-grid" id="in-development-grid"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>팍쌤의 바이브코딩 저장소</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ══════════════ PAGE 2 — 만든이 ══════════════ -->
+  <div class="page-view" id="page-about">
+    <div class="about-page">
+      <div class="container">
+        <div class="about-inner">
+
+          <!-- 사진 -->
+          <div class="about-photo-col animate-in">
+            <img src="/images/팍쌤투명배경.png" alt="팍쌤 프로필 사진" class="about-photo" />
+            <div>
+              <div class="about-name">팍쌤</div>
+              <div class="about-role">교사 · 바이브코딩 크리에이터</div>
+            </div>
+          </div>
+
+          <!-- 바이오 -->
+          <div class="about-bio">
+            <div class="about-label animate-in">About</div>
+            <h2 class="about-headline animate-in">
+              선생님의 하루를<br>더 가볍게 만드는<br>AI 도구를 만듭니다.
+            </h2>
+            <p class="about-desc animate-in">
+              안녕하세요, 팍쌤입니다.<br>
+              현직 교사로 일하며 매일 반복되는 업무를 줄이기 위해 직접 AI 도구를 개발하고 있습니다.<br>
+              코딩을 배운 지 얼마 되지 않았지만,<br>
+              AI와 함께 선생님들께 도움이 되는 프로그램을 만들고 있어요.
+            </p>
+
+            <div class="about-highlights animate-in">
+              <div class="highlight-item">
+                <div class="highlight-icon">🏫</div>
+                <div class="highlight-label">직업</div>
+                <div class="highlight-value">현직 교사</div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">🤖</div>
+                <div class="highlight-label">활동</div>
+                <div class="highlight-value">바이브코딩 크리에이터</div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">🛠️</div>
+                <div class="highlight-label">제작 도구</div>
+                <div class="highlight-value">AI + Claude Code</div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">🎯</div>
+                <div class="highlight-label">목표</div>
+                <div class="highlight-value">선생님 업무 자동화</div>
+              </div>
+            </div>
+
+            <div class="about-divider animate-in"></div>
+
+            <blockquote class="about-quote animate-in">
+              "코딩을 몰라도 괜찮아요. AI와 함께라면 누구나 만들 수 있습니다."
+            </blockquote>
+
+            <button class="about-cta animate-in" type="button"
+                    onclick="switchPage('page-feedback')">
+              피드백 · 프로그램 신청 →
+            </button>
+          </div>
+
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container"><p>팍쌤의 바이브코딩 저장소</p></div>
+    </footer>
+  </div>
+
+  <!-- ══════════════ PAGE 3 — 피드백 ══════════════ -->
+  <div class="page-view" id="page-feedback">
+    <div class="feedback-page">
+      <div class="container">
+        <div class="feedback-header animate-in">
+          <div class="about-label">Feedback</div>
+          <h2 class="feedback-title">아이디어가 있으신가요?</h2>
+          <p class="feedback-desc">
+            원하는 프로그램이 없으신가요?<br>
+            아이디어를 남겨주시면 검토 후 개발하겠습니다.
+          </p>
+        </div>
+        <div class="feedback-box animate-in">
+          <div id="feature-request-form">
+            <!-- JS injects iframe here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container"><p>팍쌤의 바이브코딩 저장소</p></div>
+    </footer>
+  </div>
 
   <!-- MODAL -->
-  <div class="modal-overlay" id="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-overlay" id="modal-overlay"
+       aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
-      <button class="modal-close" id="modal-close" aria-label="닫기">✕</button>
+      <button class="modal-close" id="modal-close" aria-label="닫기" type="button">✕</button>
       <h3 class="modal-title" id="modal-title"></h3>
       <div class="modal-body">
-        <iframe
-          id="modal-iframe"
-          src=""
-          width="100%"
-          height="530"
-          frameborder="0"
-          marginheight="0"
-          marginwidth="0"
-          title="프로그램 신청 폼">
+        <iframe id="modal-iframe" src="" width="100%" height="530"
+          frameborder="0" marginheight="0" marginwidth="0" title="프로그램 신청 폼">
           로딩 중...
         </iframe>
       </div>
     </div>
   </div>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>팍쌤의 바이브코딩 저장소</p>
-    </div>
-  </footer>
+  <!-- MOBILE BOTTOM TAB BAR -->
+  <div class="mobile-nav-tabs" role="tablist">
+    <button class="mobile-nav-btn is-active" data-page="page-programs" type="button">
+      <span class="tab-icon">🗂️</span>프로그램
+    </button>
+    <button class="mobile-nav-btn" data-page="page-about" type="button">
+      <span class="tab-icon">👤</span>만든이
+    </button>
+    <button class="mobile-nav-btn" data-page="page-feedback" type="button">
+      <span class="tab-icon">💬</span>피드백
+    </button>
+  </div>
 
   <script src="/js/main.js"></script>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script>
     if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function(user) {
+      window.netlifyIdentity.on('init', function(user) {
         if (!user) {
-          window.netlifyIdentity.on("login", function() {
-            document.location.href = "/admin/";
+          window.netlifyIdentity.on('login', function() {
+            document.location.href = '/admin/';
           });
         }
       });
