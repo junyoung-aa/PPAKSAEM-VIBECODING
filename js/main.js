@@ -1,21 +1,53 @@
-const DATA_URL = '/_data/programs.json';
+const DATA_URL    = '/_data/programs.json';
 const TRACKER_URL = 'https://ppaksaem-click-tracker.jykwak1213.workers.dev';
 
-// 버튼 클릭 추적
+// ── DOM refs ──────────────────────────────────────────────────
+const completedGrid  = document.getElementById('completed-grid');
+const inDevGrid      = document.getElementById('in-development-grid');
+const featureFormDiv = document.getElementById('feature-request-form');
+const modalOverlay   = document.getElementById('modal-overlay');
+const modalClose     = document.getElementById('modal-close');
+const modalTitle     = document.getElementById('modal-title');
+const modalIframe    = document.getElementById('modal-iframe');
+
+// ── Page switching ─────────────────────────────────────────────
+const pages      = document.querySelectorAll('.page-view');
+const navBtns    = document.querySelectorAll('.nav-page-btn');
+const mobileBtns = document.querySelectorAll('.mobile-nav-btn');
+
+function switchPage(targetId) {
+  pages.forEach(p => p.classList.remove('is-active'));
+  navBtns.forEach(b => b.classList.remove('is-active'));
+  mobileBtns.forEach(b => b.classList.remove('is-active'));
+
+  const target = document.getElementById(targetId);
+  if (target) {
+    target.classList.add('is-active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  navBtns.forEach(b => { if (b.dataset.page === targetId) b.classList.add('is-active'); });
+  mobileBtns.forEach(b => { if (b.dataset.page === targetId) b.classList.add('is-active'); });
+
+  history.replaceState(null, '', `#${targetId}`);
+
+  setTimeout(() => {
+    observeAnimateIn();
+    if (targetId === 'page-programs') observeCards();
+  }, 50);
+}
+
+navBtns.forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
+mobileBtns.forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
+
+// ── Click tracking ─────────────────────────────────────────────
 function trackClick(programId, buttonType) {
   fetch(`${TRACKER_URL}/track?id=${encodeURIComponent(programId)}&button=${encodeURIComponent(buttonType)}`, {
     method: 'POST'
-  }).catch(() => {}) // 실패해도 사용자 경험에 영향 없게
+  }).catch(() => {});
 }
 
-const completedGrid    = document.getElementById('completed-grid');
-const inDevGrid        = document.getElementById('in-development-grid');
-const featureFormDiv   = document.getElementById('feature-request-form');
-const modalOverlay     = document.getElementById('modal-overlay');
-const modalClose       = document.getElementById('modal-close');
-const modalTitle       = document.getElementById('modal-title');
-const modalIframe      = document.getElementById('modal-iframe');
-
+// ── Load & render ──────────────────────────────────────────────
 async function loadPrograms() {
   try {
     const res = await fetch(DATA_URL);
@@ -26,29 +58,36 @@ async function loadPrograms() {
     const completed = sorted.filter(p => p.status === 'completed');
     const inDev     = sorted.filter(p => p.status === 'in_development');
 
+    const completedCount = document.getElementById('completed-count');
+    const inDevCount     = document.getElementById('in-dev-count');
+    if (completedCount) completedCount.textContent = completed.length;
+    if (inDevCount)     inDevCount.textContent     = inDev.length;
+
     renderCards(completed, completedGrid, 'completed');
     renderCards(inDev, inDevGrid, 'in_development');
     renderFeatureRequestForm(data.feature_request_form_url);
 
     const inDevSection = document.getElementById('in-development');
-    if (inDev.length === 0) inDevSection.style.display = 'none';
+    if (inDev.length === 0 && inDevSection) inDevSection.style.display = 'none';
 
   } catch (err) {
-    completedGrid.innerHTML = '<p class="empty-msg">프로그램 목록을 불러오는 데 실패했습니다.</p>';
+    if (completedGrid)
+      completedGrid.innerHTML = '<p class="empty-msg">프로그램 목록을 불러오는 데 실패했습니다.</p>';
     console.error(err);
   }
 }
 
 function getIcon(tags) {
   const t = tags || [];
-  if (t.includes('PDF'))      return '📄';
-  if (t.includes('배경화면'))  return '🖥️';
-  if (t.includes('계획서'))    return '📋';
-  if (t.includes('AI'))       return '🤖';
+  if (t.includes('PDF'))     return '📄';
+  if (t.includes('배경화면')) return '🖥️';
+  if (t.includes('계획서'))   return '📋';
+  if (t.includes('AI'))      return '🤖';
   return '✨';
 }
 
 function renderCards(programs, container, type) {
+  if (!container) return;
   if (programs.length === 0) {
     container.innerHTML = '<p class="empty-msg">등록된 프로그램이 없습니다.</p>';
     return;
@@ -72,7 +111,7 @@ function renderCards(programs, container, type) {
         <p class="card-description">${p.description}</p>
         ${(p.version || p.release_date) ? `
         <div class="card-meta">
-          ${p.version    ? `<span class="card-meta-version">v${p.version}</span>` : ''}
+          ${p.version      ? `<span class="card-meta-version">v${p.version}</span>` : ''}
           ${p.release_date ? `<span class="card-meta-date">${p.release_date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1년 $2월 $3일')} 배포</span>` : ''}
         </div>` : ''}
         <div class="card-tags">
@@ -87,17 +126,10 @@ function renderCards(programs, container, type) {
                  ${p.download_url ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener" onclick="trackClick('${p.id}','download')">⬇ 다운로드</a>` : ''}
                </div>` : ''}
                ${p.site_url
-                 ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','site')">
-                      🔗 바로가기
-                    </a>`
+                 ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','site')">🔗 바로가기</a>`
                  : ''}
                ${(!p.download_url && !p.site_url)
-                 ? `<button
-                      class="btn-request"
-                      data-form-url="${p.google_form_url}"
-                      data-title="${p.title}">
-                      신청하기
-                    </button>`
+                 ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
                  : ''}
              </div>`
           : `<div class="coming-soon-bar">
@@ -115,29 +147,19 @@ function renderCards(programs, container, type) {
 }
 
 function renderFeatureRequestForm(url) {
+  if (!featureFormDiv) return;
   if (!url || url === 'FEATURE_REQUEST_FORM_URL_HERE') {
-    featureFormDiv.innerHTML = `
-      <div class="form-placeholder">
-        <p>기능 요청 폼을 준비 중입니다. 곧 공개됩니다!</p>
-      </div>
-    `;
+    featureFormDiv.innerHTML = `<div class="form-placeholder"><p>피드백 폼을 준비 중입니다. 곧 공개됩니다!</p></div>`;
     return;
   }
   featureFormDiv.innerHTML = `
-    <iframe
-      src="${url}"
-      width="100%"
-      height="600"
-      frameborder="0"
-      marginheight="0"
-      marginwidth="0"
-      title="기능 요청 폼"
-      loading="lazy">
+    <iframe src="${url}" width="100%" height="600" frameborder="0"
+      marginheight="0" marginwidth="0" title="피드백 폼" loading="lazy">
       로딩 중...
-    </iframe>
-  `;
+    </iframe>`;
 }
 
+// ── Modal ──────────────────────────────────────────────────────
 function openModal(formUrl, title) {
   if (!formUrl || formUrl === 'GOOGLE_FORM_URL_HERE') {
     alert('신청 폼이 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.');
@@ -159,30 +181,10 @@ function closeModal() {
 }
 
 modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', e => {
-  if (e.target === modalOverlay) closeModal();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ── Smooth Nav Scroll ──────────────────────────────────────────
-document.querySelectorAll('.section-nav a').forEach(link => {
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(link.getAttribute('href'));
-    if (!target) return;
-
-    // 활성 스타일
-    document.querySelectorAll('.section-nav a').forEach(a => a.classList.remove('is-active'));
-    link.classList.add('is-active');
-
-    // 부드럽게 스크롤
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
-
-// ── Ripple Effect ──────────────────────────────────────────────
+// ── Ripple ─────────────────────────────────────────────────────
 document.addEventListener('click', e => {
   const btn = e.target.closest('.btn-request');
   if (!btn) return;
@@ -190,29 +192,71 @@ document.addEventListener('click', e => {
   const rect   = btn.getBoundingClientRect();
   const size   = Math.max(rect.width, rect.height);
   ripple.className = 'ripple';
-  ripple.style.cssText = `
-    width: ${size}px; height: ${size}px;
-    left: ${e.clientX - rect.left - size / 2}px;
-    top:  ${e.clientY - rect.top  - size / 2}px;
-  `;
+  ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
   btn.appendChild(ripple);
   ripple.addEventListener('animationend', () => ripple.remove());
 });
 
-// ── Card Scroll Fade-in ─────────────────────────────────────────
+// ── Section jump links ─────────────────────────────────────────
+function initSectionNav() {
+  document.querySelectorAll('.section-nav a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      document.querySelectorAll('.section-nav a').forEach(a => a.classList.remove('is-active'));
+      link.classList.add('is-active');
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+// ── Card scroll fade-in ────────────────────────────────────────
+let cardObserver = null;
 function observeCards() {
-  const observer = new IntersectionObserver((entries) => {
+  if (cardObserver) cardObserver.disconnect();
+  cardObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
-        setTimeout(() => {
-          entry.target.classList.add('is-visible');
-        }, i * 80);
-        observer.unobserve(entry.target);
+        setTimeout(() => entry.target.classList.add('is-visible'), i * 80);
+        cardObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.1 });
-
-  document.querySelectorAll('.program-card').forEach(card => observer.observe(card));
+  document.querySelectorAll('.program-card:not(.is-visible)').forEach(c => cardObserver.observe(c));
 }
 
-loadPrograms().then(() => observeCards());
+// ── Generic animate-in ─────────────────────────────────────────
+let animateObserver = null;
+function observeAnimateIn() {
+  if (animateObserver) animateObserver.disconnect();
+  animateObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        animateObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.animate-in:not(.is-visible)').forEach(el => animateObserver.observe(el));
+}
+
+// ── Hash routing ───────────────────────────────────────────────
+function initFromHash() {
+  const hash = window.location.hash.replace('#', '');
+  const valid = ['page-programs', 'page-about', 'page-feedback'];
+  switchPage(valid.includes(hash) ? hash : 'page-programs');
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initSectionNav();
+  initFromHash();
+  observeAnimateIn();
+});
+
+loadPrograms().then(() => {
+  if (document.getElementById('page-programs')?.classList.contains('is-active')) {
+    observeCards();
+  }
+});
