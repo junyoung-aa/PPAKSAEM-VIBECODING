@@ -128,7 +128,7 @@ function renderCards(programs, container, type) {
                  ${p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
                    data-note="${p.download_url_note || ''}" data-track-id="${p.id}" data-track-type="download">⬇ 다운로드</a>` : ''}
                </div>` : ''}
-               ${(!p.download_url && !p.site_url && !p.demo_url && !p.guide_url)
+               ${(!p.download_url && !p.site_url)
                  ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
                  : ''}
              </div>`
