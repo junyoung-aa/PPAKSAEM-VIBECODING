@@ -55,8 +55,8 @@
       "version": "1.0",
       "release_date": "2026-04-26",
       "order": 3,
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -66,11 +66,11 @@
       "tags": [
         "PDF",
         "AI",
-        "문서"
+        "문서 분할"
       ],
-      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
-      "site_url": "",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0/PDF-Splitter.exe",
+      "google_form_url": "",
+      "site_url": "https://ppaksaem-pdf-splitter.hf.space",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.1_splitter/PDF-Splitter.exe",
       "thumbnail": "/images/pdf-분할기-사진.png",
       "version": "1.1",
       "release_date": "2026-05-01",
