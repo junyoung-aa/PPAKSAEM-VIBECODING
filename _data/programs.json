@@ -55,8 +55,8 @@
       "version": "1.0",
       "release_date": "2026-04-26",
       "order": 3,
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -86,12 +86,12 @@
         "크롬확장프로그램",
         "PDF"
       ],
-      "google_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScwfIANHBRxjQgvsM-Q_qc1B4jISOgsUM46WrOmSWIocyJ45w/viewform?embedded=true",
+      "google_form_url": "",
       "site_url": "",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.0.0-extension/PDF.Extension.zip",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v1.1_PDF-Extension/PDF.Extension.zip",
       "thumbnail": "/images/lm-확장프로그램-사진.png",
-      "version": "1.0",
-      "release_date": "2026-04-22",
+      "version": "1.1",
+      "release_date": "2026-05-02",
       "order": 5,
       "guide_url": "/guide/pdf-extension.html"
     }
