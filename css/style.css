@@ -292,7 +292,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: auto;
+  margin-top: 0.5rem;
 }
 
 /* ── Site Link Button ── */
