@@ -123,10 +123,14 @@ function renderCards(programs, container, type) {
                <div class="btn-row">
                  ${p.demo_url     ? `<a class="btn-demo"     href="${p.demo_url}"     target="_blank" rel="noopener" onclick="trackClick('${p.id}','demo')">▶ 체험해보기</a>` : ''}
                  ${p.guide_url    ? `<a class="btn-guide"    href="${p.guide_url}"    target="_blank" rel="noopener" onclick="trackClick('${p.id}','guide')">📖 가이드</a>` : ''}
-                 ${p.download_url ? `<a class="btn-download" href="${p.download_url}" download target="_blank" rel="noopener" onclick="trackClick('${p.id}','download')">⬇ 다운로드</a>` : ''}
+                 ${p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
+                   data-note="${p.download_url_note || ''}" data-track-id="${p.id}" data-track-type="download">⬇ 다운로드</a>` : ''}
                </div>` : ''}
                ${p.site_url
-                 ? `<a class="btn-site" href="${p.site_url}" target="_blank" rel="noopener" onclick="trackClick('${p.id}','site')">🔗 바로가기</a>`
+                 ? `<a class="btn-site${p.site_url_note ? ' has-note' : ''}" href="${p.site_url}" target="_blank" rel="noopener"
+                      data-note="${p.site_url_note || ''}" data-track-id="${p.id}" data-track-type="site">
+                      🔗 바로가기
+                    </a>`
                  : ''}
                ${(!p.download_url && !p.site_url)
                  ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
@@ -183,6 +187,43 @@ function closeModal() {
 modalClose.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── Info Popup ─────────────────────────────────────────────────
+function openInfoPopup(note, href, isDownload, trackId, trackType) {
+  const existing = document.getElementById('info-popup-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'info-popup-overlay';
+  overlay.innerHTML = `
+    <div class="info-popup">
+      <p class="info-popup-msg">${note.replace(/\n/g, '<br>')}</p>
+      <div class="info-popup-btns">
+        <button class="info-popup-cancel">취소</button>
+        <a class="info-popup-confirm" href="${href}" ${isDownload ? 'download' : ''} target="_blank" rel="noopener">계속하기</a>
+      </div>
+    </div>
+  `;
+
+  overlay.querySelector('.info-popup-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  overlay.querySelector('.info-popup-confirm').addEventListener('click', () => {
+    trackClick(trackId, trackType);
+    setTimeout(() => overlay.remove(), 200);
+  });
+
+  document.body.appendChild(overlay);
+}
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.has-note');
+  if (!btn) return;
+  const note = btn.dataset.note;
+  if (!note) return;
+  e.preventDefault();
+  const isDownload = btn.hasAttribute('download');
+  openInfoPopup(note, btn.href, isDownload, btn.dataset.trackId, btn.dataset.trackType);
+});
 
 // ── Ripple ─────────────────────────────────────────────────────
 document.addEventListener('click', e => {

@@ -518,6 +518,70 @@ body {
   padding: 2rem 0;
 }
 
+/* ── Info Popup ── */
+#info-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.15s ease;
+}
+
+.info-popup {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  text-align: center;
+}
+
+.info-popup-msg {
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+}
+
+.info-popup-btns {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.info-popup-cancel {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 8px;
+  background: #fff;
+  color: #6B7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.info-popup-cancel:hover { background: #F3F4F6; }
+
+.info-popup-confirm {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  background: #2563EB;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s;
+}
+.info-popup-confirm:hover { background: #1D4ED8; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 /* ── Modal ── */
 .modal-overlay {
   position: fixed;
