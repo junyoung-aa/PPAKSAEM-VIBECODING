@@ -80,3 +80,25 @@ collections:
                 label: "표시 순서 (숫자가 작을수록 먼저)"
                 widget: "number"
                 value_type: "int"
+              - name: "changelog"
+                label: "업데이트 내역"
+                widget: "list"
+                required: false
+                hint: "최신 버전을 맨 위에 추가하세요. 최근 30일 이내 항목이 있으면 카드에 '업데이트' 배지가 표시됩니다."
+                fields:
+                  - name: "version"
+                    label: "버전 (예: 1.2)"
+                    widget: "string"
+                  - name: "date"
+                    label: "업데이트 날짜"
+                    widget: "datetime"
+                    type: date
+                    format: "YYYY-MM-DD"
+                  - name: "changes"
+                    label: "변경 항목"
+                    widget: "list"
+                    hint: "항목마다 한 줄씩 입력하세요"
+                    field:
+                      name: "change"
+                      label: "변경 내용"
+                      widget: "string"
