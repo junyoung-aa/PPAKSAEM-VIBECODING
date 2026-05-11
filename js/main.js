@@ -146,16 +146,14 @@ function renderCards(programs, container, type) {
           ? `<img src="${p.thumbnail}" alt="${p.title} 썸네일" loading="lazy" />`
           : `<span class="placeholder-icon">${getIcon(p.tags)}</span>`
         }
+        ${isRecentlyUpdated(p) ? `<span class="update-badge" data-program-id="${p.id}">✨ 업데이트</span>` : ''}
       </div>
       <div class="card-body">
         <div class="card-header">
           <h3 class="card-title">${p.title}</h3>
-          <div class="card-header-badges">
-            ${isRecentlyUpdated(p) ? `<span class="update-badge" data-program-id="${p.id}">✨ 업데이트</span>` : ''}
-            <span class="status-badge status-badge--${p.status}">
-              ${p.status === 'completed' ? '배포중' : '개발 중'}
-            </span>
-          </div>
+          <span class="status-badge status-badge--${p.status}">
+            ${p.status === 'completed' ? '배포중' : '개발 중'}
+          </span>
         </div>
         <p class="card-description">${p.description}</p>
         ${(p.version || p.release_date) ? `
