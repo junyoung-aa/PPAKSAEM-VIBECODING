@@ -91,7 +91,7 @@ function isRecentlyUpdated(program) {
   const latestDate = new Date(program.changelog[0].date);
   const now = new Date();
   const diffDays = (now - latestDate) / (1000 * 60 * 60 * 24);
-  return diffDays <= 30;
+  return diffDays <= 15;
 }
 
 function openChangelogPopup(program) {
@@ -151,7 +151,7 @@ function renderCards(programs, container, type) {
         <div class="card-header">
           <h3 class="card-title">${p.title}</h3>
           <div class="card-header-badges">
-            ${isRecentlyUpdated(p) ? `<span class="update-badge">업데이트</span>` : ''}
+            ${isRecentlyUpdated(p) ? `<span class="update-badge" data-program-id="${p.id}">✨ 업데이트</span>` : ''}
             <span class="status-badge status-badge--${p.status}">
               ${p.status === 'completed' ? '배포중' : '개발 중'}
             </span>
@@ -177,9 +177,6 @@ function renderCards(programs, container, type) {
                  ${p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
                    data-note="${p.download_url_note || ''}" data-track-id="${p.id}" data-track-type="download">⬇ 다운로드</a>` : ''}
                </div>` : ''}
-               ${(p.changelog && p.changelog.length > 0) ? `
-               <button class="btn-changelog" data-program-id="${p.id}">🔔 업데이트 내용</button>
-               ` : ''}
                ${(!p.download_url && !p.site_url)
                  ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
                  : ''}
@@ -197,9 +194,9 @@ function renderCards(programs, container, type) {
     btn.addEventListener('click', () => openModal(btn.dataset.formUrl, btn.dataset.title));
   });
 
-  container.querySelectorAll('.btn-changelog').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const prog = programs.find(p => p.id === btn.dataset.programId);
+  container.querySelectorAll('.update-badge[data-program-id]').forEach(badge => {
+    badge.addEventListener('click', () => {
+      const prog = programs.find(p => p.id === badge.dataset.programId);
       if (prog) openChangelogPopup(prog);
     });
   });
