@@ -25,7 +25,7 @@
           "changes": [
             "레퍼런스 파일 다중 업로드 지원",
             "처리 속도 30% 개선",
-            "오류 메시지 한국어화"
+            "특수학급 주간학습안내 제작 기능 추가"
           ]
         },
         {
@@ -55,24 +55,26 @@
       "version": "2.0",
       "release_date": "2026-05-11",
       "order": 2,
-      "guide_url": "/guide/lecture-free.html",
       "changelog": [
         {
-          "version": "1.1",
-          "date": "2026-04-27",
+          "version": "2.0",
+          "date": "2026-05-11",
           "changes": [
-            "다양한 연수 사이트 호환성 개선",
-            "재생 유지 안정성 향상"
+            "[퀴즈]/[다음 버튼] 클릭 필요 시 알림 생성 기능 추가",
+            "[퀴즈]/[다음 버튼] 클릭 필요 시 창 띄우기 기능 추가",
+            "'일시정지' 세팅이 연수원 세팅값이 아님을 확인"
           ]
         },
         {
           "version": "1.0",
           "date": "2026-04-20",
           "changes": [
-            "최초 배포"
+            "최초 배포",
+            "창 최소화/창 가려져 있을 때도 연수 재생 유지 기능 추가"
           ]
         }
-      ]
+      ],
+      "guide_url": "/guide/lecture-free.html"
     },
     {
       "id": "teacher-wallpaper",
@@ -91,8 +93,6 @@
       "version": "1.0",
       "release_date": "2026-04-26",
       "order": 3,
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html",
       "changelog": [
         {
           "version": "1.0",
@@ -101,7 +101,9 @@
             "최초 배포"
           ]
         }
-      ]
+      ],
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -120,25 +122,25 @@
       "version": "1.1",
       "release_date": "2026-05-01",
       "order": 4,
-"changelog": [
-  {
-    "version": "1.1",
-    "date": "2026-05-01",
-    "changes": [
-      "실행 파일(.exe) 버전 추가로 대용량 PDF 처리 가능",
-      "챕터 감지 정확도 개선"
-    ]
-  },
-  {
-    "version": "1.0",
-    "date": "2026-04-25",
-    "changes": [
-      "최초 배포 — 웹 버전"
-    ]
-  }
-],
-"download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
-"site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
+      "changelog": [
+        {
+          "version": "1.1",
+          "date": "2026-05-01",
+          "changes": [
+            "100MB → 500MB 대용량 PDF 처리 가능",
+            "챕터 감지 정확도 개선"
+          ]
+        },
+        {
+          "version": "1.0",
+          "date": "2026-04-25",
+          "changes": [
+            "최초 배포 — 웹 버전"
+          ]
+        }
+      ],
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
@@ -157,14 +159,12 @@
       "version": "1.1",
       "release_date": "2026-05-02",
       "order": 5,
-      "guide_url": "/guide/pdf-extension.html",
       "changelog": [
         {
           "version": "1.1",
           "date": "2026-05-02",
           "changes": [
-            "노트북LM 자동 업로드 기능 추가",
-            "챕터 분할 후 바로 업로드 연동"
+            "PDF 업로드 용량 100MB → 500MB 증가"
           ]
         },
         {
@@ -174,7 +174,8 @@
             "최초 배포 — 크롬 확장프로그램"
           ]
         }
-      ]
+      ],
+      "guide_url": "/guide/pdf-extension.html"
     }
   ]
 }
