@@ -86,6 +86,52 @@ function getIcon(tags) {
   return '✨';
 }
 
+function isRecentlyUpdated(program) {
+  if (!program.changelog || program.changelog.length === 0) return false;
+  const latestDate = new Date(program.changelog[0].date);
+  const now = new Date();
+  const diffDays = (now - latestDate) / (1000 * 60 * 60 * 24);
+  return diffDays <= 30;
+}
+
+function openChangelogPopup(program) {
+  const existing = document.getElementById('changelog-popup-overlay');
+  if (existing) existing.remove();
+
+  const entriesHtml = (program.changelog || []).map(entry => `
+    <div class="changelog-entry">
+      <div class="changelog-entry-header">
+        <span class="changelog-version">v${entry.version}</span>
+        <span class="changelog-date">${entry.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1년 $2월 $3일')}</span>
+      </div>
+      <ul class="changelog-list">
+        ${entry.changes.map(c => `<li>${c}</li>`).join('')}
+      </ul>
+    </div>
+  `).join('');
+
+  const overlay = document.createElement('div');
+  overlay.id = 'changelog-popup-overlay';
+  overlay.innerHTML = `
+    <div class="changelog-popup" role="dialog" aria-modal="true" aria-labelledby="changelog-popup-title">
+      <div class="changelog-popup-header">
+        <h3 class="changelog-popup-title" id="changelog-popup-title">${program.title} 업데이트 내용</h3>
+        <button class="changelog-popup-close" aria-label="닫기">✕</button>
+      </div>
+      <div class="changelog-popup-body">${entriesHtml}</div>
+    </div>
+  `;
+
+  overlay.querySelector('.changelog-popup-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.addEventListener('keydown', function onEsc(e) {
+    if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', onEsc); }
+  });
+
+  document.body.appendChild(overlay);
+  overlay.querySelector('.changelog-popup-close').focus();
+}
+
 function renderCards(programs, container, type) {
   if (!container) return;
   if (programs.length === 0) {
@@ -104,9 +150,12 @@ function renderCards(programs, container, type) {
       <div class="card-body">
         <div class="card-header">
           <h3 class="card-title">${p.title}</h3>
-          <span class="status-badge status-badge--${p.status}">
-            ${p.status === 'completed' ? '배포중' : '개발 중'}
-          </span>
+          <div class="card-header-badges">
+            ${isRecentlyUpdated(p) ? `<span class="update-badge">업데이트</span>` : ''}
+            <span class="status-badge status-badge--${p.status}">
+              ${p.status === 'completed' ? '배포중' : '개발 중'}
+            </span>
+          </div>
         </div>
         <p class="card-description">${p.description}</p>
         ${(p.version || p.release_date) ? `
@@ -128,6 +177,9 @@ function renderCards(programs, container, type) {
                  ${p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
                    data-note="${p.download_url_note || ''}" data-track-id="${p.id}" data-track-type="download">⬇ 다운로드</a>` : ''}
                </div>` : ''}
+               ${(p.changelog && p.changelog.length > 0) ? `
+               <button class="btn-changelog" data-program-id="${p.id}">🔔 업데이트 내용</button>
+               ` : ''}
                ${(!p.download_url && !p.site_url)
                  ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
                  : ''}
@@ -143,6 +195,13 @@ function renderCards(programs, container, type) {
 
   container.querySelectorAll('.btn-request').forEach(btn => {
     btn.addEventListener('click', () => openModal(btn.dataset.formUrl, btn.dataset.title));
+  });
+
+  container.querySelectorAll('.btn-changelog').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const prog = programs.find(p => p.id === btn.dataset.programId);
+      if (prog) openChangelogPopup(prog);
+    });
   });
 }
 

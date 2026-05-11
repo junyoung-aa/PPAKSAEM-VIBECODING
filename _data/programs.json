@@ -17,7 +17,26 @@
       "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
       "version": "1.2",
       "release_date": "2026-04-28",
-      "order": 1
+      "order": 1,
+      "changelog": [
+        {
+          "version": "1.2",
+          "date": "2026-04-28",
+          "changes": [
+            "레퍼런스 파일 다중 업로드 지원",
+            "처리 속도 30% 개선",
+            "오류 메시지 한국어화"
+          ]
+        },
+        {
+          "version": "1.1",
+          "date": "2026-04-22",
+          "changes": [
+            "최초 배포 후 UI 개선",
+            "파일 형식 오류 수정"
+          ]
+        }
+      ]
     },
     {
       "id": "Auto-Lecture",
@@ -36,7 +55,24 @@
       "version": "1.1",
       "release_date": "2026-04-27",
       "order": 2,
-      "guide_url": "/guide/lecture-free.html"
+      "guide_url": "/guide/lecture-free.html",
+      "changelog": [
+        {
+          "version": "1.1",
+          "date": "2026-04-27",
+          "changes": [
+            "다양한 연수 사이트 호환성 개선",
+            "재생 유지 안정성 향상"
+          ]
+        },
+        {
+          "version": "1.0",
+          "date": "2026-04-20",
+          "changes": [
+            "최초 배포"
+          ]
+        }
+      ]
     },
     {
       "id": "teacher-wallpaper",
@@ -56,7 +92,16 @@
       "release_date": "2026-04-26",
       "order": 3,
       "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
+      "guide_url": "/guide/dashboard.html",
+      "changelog": [
+        {
+          "version": "1.0",
+          "date": "2026-04-26",
+          "changes": [
+            "최초 배포"
+          ]
+        }
+      ]
     },
     {
       "id": "ai-pdf-splitter",
@@ -76,7 +121,24 @@
       "thumbnail": "/images/pdf-분할기-사진.png",
       "version": "1.1",
       "release_date": "2026-05-01",
-      "order": 4
+      "order": 4,
+      "changelog": [
+        {
+          "version": "1.1",
+          "date": "2026-05-01",
+          "changes": [
+            "실행 파일(.exe) 버전 추가로 대용량 PDF 처리 가능",
+            "챕터 감지 정확도 개선"
+          ]
+        },
+        {
+          "version": "1.0",
+          "date": "2026-04-25",
+          "changes": [
+            "최초 배포 — 웹 버전"
+          ]
+        }
+      ]
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
@@ -95,7 +157,24 @@
       "version": "1.1",
       "release_date": "2026-05-02",
       "order": 5,
-      "guide_url": "/guide/pdf-extension.html"
+      "guide_url": "/guide/pdf-extension.html",
+      "changelog": [
+        {
+          "version": "1.1",
+          "date": "2026-05-02",
+          "changes": [
+            "노트북LM 자동 업로드 기능 추가",
+            "챕터 분할 후 바로 업로드 연동"
+          ]
+        },
+        {
+          "version": "1.0",
+          "date": "2026-04-28",
+          "changes": [
+            "최초 배포 — 크롬 확장프로그램"
+          ]
+        }
+      ]
     }
   ]
 }
