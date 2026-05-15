@@ -176,6 +176,27 @@
         }
       ],
       "guide_url": "/guide/pdf-extension.html"
+    },
+    {
+      "id": "exam-paper-restorer",
+      "title": "시험지 복원기",
+      "description": "시험지 PDF를 업로드하면 AI가 학생 필기를 제거하고 깨끗한 원본 시험지를 복원합니다. API 키 없이 바로 사용 가능합니다.",
+      "status": "completed",
+      "tags": ["AI", "시험지", "PDF"],
+      "google_form_url": "",
+      "site_url": "https://ppaksaem-exam-paper-restorer.hf.space",
+      "download_url": "",
+      "thumbnail": "",
+      "version": "1.0",
+      "release_date": "2026-05-16",
+      "order": 6,
+      "changelog": [
+        {
+          "version": "1.0",
+          "date": "2026-05-16",
+          "changes": ["최초 배포"]
+        }
+      ]
     }
   ]
 }
