@@ -102,8 +102,8 @@
           ]
         }
       ],
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -139,8 +139,8 @@
           ]
         }
       ],
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
@@ -181,7 +181,7 @@
       "id": "exam-paper-restorer",
       "title": "시험지 복원기",
       "description": "시험지를 업로드하면 AI가 학생 필기를 제거하고 깨끗한 원본 시험지를 복원합니다.",
-      "status": "in_development",
+      "status": "completed",
       "tags": [
         "AI",
         "시험지",
