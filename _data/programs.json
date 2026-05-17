@@ -2,43 +2,6 @@
   "feature_request_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeByirhECDCWjMEH1rNMLcGJIUvepuKS53C7zIdnawamJTUug/viewform?usp=dialog",
   "programs": [
     {
-      "id": "plan-generator",
-      "title": "문서 생성기",
-      "description": "수정하고 싶은 파일을 업로드하고 요청하면 AI가 자동으로 수정해줍니다. \n레퍼런스 파일을 넣어 문서별 참고사항을 지시해도 좋아요.",
-      "status": "completed",
-      "tags": [
-        "AI",
-        "문서",
-        "계획서"
-      ],
-      "google_form_url": "",
-      "site_url": "https://ppaksaem-document-changer.hf.space/",
-      "download_url": "",
-      "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
-      "version": "1.2",
-      "release_date": "2026-04-28",
-      "order": 1,
-      "changelog": [
-        {
-          "version": "1.2",
-          "date": "2026-04-28",
-          "changes": [
-            "레퍼런스 파일 다중 업로드 지원",
-            "처리 속도 30% 개선",
-            "특수학급 주간학습안내 제작 기능 추가"
-          ]
-        },
-        {
-          "version": "1.1",
-          "date": "2026-04-22",
-          "changes": [
-            "최초 배포 후 UI 개선",
-            "파일 형식 오류 수정"
-          ]
-        }
-      ]
-    },
-    {
       "id": "Auto-Lecture",
       "title": "연수 도우미",
       "description": "원격연수 실행 시 재생이 멈추지 않고 유지되도록 도와줍니다. 또한, 다음 단계로 넘어가야 하면 자동으로 창을 띄우거나 알림을 표시합니다.",
@@ -84,12 +47,13 @@
       "tags": [
         "배경화면",
         "대시보드",
-        "생산성"
+        "생산성",
+        "초기세팅 난이도 높음"
       ],
       "google_form_url": "https://forms.gle/omGGf5G74JH1w3iG8",
       "site_url": "",
       "download_url": "",
-      "thumbnail": "/images/스크린샷-2026-04-20-142511.png",
+      "thumbnail": "/images/스크린샷 2026-05-17 235152.png",
       "version": "1.0",
       "release_date": "2026-04-26",
       "order": 3,
@@ -98,12 +62,61 @@
           "version": "1.0",
           "date": "2026-04-26",
           "changes": [
-            "최초 배포"
+            "최초 배포",
+            "[퀴즈]/[다음 버튼] 클릭 필요 시 창 띄우기 기능 추가",
+            "'일시정지' 세팅이 연수원 세팅값이 아님을 확인"
+          ]
+        },
+        {
+          "version": "1.0",
+          "date": "2026-04-20",
+          "changes": [
+            "최초 배포",
+            "창 최소화/창 가려져 있을 때도 연수 재생 유지 기능 추가"
           ]
         }
       ],
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
+    },
+    {
+      "id": "plan-generator",
+      "title": "문서 생성기",
+      "description": "수정하고 싶은 파일을 업로드하고 요청하면 AI가 자동으로 수정해줍니다. \n레퍼런스 파일을 넣어 문서별 참고사항을 지시해도 좋아요.",
+      "status": "completed",
+      "tags": [
+        "AI",
+        "문서",
+        "계획서"
+      ],
+      "google_form_url": "",
+      "site_url": "https://ppaksaem-document-changer.hf.space/",
+      "download_url": "",
+      "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
+      "version": "1.2",
+      "release_date": "2026-04-28",
+      "order": 1,
+      "changelog": [
+        {
+          "version": "1.2",
+          "date": "2026-04-28",
+          "changes": [
+            "레퍼런스 파일 다중 업로드 지원",
+            "처리 속도 30% 개선",
+            "특수학급 주간학습안내 제작 기능 추가"
+          ]
+        },
+        {
+          "version": "1.1",
+          "date": "2026-04-22",
+          "changes": [
+            "최초 배포 후 UI 개선",
+            "파일 형식 오류 수정"
+          ]
+        }
+      ],
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -139,8 +152,8 @@
           ]
         }
       ],
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
