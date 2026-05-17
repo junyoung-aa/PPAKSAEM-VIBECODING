@@ -45,7 +45,6 @@
       "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
       "status": "completed",
       "tags": [
-        "배경화면",
         "대시보드",
         "생산성",
         "초기세팅 난이도 높음"
@@ -59,12 +58,13 @@
       "order": 2,
       "changelog": [
         {
-          "version": "1.0",
-          "date": "2026-04-26",
+          "version": "2.0",
+          "date": "2026-05-18",
           "changes": [
-            "최초 배포",
-            "[퀴즈]/[다음 버튼] 클릭 필요 시 창 띄우기 기능 추가",
-            "'일시정지' 세팅이 연수원 세팅값이 아님을 확인"
+            "공문/메신저 캡쳐 or 복붙 - AI가 할 일 자동 추출",
+            "학부모에게 보낼 메시지 AI가 자동으로 다듬기",
+            "구글캘린더 일정 추가/삭제/수정 기능 추가",
+            "디자인 대변혁"
           ]
         },
         {
@@ -76,8 +76,8 @@
           ]
         }
       ],
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "plan-generator",
@@ -115,8 +115,8 @@
           ]
         }
       ],
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "ai-pdf-splitter",
@@ -152,8 +152,8 @@
           ]
         }
       ],
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
