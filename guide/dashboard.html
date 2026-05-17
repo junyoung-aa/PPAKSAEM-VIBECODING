@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교사용 대시보드 설정 가이드 — 팍쌤의 바이브코딩 저장소</title>
+<title>교사용 클래스룸 대시보드 ver2.0 설정 가이드</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -277,10 +277,33 @@
 
   @media screen{
     .page-break{margin-top:48px;padding-top:48px;border-top:1px solid var(--line-soft);}
+    .toc{display:none;}  /* 가로 탭바가 대체 */
   }
+
+  /* ── 상단 바 ── */
+  .guide-topbar{background:#fff;border-bottom:1px solid #e8ddd0;padding:.55rem 1.2rem;display:flex;align-items:center;gap:.6rem;position:sticky;top:0;z-index:200;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
+  .guide-topbar-back{display:inline-flex;align-items:center;gap:.3rem;color:#857969;text-decoration:none;font-size:.84rem;font-weight:500;transition:color .15s;}
+  .guide-topbar-back:hover{color:var(--accent);}
+  .guide-topbar-sep{color:#e0d4c0;}
+  .guide-topbar-title{font-size:.88rem;font-weight:600;color:var(--ink);}
+
+  /* ── 가로 탭 내비게이션 ── */
+  .guide-tab-nav{background:#fff;border-bottom:1px solid #e8ddd0;padding:.45rem 1rem;display:flex;gap:.3rem;overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:40px;z-index:190;}
+  .guide-tab-nav::-webkit-scrollbar{height:3px;}
+  .guide-tab-nav::-webkit-scrollbar-thumb{background:#e0d4c0;border-radius:2px;}
+  .guide-tab-btn{flex-shrink:0;padding:.32rem .75rem;border:1.5px solid #e0d4c0;border-radius:999px;background:#fff;color:#857969;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;}
+  .guide-tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .guide-tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  @media print{.guide-topbar,.guide-tab-nav{display:none;}}
 </style>
 </head>
 <body>
+
+<div class="guide-topbar">
+  <a class="guide-topbar-back" href="/">← 목록으로</a>
+  <span class="guide-topbar-sep">/</span>
+  <span class="guide-topbar-title">교사용 대시보드 설정 가이드</span>
+</div>
 
 <!-- ══════════════════════════════════════════
      표지
@@ -304,6 +327,22 @@
     다음 페이지 <b>"기존 사용자를 위한 업데이트 가이드"</b>로 바로 이동하세요.
   </div>
 </div>
+
+<nav class="guide-tab-nav" id="guideTabNav">
+  <button class="guide-tab-btn active" data-target="migration">🆕 업데이트</button>
+  <button class="guide-tab-btn" data-target="ch1">1장. 준비물</button>
+  <button class="guide-tab-btn" data-target="ch2">2장. Lively 설치</button>
+  <button class="guide-tab-btn" data-target="ch3">3장. 대시보드 실행</button>
+  <button class="guide-tab-btn" data-target="ch4">4장. 구글시트 설정</button>
+  <button class="guide-tab-btn" data-target="ch5">5장. Apps Script ★</button>
+  <button class="guide-tab-btn" data-target="ch6">6장. 기본 설정</button>
+  <button class="guide-tab-btn" data-target="ch7">7장. 🎨 디자인</button>
+  <button class="guide-tab-btn" data-target="ch8">8장. 🤖 AI</button>
+  <button class="guide-tab-btn" data-target="ch9">9장. 📅 캘린더</button>
+  <button class="guide-tab-btn" data-target="ch10">10장. ✅ 할 일</button>
+  <button class="guide-tab-btn" data-target="ch11">11장. 💾 백업</button>
+  <button class="guide-tab-btn" data-target="ch12">12장. FAQ</button>
+</nav>
 
 <!-- ══════════════════════════════════════════
      목차
@@ -1867,5 +1906,34 @@ Lively 앱을 열고 등록된 대시보드를 선택한 후, 오른쪽 아래 <
   문의 및 피드백은 <a href="https://joo.is/팍쌤바이브" style="color:#a85a1e;">joo.is/팍쌤바이브</a> 로 연락주세요.
 </div>
 
+<script>
+(function(){
+  const btns = document.querySelectorAll('.guide-tab-btn');
+  const topbar = document.querySelector('.guide-topbar');
+  const tabNav = document.querySelector('.guide-tab-nav');
+  const offset = () => (topbar ? topbar.offsetHeight : 0) + (tabNav ? tabNav.offsetHeight : 0) + 8;
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = document.getElementById(btn.dataset.target);
+      if(!el) return;
+      window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - offset(), behavior:'smooth'});
+    });
+  });
+
+  const ids = ['migration','ch1','ch2','ch3','ch4','ch5','ch6','ch7','ch8','ch9','ch10','ch11','ch12'];
+  const setActive = id => {
+    btns.forEach(b => b.classList.toggle('active', b.dataset.target === id));
+    const active = document.querySelector(`.guide-tab-btn[data-target="${id}"]`);
+    if(active) active.scrollIntoView({block:'nearest', inline:'center'});
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) setActive(e.target.id); });
+  }, {rootMargin: `-${offset()}px 0px -55% 0px`, threshold: 0});
+
+  ids.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+})();
+</script>
 </body>
 </html>
