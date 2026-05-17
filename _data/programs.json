@@ -17,7 +17,7 @@
       "thumbnail": "/images/스크린샷 2026-05-11 231428.png",
       "version": "2.0",
       "release_date": "2026-05-11",
-      "order": 2,
+      "order": 1,
       "changelog": [
         {
           "version": "2.0",
@@ -54,9 +54,9 @@
       "site_url": "",
       "download_url": "",
       "thumbnail": "/images/스크린샷 2026-05-17 235152.png",
-      "version": "1.0",
-      "release_date": "2026-04-26",
-      "order": 3,
+      "version": "2.0",
+      "release_date": "2026-05-17",
+      "order": 2,
       "changelog": [
         {
           "version": "1.0",
@@ -95,7 +95,7 @@
       "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
       "version": "1.2",
       "release_date": "2026-04-28",
-      "order": 1,
+      "order": 3,
       "changelog": [
         {
           "version": "1.2",
