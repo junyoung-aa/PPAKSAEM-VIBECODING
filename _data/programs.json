@@ -122,9 +122,7 @@
             "파일 형식 오류 수정"
           ]
         }
-      ],
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      ]
     },
     {
       "id": "ai-pdf-splitter",
