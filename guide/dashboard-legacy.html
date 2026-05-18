@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>교사용 클래스룸 대시보드 ver2.0 설정 가이드</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+  /* ──────────────────────────────────────────
+     기본 — Pretendard 글꼴 + 가독성 최우선 세팅
+  ────────────────────────────────────────── */
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ink:#2c2620;            /* 본문 (웜 다크) */
+    --ink-soft:#4a4036;       /* 부드러운 본문 */
+    --ink-mute:#857969;       /* 흐린 텍스트 */
+    --line:#e8ddd0;           /* 구분선 */
+    --line-soft:#f2ebe1;
+    --bg:#fdfaf5;             /* 살짝 웜한 배경 */
+    --accent:#a85a1e;         /* 진한 앰버 */
+    --accent-soft:#d97706;
+    --accent-bg:#fef3e7;
+    --warn:#c2680b;
+    --warn-bg:#fff7e6;
+    --info:#2563eb;
+    --info-bg:#eff6ff;
+    --danger:#c62828;
+    --danger-bg:#fce8e6;
+    --new:#d97706;
+  }
+  html{
+    /* 한글 자간을 살짝 좁혀 답답함 완화 */
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+  body{
+    font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',
+                'Malgun Gothic',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--ink);
+    background:#f4ece0;
+    line-height:1.85;
+    letter-spacing:-0.011em;
+    word-break:keep-all;       /* 한글 어절 단위 줄바꿈 */
+    overflow-wrap:break-word;
+  }
+  p{margin:0 0 14px;}
+  p:last-child{margin-bottom:0;}
+
+  /* ──────────────────────────────────────────
+     인쇄/PDF
+  ────────────────────────────────────────── */
+  @media print{
+    @page{size:A4;margin:18mm 16mm 18mm 16mm;}
+    .page-break{page-break-before:always;}
+    .no-print{display:none;}
+    body{font-size:11pt;background:#fff;line-height:1.75;}
+    a{text-decoration:none;color:var(--ink);}
+  }
+  @media screen{
+    body{
+      font-size:15.5px;
+      max-width:760px;margin:0 auto;padding:60px 56px;
+      background:#fff;
+      box-shadow:0 0 24px rgba(80,50,20,0.08);
+    }
+  }
+
+  /* ──────────────────────────────────────────
+     표지
+  ────────────────────────────────────────── */
+  .cover{
+    background:linear-gradient(135deg,#3a2418 0%,#7a4a2a 55%,#b87a4a 100%);
+    color:#fff;min-height:880px;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;text-align:center;
+    padding:80px 40px;border-radius:6px;letter-spacing:-0.01em;
+  }
+  .cover-badge{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.35);
+    border-radius:24px;padding:7px 20px;font-size:12px;letter-spacing:2.5px;font-weight:600;
+    color:rgba(255,255,255,0.92);margin-bottom:28px;}
+  .cover-title{font-size:42px;font-weight:800;letter-spacing:-2px;line-height:1.25;margin-bottom:18px;}
+  .cover-sub{font-size:17px;color:rgba(255,255,255,0.82);margin-bottom:28px;font-weight:400;}
+  .cover-tag{display:inline-block;background:rgba(255,255,255,0.18);border-radius:8px;padding:6px 14px;font-size:13px;margin:0 4px 8px;color:rgba(255,255,255,0.95);font-weight:500;}
+  .cover-divider{width:64px;height:3px;background:rgba(255,255,255,0.4);border-radius:2px;margin:36px auto;}
+  .cover-meta{font-size:13px;color:rgba(255,255,255,0.7);line-height:2;font-weight:300;}
+  .cover-icon{font-size:64px;margin-bottom:28px;}
+  .cover-v1user{margin-top:40px;background:rgba(255,255,255,0.12);border:1px dashed rgba(255,255,255,0.4);border-radius:10px;padding:18px 24px;font-size:14px;color:rgba(255,255,255,0.94);max-width:520px;line-height:1.75;}
+  .cover-v1user b{color:#fff;font-weight:700;}
+
+  /* ──────────────────────────────────────────
+     목차
+  ────────────────────────────────────────── */
+  .toc{padding:8px 0 16px;}
+  .toc-title{font-size:22px;font-weight:800;color:var(--accent);margin-bottom:24px;padding-bottom:12px;
+    border-bottom:2px solid var(--accent);letter-spacing:-0.02em;}
+  .toc-item{display:block;padding:0;border-bottom:1px dotted #d8c9b3;}
+  .toc-item a{color:inherit;text-decoration:none;display:flex;align-items:baseline;padding:11px 4px;transition:background .15s;}
+  .toc-item a:hover{background:var(--accent-bg);}
+  .toc-num{color:var(--accent);font-weight:700;min-width:76px;font-size:14px;}
+  .toc-text{flex:1;font-size:15px;color:var(--ink);}
+  .toc-new{display:inline-block;background:var(--new);color:#fff;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;margin-left:8px;vertical-align:middle;letter-spacing:0.5px;}
+
+  /* ──────────────────────────────────────────
+     장 헤더
+  ────────────────────────────────────────── */
+  .chapter-header{background:linear-gradient(135deg,#7a4a2a,#b87a4a);color:#fff;
+    padding:22px 26px;border-radius:10px;margin:0 0 28px;display:flex;align-items:center;gap:18px;
+    box-shadow:0 4px 16px rgba(122,74,42,0.18);}
+  .chapter-header.new{background:linear-gradient(135deg,#a85a1e,#e89154);box-shadow:0 4px 16px rgba(168,90,30,0.22);}
+  .chapter-num{background:rgba(255,255,255,0.22);border-radius:50%;width:46px;height:46px;
+    display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;}
+  .chapter-label{font-size:11px;color:rgba(255,255,255,0.78);letter-spacing:1.5px;font-weight:600;margin-bottom:2px;}
+  .chapter-title{font-size:22px;font-weight:800;line-height:1.25;letter-spacing:-0.02em;}
+
+  /* ──────────────────────────────────────────
+     섹션 제목
+  ────────────────────────────────────────── */
+  .section-title{font-size:18px;font-weight:700;color:var(--accent);margin:32px 0 14px;
+    padding-left:14px;border-left:4px solid var(--accent-soft);letter-spacing:-0.015em;line-height:1.4;}
+
+  /* ──────────────────────────────────────────
+     단계 목록
+  ────────────────────────────────────────── */
+  .steps{list-style:none;padding:0;margin:14px 0;}
+  .steps li{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--line-soft);}
+  .steps li:last-child{border-bottom:none;}
+  .step-num{background:var(--accent);color:#fff;border-radius:50%;width:28px;height:28px;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+    flex-shrink:0;margin-top:2px;}
+  .step-content{flex:1;font-size:15px;line-height:1.85;color:var(--ink);}
+
+  /* ──────────────────────────────────────────
+     일반 글머리
+  ────────────────────────────────────────── */
+  .bullets{padding-left:22px;margin:8px 0 14px;}
+  .bullets li{margin-bottom:8px;font-size:15px;line-height:1.8;color:var(--ink);}
+  .bullets li:last-child{margin-bottom:0;}
+
+  /* ──────────────────────────────────────────
+     강조 — 톤다운 (red 빈도 줄이고 accent 위주)
+  ────────────────────────────────────────── */
+  .red{color:var(--danger);font-weight:600;}
+  .accent{color:var(--accent);font-weight:600;}
+  .bold{font-weight:700;}
+  .mono{font-family:'JetBrains Mono','D2Coding','Consolas',monospace;
+    background:#f4ece0;padding:1px 7px;border-radius:4px;font-size:13.5px;color:#5a3a1e;
+    letter-spacing:0;}
+  .badge-new{display:inline-block;background:var(--new);color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;vertical-align:middle;letter-spacing:0.5px;margin:0 3px;}
+  .badge-v2{display:inline-block;background:var(--accent);color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;vertical-align:middle;letter-spacing:0.5px;margin:0 3px;}
+
+  /* ──────────────────────────────────────────
+     알림 박스 — 톤다운, 패딩 확장
+  ────────────────────────────────────────── */
+  .box{border-radius:8px;padding:16px 20px;margin:18px 0;font-size:15px;line-height:1.8;color:var(--ink);}
+  .box-warn{background:var(--warn-bg);border-left:4px solid var(--warn);}
+  .box-tip{background:var(--info-bg);border-left:4px solid var(--info);}
+  .box-important{background:var(--danger-bg);border-left:4px solid var(--danger);}
+  .box-new{background:var(--accent-bg);border-left:4px solid var(--accent-soft);}
+  .box-title{font-weight:700;margin-bottom:6px;font-size:15.5px;}
+  .box p{margin-bottom:8px;}
+  .box p:last-child,
+  .box ul:last-child{margin-bottom:0;}
+  .box .bullets{margin:6px 0 0;}
+
+  /* ──────────────────────────────────────────
+     스크린샷 placeholder
+  ────────────────────────────────────────── */
+  .screenshot{
+    border:2px dashed #e0a86a;background:#fffaf2;border-radius:8px;
+    padding:24px 20px;margin:16px 0;text-align:center;color:var(--accent);
+    font-size:14px;min-height:96px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;
+  }
+  .screenshot-icon{font-size:28px;}
+  .screenshot-label{font-weight:700;font-size:14.5px;}
+  .screenshot-desc{font-size:13px;color:#a08054;line-height:1.6;}
+
+  /* ──────────────────────────────────────────
+     테이블
+  ────────────────────────────────────────── */
+  .data-table{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14.5px;
+    border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(80,50,20,0.08);}
+  .data-table th{background:var(--accent);color:#fff;padding:11px 14px;text-align:left;font-weight:700;letter-spacing:-0.01em;font-size:14px;}
+  .data-table td{padding:11px 14px;border-bottom:1px solid var(--line-soft);color:var(--ink);}
+  .data-table tr:nth-child(even) td{background:#faf6f1;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table .col-ex{color:var(--ink-soft);font-size:14px;}
+
+  /* ──────────────────────────────────────────
+     FAQ
+  ────────────────────────────────────────── */
+  .faq-item{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line-soft);}
+  .faq-item:last-child{border-bottom:none;}
+  .faq-q{font-weight:700;color:var(--accent);margin-bottom:8px;font-size:15.5px;line-height:1.6;}
+  .faq-q::before{content:'Q. ';}
+  .faq-a{padding-left:22px;font-size:14.5px;color:var(--ink);line-height:1.85;}
+  .faq-a::before{content:'A. ';font-weight:700;color:var(--accent-soft);}
+
+  /* ──────────────────────────────────────────
+     이미지
+  ────────────────────────────────────────── */
+  .img-ss{margin:16px 0;text-align:center;}
+  .img-ss img{max-width:100%;border-radius:8px;box-shadow:0 3px 12px rgba(80,50,20,0.12);}
+  .img-row{display:flex;gap:12px;margin:14px 0;}
+  .img-row .img-ss{flex:1;margin:0;}
+
+  /* ──────────────────────────────────────────
+     7테마 스와치
+  ────────────────────────────────────────── */
+  .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0;}
+  .theme-card{border:1px solid var(--line);border-radius:10px;padding:14px 10px;text-align:center;background:#fff;}
+  .theme-swatch{display:flex;gap:4px;justify-content:center;margin-bottom:10px;}
+  .theme-dot{width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,0.06);box-shadow:0 1px 2px rgba(0,0,0,0.05);}
+  .theme-name{font-weight:700;color:var(--accent);margin-bottom:3px;font-size:13.5px;}
+  .theme-tag{font-size:12px;color:var(--ink-mute);line-height:1.4;}
+
+  /* ──────────────────────────────────────────
+     키 발급 카드
+  ────────────────────────────────────────── */
+  .kit-card{background:var(--accent-bg);border:1px solid #f0d9b5;border-radius:10px;padding:18px 22px;margin:16px 0;}
+  .kit-card .kit-title{font-weight:700;color:var(--accent);margin-bottom:10px;font-size:15.5px;}
+  .kit-card .bullets{margin-bottom:0;}
+
+  /* ──────────────────────────────────────────
+     점프 카드
+  ────────────────────────────────────────── */
+  .jump-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0;}
+  .jump-card{display:block;background:var(--accent-bg);border:1px solid #f0d9b5;border-radius:10px;padding:18px 20px;text-decoration:none;color:var(--ink);transition:all .2s;}
+  .jump-card:hover{background:#fef0d5;transform:translateY(-2px);box-shadow:0 4px 12px rgba(168,90,30,0.15);}
+  .jump-card .jc-icon{font-size:24px;margin-bottom:8px;}
+  .jump-card .jc-title{font-weight:700;color:var(--accent);font-size:15px;margin-bottom:4px;letter-spacing:-0.01em;}
+  .jump-card .jc-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+
+  /* ──────────────────────────────────────────
+     여백 유틸
+  ────────────────────────────────────────── */
+  .mt8{margin-top:10px;}
+  .mt16{margin-top:24px;}
+  .mt24{margin-top:32px;}
+  .mb8{margin-bottom:10px;}
+  .center{text-align:center;}
+
+  /* ──────────────────────────────────────────
+     코드 블록 (복사 버튼 포함)
+  ────────────────────────────────────────── */
+  .code-block{position:relative;background:#1e1a17;border:1px solid #3a3026;border-radius:10px;margin:18px 0;overflow:hidden;box-shadow:0 4px 16px rgba(40,25,10,0.12);}
+  .code-block-header{display:flex;justify-content:space-between;align-items:center;background:#2a2520;padding:10px 14px;border-bottom:1px solid #3a3026;}
+  .code-block-lang{font-family:'JetBrains Mono','D2Coding','Consolas',monospace;font-size:12.5px;color:#d4a574;font-weight:600;letter-spacing:0.3px;}
+  .code-copy-btn{background:var(--accent-soft);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;letter-spacing:-0.01em;font-family:inherit;transition:background .15s,transform .1s;display:inline-flex;align-items:center;gap:5px;}
+  .code-copy-btn:hover{background:#b86305;}
+  .code-copy-btn:active{transform:scale(0.96);}
+  .code-copy-btn.copied{background:#3a9d7c;}
+  .code-block pre{margin:0;padding:16px 18px;max-height:440px;overflow:auto;background:#1e1a17;}
+  .code-block code{font-family:'JetBrains Mono','D2Coding','Consolas',monospace;font-size:12.5px;color:#e8e0d4;line-height:1.65;white-space:pre;letter-spacing:0;display:block;}
+  .code-block pre::-webkit-scrollbar{width:9px;height:9px;}
+  .code-block pre::-webkit-scrollbar-track{background:#1e1a17;}
+  .code-block pre::-webkit-scrollbar-thumb{background:#5a4838;border-radius:4px;}
+  .code-block pre::-webkit-scrollbar-thumb:hover{background:#7a6248;}
+
+  /* 챕터 사이 간격 확장 */
+  .chapter-header{margin-top:0;}
+  .page-break + #ch1,
+  .page-break + #ch2,
+  .page-break + #ch3,
+  .page-break + #ch4,
+  .page-break + #ch5,
+  .page-break + #ch6,
+  .page-break + #ch7,
+  .page-break + #ch8,
+  .page-break + #ch9,
+  .page-break + #ch10,
+  .page-break + #ch11,
+  .page-break + #ch12,
+  .page-break + #migration{margin-top:40px;}
+
+  @media screen{
+    .page-break{margin-top:48px;padding-top:48px;border-top:1px solid var(--line-soft);}
+    .toc{display:none;}  /* 가로 탭바가 대체 */
+  }
+
+  /* ── 상단 바 ── */
+  .guide-topbar{background:#fff;border-bottom:1px solid #e8ddd0;padding:.55rem 1.2rem;display:flex;align-items:center;gap:.6rem;position:sticky;top:0;z-index:200;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
+  .guide-topbar-back{display:inline-flex;align-items:center;gap:.3rem;color:#857969;text-decoration:none;font-size:.84rem;font-weight:500;transition:color .15s;}
+  .guide-topbar-back:hover{color:var(--accent);}
+  .guide-topbar-sep{color:#e0d4c0;}
+  .guide-topbar-title{font-size:.88rem;font-weight:600;color:var(--ink);}
+
+  /* ── 가로 탭 내비게이션 ── */
+  .guide-tab-nav{background:#fff;border-bottom:1px solid #e8ddd0;padding:.45rem 1rem;display:flex;gap:.3rem;overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:40px;z-index:190;}
+  .guide-tab-nav::-webkit-scrollbar{height:3px;}
+  .guide-tab-nav::-webkit-scrollbar-thumb{background:#e0d4c0;border-radius:2px;}
+  .guide-tab-btn{flex-shrink:0;padding:.32rem .75rem;border:1.5px solid #e0d4c0;border-radius:999px;background:#fff;color:#857969;font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;}
+  .guide-tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .guide-tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  @media print{.guide-topbar,.guide-tab-nav{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="guide-topbar">
+  <a class="guide-topbar-back" href="/">← 목록으로</a>
+  <span class="guide-topbar-sep">/</span>
+  <span class="guide-topbar-title">교사용 대시보드 설정 가이드</span>
+</div>
+
+<!-- ══════════════════════════════════════════
+     표지
+══════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-icon">🖥️</div>
+  <div class="cover-badge">TEACHER DASHBOARD · v2.0</div>
+  <div class="cover-title">교사용 대시보드<br>설정 가이드</div>
+  <div class="cover-sub">팍쌤의 바이브코딩 저장소</div>
+  <div>
+    <span class="cover-tag">🎨 디자인 대변혁</span>
+    <span class="cover-tag">🤖 AI 기능</span>
+    <span class="cover-tag">📅 캘린더 양방향</span>
+  </div>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    ver 2.0 &nbsp;|&nbsp; 2026.5.
+  </div>
+  <div class="cover-v1user">
+    💡 <b>이미 기존 버전을 쓰고 계신 분</b>이라면 처음부터 다 다시 할 필요 없어요.<br>
+    다음 페이지 <b>"기존 사용자를 위한 업데이트 가이드"</b>로 바로 이동하세요.
+  </div>
+</div>
+
+<nav class="guide-tab-nav" id="guideTabNav">
+  <button class="guide-tab-btn active" data-target="migration">🆕 업데이트</button>
+  <button class="guide-tab-btn" data-target="ch1">1장. 준비물</button>
+  <button class="guide-tab-btn" data-target="ch2">2장. Lively 설치</button>
+  <button class="guide-tab-btn" data-target="ch3">3장. 대시보드 실행</button>
+  <button class="guide-tab-btn" data-target="ch4">4장. 구글시트 설정</button>
+  <button class="guide-tab-btn" data-target="ch5">5장. Apps Script ★</button>
+  <button class="guide-tab-btn" data-target="ch6">6장. 기본 설정</button>
+  <button class="guide-tab-btn" data-target="ch7">7장. 🎨 디자인</button>
+  <button class="guide-tab-btn" data-target="ch8">8장. 🤖 AI</button>
+  <button class="guide-tab-btn" data-target="ch9">9장. 📅 캘린더</button>
+  <button class="guide-tab-btn" data-target="ch10">10장. ✅ 할 일</button>
+  <button class="guide-tab-btn" data-target="ch11">11장. 💾 백업</button>
+  <button class="guide-tab-btn" data-target="ch12">12장. FAQ</button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     목차
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div class="toc">
+  <div class="toc-title">📋 목차</div>
+  <div class="toc-item"><a href="#migration"><span class="toc-num">시작 전</span><span class="toc-text">기존 사용자를 위한 업데이트 가이드<span class="toc-new">NEW</span></span></a></div>
+  <div class="toc-item"><a href="#ch1"><span class="toc-num">1장</span><span class="toc-text">준비물 확인</span></a></div>
+  <div class="toc-item"><a href="#ch2"><span class="toc-num">2장</span><span class="toc-text">Lively Wallpaper 설치</span></a></div>
+  <div class="toc-item"><a href="#ch3"><span class="toc-num">3장</span><span class="toc-text">대시보드 실행 + Lively 권장 설정</span></a></div>
+  <div class="toc-item"><a href="#ch4"><span class="toc-num">4장</span><span class="toc-text">구글 시트 설정 (명렬표·내선번호 입력)</span></a></div>
+  <div class="toc-item"><a href="#ch5"><span class="toc-num">5장 ★</span><span class="toc-text">Apps Script 배포 (구글시트·캘린더 연동 핵심)</span></a></div>
+  <div class="toc-item"><a href="#ch6"><span class="toc-num">6장</span><span class="toc-text">대시보드 기본 설정 (학교·시트·캘린더·AI)</span></a></div>
+  <div class="toc-item"><a href="#ch7"><span class="toc-num">7장</span><span class="toc-text">🎨 디자인 커스터마이징 (디자인 패널)<span class="toc-new">NEW</span></span></a></div>
+  <div class="toc-item"><a href="#ch8"><span class="toc-num">8장</span><span class="toc-text">🤖 AI 기능 활용 (공문 추출·학부모 메시지)<span class="toc-new">NEW</span></span></a></div>
+  <div class="toc-item"><a href="#ch9"><span class="toc-num">9장</span><span class="toc-text">📅 캘린더 양방향 편집<span class="toc-new">NEW</span></span></a></div>
+  <div class="toc-item"><a href="#ch10"><span class="toc-num">10장</span><span class="toc-text">✅ 할 일 & D-Day 관리</span></a></div>
+  <div class="toc-item"><a href="#ch11"><span class="toc-num">11장</span><span class="toc-text">설정 백업</span></a></div>
+  <div class="toc-item"><a href="#ch12"><span class="toc-num">12장</span><span class="toc-text">자주 묻는 질문 (FAQ)</span></a></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     업데이트 가이드 (기존 사용자용)
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="migration"></div>
+<div class="chapter-header new">
+  <div class="chapter-num">🆕</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">FOR EXISTING USERS</div>
+    <div class="chapter-title">기존 사용자를 위한 업데이트 가이드</div>
+  </div>
+</div>
+
+<p>이미 기존 버전을 잘 쓰고 있었다면 1장부터 다시 할 필요 없어요. <span class="accent">HTML 파일 하나만 교체하면 끝</span>이고, 기존 설정은 모두 자동으로 복원됩니다.</p>
+
+<div class="box box-new mt8">
+  <div class="box-title">🚀 3줄 요약</div>
+  <ol class="bullets" style="padding-left:18px;">
+    <li>기존 <span class="mono">교사용 바탕화면 대시보드_ver1.0.0.html</span>을 새 <span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span>로 교체합니다.</li>
+    <li>Lively Wallpaper에서 배경화면을 <span class="accent">새 HTML 파일로 다시 등록</span>합니다.</li>
+    <li><span class="mono">대시보드_설정.json</span> 파일이 같은 폴더에 있다면, <span class="accent">기존 설정이 모두 자동 복원</span>됩니다. (Apps Script URL을 통해 클라우드 백업되어 있다면 그것도 자동 복원)</li>
+  </ol>
+</div>
+
+<div class="section-title mt16">⚠️ Apps Script도 v2 통합본으로 재배포 필요</div>
+<p>v2에서 <span class="accent">구글 캘린더 양방향 편집</span>(일정 추가·수정·삭제) 기능을 쓰려면 Apps Script도 새 통합본으로 업데이트해야 합니다. 새 액션 5개(<span class="mono">calendarList</span>, <span class="mono">calendarEvents</span>, <span class="mono">calendarCreate</span>, <span class="mono">calendarUpdate</span>, <span class="mono">calendarDelete</span>)가 추가됐어요.</p>
+
+<div class="box box-tip">
+  <div class="box-title">💡 Apps Script 업데이트 절차</div>
+  <ol class="bullets" style="padding-left:18px;">
+    <li>구글 시트 → <span class="mono">확장 프로그램 → Apps Script</span> 열기</li>
+    <li>기존 코드 전체를 v2 통합본 코드로 교체</li>
+    <li>오른쪽 위 <span class="accent">"배포 → 배포 관리"</span> 클릭 → 기존 배포 옆 ✏️ 클릭 → <span class="accent">버전: 새 버전</span> 선택 → "배포"</li>
+    <li>웹 앱 URL은 그대로 유지되므로 대시보드 설정은 손댈 필요 없음</li>
+  </ol>
+  <p style="margin-top:6px;">자세한 절차는 <a href="#ch5" style="color:#7a4a2a;font-weight:700;">5장 Apps Script 배포</a> 참고.</p>
+</div>
+
+<p class="mt16">📋 아래 통합본 코드를 <span class="accent">복사 버튼으로 한 번에 복사</span>해서 Apps Script 편집기에 붙여넣으세요. (편집기 안의 기존 코드는 <span class="mono">Ctrl+A</span> → <span class="mono">Delete</span>로 전체 삭제 후 붙여넣기)</p>
+
+<!-- 원본 코드 보관 (HTML 파서가 건드리지 않는 type=text/plain) -->
+<script type="text/plain" id="appsScriptCodeSrc">
+// ============================================================
+//  Teacher Dashboard Apps Script — 통합본 (캘린더 CRUD 추가)
+// ============================================================
+
+function doGet(e){
+  const action = (e.parameter && e.parameter.action) || 'read';
+  const grade  = (e.parameter && e.parameter.grade)  || '';
+  const date   = (e.parameter && e.parameter.date)   || '';
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if(action === 'roster')         return getRoster(ss);
+  if(action === 'loadSettings')   return loadSettings(ss);
+  if(action === 'phone')          return getPhone(ss);
+  if(action === 'calendarList')   return getCalendarList();
+  if(action === 'calendarEvents') return getCalendarEvents(e.parameter || {});
+  return getMemos(ss, grade, date);
+}
+
+function doPost(e){
+  try{
+    const body  = JSON.parse(e.postData.contents);
+    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    if(body.action === 'saveSettings')    return saveSettings(ss, body);
+    if(body.action === 'calendarCreate')  return calendarCreate(body);
+    if(body.action === 'calendarUpdate')  return calendarUpdate(body);
+    if(body.action === 'calendarDelete')  return calendarDelete(body);
+    // 기본: 누가기록 저장 (기존 동작)
+    const data  = body.data || {};
+    const today = body.date || Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
+    let sh = ss.getSheetByName('누가기록');
+    if(!sh){
+      sh = ss.insertSheet('누가기록');
+      sh.appendRow(['번호','이름','날짜','내용']);
+    }
+    for(const [grade, memos] of Object.entries(data)){
+      const students   = getStudentsForGrade(ss, grade);
+      const studentMap = {};
+      students.forEach(s => { studentMap[String(s.no)] = s.name; });
+      const allRows = sh.getDataRange().getValues();
+      for(const [no, content] of Object.entries(memos)){
+        const noStr  = String(no).trim();
+        const conStr = String(content || '').trim();
+        if(!conStr) continue;
+        let foundRow = -1;
+        for(let r = 1; r < allRows.length; r++){
+          const rowNo   = String(allRows[r][0]).trim();
+          const rowH    = allRows[r][2];
+          const rowDate = rowH instanceof Date
+            ? Utilities.formatDate(rowH, 'Asia/Seoul', 'yyyy-MM-dd')
+            : String(rowH).trim();
+          if(rowNo === noStr && rowDate === today){ foundRow = r + 1; break; }
+        }
+        if(foundRow > 0){
+          sh.getRange(foundRow, 4).setValue(conStr);
+        } else {
+          sh.appendRow([noStr, studentMap[noStr] || '', today, conStr]);
+        }
+      }
+    }
+    return _json({ok:true});
+  }catch(err){ return _json({error:err.message}); }
+}
+
+// ============================================================
+//  📅 캘린더 CRUD
+// ============================================================
+function getCalendarList(){
+  try{
+    const cals = CalendarApp.getAllCalendars();
+    const out = cals.map(c => ({
+      id: c.getId(),
+      name: c.getName(),
+      color: c.getColor(),
+      primary: c.isMyPrimaryCalendar ? c.isMyPrimaryCalendar() : false,
+      owned: c.isOwnedByMe ? c.isOwnedByMe() : false,
+    }));
+    return _json(out);
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function getCalendarEvents(params){
+  try{
+    const ids = (params.calendarIds || '').split(',').map(s=>s.trim()).filter(Boolean);
+    if(!ids.length) return _json([]);
+    const start = params.start ? new Date(params.start) : new Date(Date.now() - 30*86400000);
+    const end   = params.end   ? new Date(params.end)   : new Date(Date.now() + 90*86400000);
+    const out = [];
+    for(const id of ids){
+      let cal; try{ cal = CalendarApp.getCalendarById(id); }catch(e){ continue; }
+      if(!cal) continue;
+      const events = cal.getEvents(start, end);
+      for(const ev of events){
+        out.push({
+          eventId: ev.getId(),
+          calendarId: id,
+          title: ev.getTitle(),
+          start: ev.isAllDayEvent()
+            ? Utilities.formatDate(ev.getAllDayStartDate(), 'Asia/Seoul', 'yyyy-MM-dd')
+            : ev.getStartTime().toISOString(),
+          end: ev.isAllDayEvent()
+            ? Utilities.formatDate(ev.getAllDayEndDate(), 'Asia/Seoul', 'yyyy-MM-dd')
+            : ev.getEndTime().toISOString(),
+          allDay: ev.isAllDayEvent(),
+          description: ev.getDescription() || '',
+          location: ev.getLocation() || '',
+        });
+      }
+    }
+    return _json(out);
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function calendarCreate(body){
+  try{
+    const cal = _getCal(body.calendarId);
+    if(!cal) return _json({error:'캘린더를 찾을 수 없습니다'});
+    const title = String(body.title || '(제목 없음)');
+    let ev;
+    if(body.allDay){
+      const s = new Date(body.start);
+      let e = body.end ? new Date(body.end) : new Date(s.getTime() + 86400000);
+      // 종일 이벤트는 end exclusive — end<=start이면 +1일 보정
+      if(e.getTime() <= s.getTime()) e = new Date(s.getTime() + 86400000);
+      ev = cal.createAllDayEvent(title, s, e, {
+        description: body.description || '',
+        location: body.location || ''
+      });
+    } else {
+      ev = cal.createEvent(title, new Date(body.start), new Date(body.end), {
+        description: body.description || '',
+        location: body.location || ''
+      });
+    }
+    return _json({ok:true, eventId: ev.getId(), calendarId: cal.getId()});
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function calendarUpdate(body){
+  try{
+    const cal = _getCal(body.calendarId);
+    if(!cal) return _json({error:'캘린더를 찾을 수 없습니다'});
+    let ev = cal.getEventById(body.eventId);
+    // iCal UID 형식 변형 (xxx@google.com → xxx)에 대비
+    if(!ev && body.eventId){
+      const alt = body.eventId.replace(/@google\.com$/,'');
+      try{ ev = cal.getEventById(alt); }catch(e){}
+    }
+    if(!ev) return _json({error:'일정을 찾을 수 없습니다'});
+    if(body.title !== undefined) ev.setTitle(String(body.title || '(제목 없음)'));
+    if(body.description !== undefined) ev.setDescription(body.description || '');
+    if(body.location !== undefined) ev.setLocation(body.location || '');
+    if(body.start){
+      if(body.allDay){
+        const s = new Date(body.start);
+        let e = body.end ? new Date(body.end) : new Date(s.getTime() + 86400000);
+        // 종일 이벤트는 end exclusive — end<=start이면 +1일 보정
+        if(e.getTime() <= s.getTime()) e = new Date(s.getTime() + 86400000);
+        ev.setAllDayDates(s, e);
+      } else {
+        ev.setTime(new Date(body.start), new Date(body.end || body.start));
+      }
+    }
+    return _json({ok:true});
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function calendarDelete(body){
+  try{
+    const cal = _getCal(body.calendarId);
+    if(!cal) return _json({error:'캘린더를 찾을 수 없습니다'});
+    let ev = cal.getEventById(body.eventId);
+    if(!ev && body.eventId){
+      const alt = body.eventId.replace(/@google\.com$/,'');
+      try{ ev = cal.getEventById(alt); }catch(e){}
+    }
+    if(!ev) return _json({error:'일정을 찾을 수 없습니다'});
+    ev.deleteEvent();
+    return _json({ok:true});
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function _getCal(id){
+  if(!id) return CalendarApp.getDefaultCalendar();
+  try{ return CalendarApp.getCalendarById(id); }catch(e){ return null; }
+}
+
+function _json(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ============================================================
+//  이하 기존 함수 (변경 없음)
+// ============================================================
+function getRoster(ss){
+  try{
+    const sh = ss.getSheetByName('학생 명렬표');
+    if(!sh) return _json({});
+    const data = sh.getDataRange().getValues();
+    if(data.length < 2) return _json({});
+    const headers = data[0].map(h => String(h).trim());
+    const iGrade  = headers.findIndex(h => h === '학년');
+    const iCls    = headers.findIndex(h => h === '반');
+    const iNo     = headers.findIndex(h => h === '번호');
+    const iName   = headers.findIndex(h => h === '이름' || h === '성명');
+    const iGender = headers.findIndex(h => h === '성별');
+    if(iGrade < 0 || iNo < 0 || iName < 0) return _json({error:'컬럼 인식 실패'});
+    const result = {};
+    for(let r = 1; r < data.length; r++){
+      const row    = data[r];
+      let   grade  = String(row[iGrade]  || '').trim();
+      const cls    = iCls >= 0 ? String(row[iCls] || '').trim() : '';
+      const no     = String(row[iNo]     || '').trim();
+      const name   = String(row[iName]   || '').trim();
+      const gender = iGender >= 0 ? String(row[iGender] || '남').trim() : '남';
+      if(!grade || !no || !name) continue;
+      if(/^\d+$/.test(grade)) grade += '학년';
+      if(!result[grade]) result[grade] = [];
+      result[grade].push({no, cls, name, gender});
+    }
+    return _json(result);
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function getPhone(ss){
+  try{
+    const sh = ss.getSheetByName('내선번호');
+    if(!sh) return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT);
+    return ContentService.createTextOutput(sheetToCsv(sh)).setMimeType(ContentService.MimeType.TEXT);
+  }catch(err){ return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT); }
+}
+
+function getMemos(ss, grade, dateOverride){
+  try{
+    const sh = ss.getSheetByName('누가기록');
+    if(!sh) return _json({});
+    const today = dateOverride || Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
+    const data  = sh.getDataRange().getValues();
+    if(data.length < 2) return _json({});
+    const headers  = data[0].map(h => String(h).trim());
+    const iNo      = headers.findIndex(h => h === '번호');
+    const iDate    = headers.findIndex(h => h === '날짜');
+    const iContent = headers.findIndex(h => h === '내용');
+    if(iNo < 0 || iDate < 0 || iContent < 0) return _json({});
+    const gradeStudents = grade ? getStudentsForGrade(ss, grade) : null;
+    const gradeNos = gradeStudents ? new Set(gradeStudents.map(s => String(s.no))) : null;
+    const memos = {};
+    for(let r = 1; r < data.length; r++){
+      const no  = String(data[r][iNo]  || '').trim();
+      const h   = data[r][iDate];
+      const ds  = h instanceof Date
+        ? Utilities.formatDate(h, 'Asia/Seoul', 'yyyy-MM-dd')
+        : String(h).trim();
+      const con = String(data[r][iContent] || '').trim();
+      if(ds !== today) continue;
+      if(gradeNos && !gradeNos.has(no)) continue;
+      if(!no || !con) continue;
+      memos[no] = con;
+    }
+    const result = {};
+    result[grade || '전체'] = memos;
+    return _json(result);
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function loadSettings(ss){
+  try{
+    const sh = ss.getSheetByName('_dashboard_settings');
+    if(!sh) return _json({});
+    const data = sh.getDataRange().getValues();
+    if(data.length < 2) return _json({});
+    const result = {};
+    for(let i = 1; i < data.length; i++){
+      const key = String(data[i][0]).trim();
+      const val = String(data[i][1]).trim();
+      if(!key) continue;
+      try       { result[key] = JSON.parse(val); }
+      catch(ex) { result[key] = val; }
+    }
+    return _json(result);
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function saveSettings(ss, body){
+  try{
+    const settings = body.settings || {};
+    let sh = ss.getSheetByName('_dashboard_settings');
+    if(!sh){ sh = ss.insertSheet('_dashboard_settings'); sh.hideSheet(); }
+    sh.clearContents();
+    sh.appendRow(['key','value']);
+    for(const [k, v] of Object.entries(settings)){
+      sh.appendRow([k, JSON.stringify(v)]);
+    }
+    return _json({ok:true});
+  }catch(err){ return _json({error:err.message}); }
+}
+
+function getStudentsForGrade(ss, grade){
+  try{
+    const sh = ss.getSheetByName('학생 명렬표');
+    if(!sh) return [];
+    const data = sh.getDataRange().getValues();
+    if(data.length < 2) return [];
+    const headers = data[0].map(h => String(h).trim());
+    const iGrade  = headers.findIndex(h => h === '학년');
+    const iNo     = headers.findIndex(h => h === '번호');
+    const iName   = headers.findIndex(h => h === '이름' || h === '성명');
+    if(iGrade < 0 || iNo < 0 || iName < 0) return [];
+    const students = [];
+    for(let r = 1; r < data.length; r++){
+      const row = data[r];
+      let   g   = String(row[iGrade] || '').trim();
+      if(/^\d+$/.test(g)) g += '학년';
+      if(g !== grade) continue;
+      const no   = String(row[iNo]   || '').trim();
+      const name = String(row[iName] || '').trim();
+      if(no && name) students.push({no, name});
+    }
+    return students;
+  }catch(err){ return []; }
+}
+
+function sheetToCsv(sh, rowsOverride){
+  const rows = rowsOverride || sh.getDataRange().getValues();
+  return rows.map(row =>
+    row.map(cell => {
+      const s = String(cell);
+      return (s.includes(',') || s.includes('"') || s.includes('\n'))
+        ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(',')
+  ).join('\n');
+}
+</script>
+
+<div class="code-block">
+  <div class="code-block-header">
+    <span class="code-block-lang">📄 Apps Script — v2 통합본 (Code.gs)</span>
+    <button id="copyAppsScriptBtn" class="code-copy-btn" type="button">📋 복사</button>
+  </div>
+  <pre><code id="appsScriptCodeDisplay">코드 로딩 중...</code></pre>
+</div>
+
+<script>
+(function(){
+  var src = document.getElementById('appsScriptCodeSrc');
+  var dst = document.getElementById('appsScriptCodeDisplay');
+  var btn = document.getElementById('copyAppsScriptBtn');
+  if(!src || !dst || !btn) return;
+
+  // 양 끝 공백/줄바꿈 제거
+  var code = (src.textContent || '').replace(/^\s+|\s+$/g, '');
+  dst.textContent = code;
+
+  function flash(msg, ok){
+    var orig = btn.innerHTML;
+    btn.innerHTML = (ok ? '✓ ' : '⚠ ') + msg;
+    if(ok) btn.classList.add('copied');
+    setTimeout(function(){
+      btn.innerHTML = orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  }
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    var ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    flash(ok ? '복사 완료' : '복사 실패', ok);
+  }
+
+  btn.addEventListener('click', function(){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(function(){
+        flash('복사 완료', true);
+      }, function(){
+        fallbackCopy(code);
+      });
+    } else {
+      fallbackCopy(code);
+    }
+  });
+})();
+</script>
+
+<div class="section-title mt16">✨ v2 신규 기능 한눈에 보기</div>
+<p>관심 있는 기능을 클릭하면 해당 챕터로 바로 이동합니다.</p>
+
+<div class="jump-grid">
+  <a href="#ch7" class="jump-card">
+    <div class="jc-icon">🎨</div>
+    <div class="jc-title">디자인 패널 (우상단)</div>
+    <div class="jc-desc">7테마 · 라이트/다크 · 여백 슬라이더 · 24시간 토글</div>
+  </a>
+  <a href="#ch8" class="jump-card">
+    <div class="jc-icon">🤖</div>
+    <div class="jc-title">AI 기능</div>
+    <div class="jc-desc">공문/이미지 → 투두 자동 추출, 학부모 메시지 톤 변환</div>
+  </a>
+  <a href="#ch9" class="jump-card">
+    <div class="jc-icon">📅</div>
+    <div class="jc-title">캘린더 양방향 편집</div>
+    <div class="jc-desc">대시보드에서 직접 일정 추가·수정·삭제</div>
+  </a>
+  <a href="#ch6" class="jump-card">
+    <div class="jc-icon">🕐</div>
+    <div class="jc-title">시계 카드 3분할 + 요일별 인사말</div>
+    <div class="jc-desc">다음 일정 미리보기 + 시계 + 50종 인사말 매트릭스</div>
+  </a>
+</div>
+
+<div class="box box-warn mt16">
+  <div class="box-title">💡 설정 모달 5탭 재구성</div>
+  v2부터 <span class="accent">"🎨 디자인" 탭이 없어졌습니다.</span> 여백·테마·다크모드 같은 디자인 항목은 모두 <span class="accent">우상단 🎨 디자인 패널</span>(7장)로 이관됐어요. 설정 모달은 <span class="mono">✅ 할 일 & D-Day</span> / <span class="mono">📅 캘린더</span> / <span class="mono">🏫 학교 정보</span> / <span class="mono">🤖 AI</span> / <span class="mono">📊 구글시트 연동</span> / <span class="mono">💾 백업</span> 6탭으로 정리됐습니다.
+</div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 신규 사용자라면</div>
+  처음 설치하는 분은 업데이트 가이드는 건너뛰고 다음 페이지 <a href="#ch1" style="color:#7a4a2a;font-weight:700;">1장. 준비물 확인</a>부터 시작하세요.
+</div>
+
+<!-- ══════════════════════════════════════════
+     1장. 준비물 확인
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch1"></div>
+<div class="chapter-header">
+  <div class="chapter-num">1</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 1</div>
+    <div class="chapter-title">준비물 확인</div>
+  </div>
+</div>
+
+<div class="box box-important mt8">
+  <div class="box-title">⚠️ 중요 — 파일 보관 위치</div>
+  <span class="red">제공된 파일 모두 같은 폴더에 보관</span>해 주세요. 설정 백업 파일도 나중에 같은 폴더에 저장됩니다.
+</div>
+
+<div class="section-title mt16">제공되는 파일</div>
+<ul class="bullets">
+  <li><span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span> — 메인 대시보드 파일</li>
+  <li><span class="mono">LWP_Setup.exe</span> — Lively Wallpaper 설치 파일</li>
+  <li>구글 시트 사본 링크 — 명렬표 · 내선번호 · 누가기록 데이터 저장소</li>
+  <li>Apps Script 통합본 코드 (v2) — 시트·캘린더 연동용</li>
+</ul>
+
+<!-- ══════════════════════════════════════════
+     2장. Lively Wallpaper 설치
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch2"></div>
+<div class="chapter-header">
+  <div class="chapter-num">2</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 2</div>
+    <div class="chapter-title">Lively Wallpaper 설치</div>
+  </div>
+</div>
+
+<p>Lively Wallpaper는 HTML 파일을 바탕화면으로 실행해 주는 무료 앱입니다.</p>
+
+<div class="section-title">설치 방법</div>
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content"><span class="mono">LWP_Setup.exe</span> 파일을 <span class="red">더블클릭</span>하여 실행합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">설치 모드 선택 화면이 나타나면 <span class="red">'현재 사용자용으로 설치(추천)'</span>를 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/01.%20월페이퍼%20설치.png" alt="월페이퍼 설치 화면"></div>
+
+<ol class="steps" start="3">
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">이후 화면은 <span class="red">기본값 그대로</span> 두고 "Install" 버튼을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">설치가 완료되면 Lively Wallpaper가 자동으로 실행됩니다.<br>작업표시줄 우측 하단(🔔 알림 영역)에 <span style="display:inline-block;background:linear-gradient(135deg,#3a3a8c,#5a5acc);color:#fff;border-radius:4px;padding:0px 6px;font-size:9pt;font-weight:700;vertical-align:middle;letter-spacing:0.5px;">Lively</span> 아이콘이 생기면 정상입니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/02.%20월페이퍼%20아이콘.png" alt="Lively 아이콘"></div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 이미 설치되어 있다면</div>
+  이미 Lively Wallpaper가 설치되어 있다면 이 장을 건너뛰고 3장으로 이동하세요.
+</div>
+
+<!-- ══════════════════════════════════════════
+     3장. 대시보드 실행
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch3"></div>
+<div class="chapter-header">
+  <div class="chapter-num">3</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 3</div>
+    <div class="chapter-title">대시보드 실행</div>
+  </div>
+</div>
+
+<p>Lively Wallpaper에 대시보드 HTML 파일을 등록합니다.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">작업표시줄 우측 하단의 <span class="red"><span style="display:inline-block;background:linear-gradient(135deg,#3a3a8c,#5a5acc);color:#fff;border-radius:4px;padding:0px 6px;font-size:9pt;font-weight:700;vertical-align:middle;letter-spacing:0.5px;">Lively</span> 아이콘을 클릭</span>하여 Lively Wallpaper를 엽니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">Lively 화면 왼쪽 상단의 <span class="red">"+" 버튼</span> (배경화면 추가)을 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/03-1.%20배경화면%20추가.png" alt="배경화면 추가 버튼"></div>
+
+<ol class="steps" start="3">
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">팝업 창에서 <span class="red">"파일에서 열기"</span> 또는 하단의 파일 탐색 버튼을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">파일 탐색기에서 <span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">5</div>
+    <div class="step-content">미리보기가 뜨면 <span class="red">"확인"</span>을 클릭합니다. 바탕화면에 대시보드가 표시됩니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/03-2.%20배경화면%20적용.png" alt="바탕화면 대시보드 표시"></div>
+
+<div class="box box-warn mt8">
+  <div class="box-title">⚠️ 처음 실행 시 안내</div>
+  처음에는 날씨·급식 등 데이터가 비어 있는 것이 정상입니다. 6장에서 학교 정보를 설정하면 자동으로 채워집니다.
+</div>
+
+<div class="box box-new mt8">
+  <div class="box-title"><span class="badge-v2">v2</span> 라이트 웜 톤이 기본 테마</div>
+  v2부터 기본 테마가 <span class="accent">라이트 웜 톤(베이지·앰버·세이지)</span>으로 바뀌었어요. 다크 모드나 다른 컬러 팔레트로 바꾸고 싶다면 <a href="#ch7" style="color:#7a4a2a;font-weight:700;">7장 🎨 디자인 커스터마이징</a>을 참고하세요.
+</div>
+
+<div class="section-title mt16">3-1. Lively 권장 설정 (2가지)</div>
+<p>대시보드를 편하게 사용하려면 Lively Wallpaper의 설정을 아래와 같이 조정하세요.<br>
+Lively 앱을 열고 등록된 대시보드를 선택한 후, 오른쪽 아래 <span class="red">⚙ 설정(톱니바퀴) 아이콘</span>을 클릭하면 설정 패널이 열립니다.</p>
+
+<p class="mt8"><span class="bold">① 마우스 클릭이 씹히는 경우 해결</span></p>
+<p>설정 패널 <span class="red">[배경화면] 탭</span> → <span class="red">"응용 프로그램이 포커싱된 경우 마우스 상호 작용"</span></p>
+
+<table class="data-table mt8">
+  <tr><th>상태</th><th>동작</th><th>권장</th></tr>
+  <tr>
+    <td><span class="bold red">☑ 체크</span></td>
+    <td>다른 앱이 포커싱된 상태에서도 대시보드 클릭 가능 → 씹힘 해결</td>
+    <td><span class="red">✔ 권장</span></td>
+  </tr>
+  <tr>
+    <td><span class="bold">☐ 체크 해제</span></td>
+    <td>다른 앱 사용 중에는 대시보드 클릭 불가 → 자주 씹힘</td>
+    <td></td>
+  </tr>
+</table>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 참고</div>
+  체크 시 다른 창이 모두 최소화된 상태(바탕화면이 보이는 상태)에서 대시보드 버튼이 눌릴 수 있습니다. 이는 정상 동작입니다.
+</div>
+
+<div class="img-ss"><img src="가이드북%20사진/03-3.%20마우스%20상호작용.png" alt="마우스 상호작용 설정"></div>
+
+<p class="mt16"><span class="bold">② 재시작 후에도 설정 유지</span></p>
+<p>설정 패널 <span class="red">[배경화면] 탭</span> → <span class="red">웹 브라우저</span> 섹션 → <span class="red">"디스크 캐시"</span> 버튼</p>
+
+<table class="data-table mt8">
+  <tr><th>상태</th><th>동작</th><th>권장</th></tr>
+  <tr>
+    <td><span class="bold red">활성화</span></td>
+    <td>브라우저 데이터(캐시·저장소)를 디스크에 보관 → PC 재시작 후에도 설정 유지</td>
+    <td><span class="red">✔ 권장</span></td>
+  </tr>
+  <tr>
+    <td><span class="bold">비활성화</span></td>
+    <td>메모리에만 저장 → 재시작 시 일부 설정이 초기화될 수 있음</td>
+    <td></td>
+  </tr>
+</table>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 참고</div>
+  디스크 캐시를 켜도 <span class="red">11장의 백업 파일(대시보드_설정.json)</span>을 만들어두면 이중으로 보호됩니다. 둘 다 설정하는 것을 권장합니다.
+</div>
+
+<div class="img-ss"><img src="가이드북%20사진/03-4.%20디스크캐시.png" alt="디스크 캐시 활성화"></div>
+
+<!-- ══════════════════════════════════════════
+     4장. 구글 시트 설정
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch4"></div>
+<div class="chapter-header">
+  <div class="chapter-num">4</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 4</div>
+    <div class="chapter-title">구글 시트 설정</div>
+  </div>
+</div>
+
+<div class="section-title">4-1. 시트 사본 만들기</div>
+<p>제공된 구글 시트 링크를 통해 본인의 구글 드라이브에 복사합니다.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">제공된 <span class="red">구글 시트 링크</span>를 Chrome 브라우저에서 엽니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">상단 메뉴 <span class="red">파일 → 사본 만들기</span>를 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/04-1.%20사본만들기.png" alt="파일 사본 만들기"></div>
+
+<ol class="steps" start="3">
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">사본 이름을 원하는 대로 변경하고 <span class="red">"사본 만들기"</span>를 클릭합니다.<br>(예: "3학년 1반 대시보드")</div>
+  </li>
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">내 구글 드라이브에 시트가 생성됩니다. 이 시트가 앞으로 사용할 <span class="red">본인의 전용 시트</span>입니다.</div>
+  </li>
+</ol>
+
+<div class="box box-important mt8">
+  <div class="box-title">⚠️ 반드시 지켜야 할 사항</div>
+  아래 <span class="red">탭 이름은 절대 변경하지 마세요.</span> 탭 이름이 다르면 대시보드에서 데이터를 불러오지 못합니다.
+  <ul class="bullets mt8">
+    <li><span class="red mono">학생 명렬표</span></li>
+    <li><span class="red mono">내선번호</span></li>
+    <li><span class="red mono">누가기록</span></li>
+  </ul>
+</div>
+
+<div class="section-title mt16">4-2. 학생 명렬표 입력</div>
+<p><span class="mono">학생 명렬표</span> 탭에 학생 정보를 입력합니다.</p>
+
+<table class="data-table mt8">
+  <tr><th>A열 — 학년</th><th>B열 — 반</th><th>C열 — 번호</th><th>D열 — 이름</th><th>E열 — 성별</th></tr>
+  <tr><td class="col-ex">3</td><td class="col-ex">1</td><td class="col-ex">1</td><td class="col-ex">김철수</td><td class="col-ex">남</td></tr>
+  <tr><td class="col-ex">3</td><td class="col-ex">1</td><td class="col-ex">2</td><td class="col-ex">이영희</td><td class="col-ex">여</td></tr>
+  <tr><td class="col-ex">3</td><td class="col-ex">2</td><td class="col-ex">1</td><td class="col-ex">박민준</td><td class="col-ex">남</td></tr>
+</table>
+
+<div class="img-ss"><img src="가이드북%20사진/04-2.%20학생명렬표%20입력.png" alt="학생 명렬표 입력 예시"></div>
+
+<div class="section-title mt16">4-3. 내선번호 입력</div>
+<p><span class="mono">내선번호</span> 탭에 학교 내선번호를 입력합니다.</p>
+
+<table class="data-table mt8">
+  <tr><th>A열 — 섹션</th><th>B열 — 색상</th><th>C열 — 이름</th><th>D열 — 내선번호</th></tr>
+  <tr><td class="col-ex">행정실</td><td class="col-ex">green</td><td class="col-ex">교장</td><td class="col-ex">2100</td></tr>
+  <tr><td class="col-ex">행정실</td><td class="col-ex">green</td><td class="col-ex">교감</td><td class="col-ex">2101</td></tr>
+  <tr><td class="col-ex">교무실</td><td class="col-ex">orange</td><td class="col-ex">교무부장</td><td class="col-ex">2102</td></tr>
+</table>
+
+<div class="box box-warn mt8">
+  <div class="box-title">⚠️ 색상값 주의</div>
+  B열 색상 값은 <span class="red">반드시 소문자 영어</span>로만 입력해야 합니다.<br>
+  사용 가능한 값: <span class="mono red">green</span> · <span class="mono red">orange</span> · <span class="mono red">purple</span> · <span class="mono red">yellow</span>
+</div>
+
+<div class="img-ss"><img src="가이드북%20사진/04-3.%20내선번호입력.png" alt="내선번호 입력 예시"></div>
+
+<!-- ══════════════════════════════════════════
+     5장. Apps Script 배포
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch5"></div>
+<div class="chapter-header">
+  <div class="chapter-num">5</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 5 ★ 핵심 단계</div>
+    <div class="chapter-title">Apps Script 배포</div>
+  </div>
+</div>
+
+<p>구글 시트·캘린더와 대시보드를 연결해주는 핵심 단계입니다. 단계별로 천천히 따라해 주세요.</p>
+
+<div class="box box-tip">
+  <div class="box-title">💡 Apps Script란?</div>
+  구글이 제공하는 무료 서버 기능입니다. 대시보드가 구글 시트의 데이터(명렬표, 내선번호, 누가기록 등)와 구글 캘린더 일정을 읽고 쓸 수 있게 해줍니다.
+</div>
+
+<div class="box box-new">
+  <div class="box-title"><span class="badge-v2">v2</span> 통합본에 캘린더 액션 5개 추가</div>
+  v2 통합본 코드에는 캘린더 양방향 편집을 위한 액션이 추가됐어요:
+  <ul class="bullets mt8">
+    <li><span class="mono">calendarList</span> — 사용자의 캘린더 목록 조회</li>
+    <li><span class="mono">calendarEvents</span> — 범위 내 이벤트 조회</li>
+    <li><span class="mono">calendarCreate / calendarUpdate / calendarDelete</span> — 이벤트 생성·수정·삭제</li>
+  </ul>
+  <p class="mt8">기존 기존 사용자도 v2 양방향 편집을 쓰려면 통합본 코드를 새로 배포해야 합니다.</p>
+</div>
+
+<div class="section-title">편집기 열기</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">구글 시트 상단 메뉴에서 <span class="red">확장 프로그램 → Apps Script</span>를 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-1.%20확장프로그램.png" alt="확장 프로그램 메뉴"></div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 코드는 이미 입력되어 있습니다</div>
+  Apps Script 편집기가 새 탭으로 열리면 <span class="red">v2 통합본 코드가 이미 작성되어 있습니다.</span> 별도로 코드를 입력하거나 복사·붙여넣기 할 필요가 없습니다. 바로 아래 배포 단계로 이동하세요.
+</div>
+
+<div class="section-title mt16">배포하기</div>
+
+<ol class="steps" start="2">
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">오른쪽 위의 <span class="red">"배포"</span> 버튼을 클릭한 후, <span class="red">"새 배포"</span>를 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-2.%20배포.png" alt="새 배포 클릭"></div>
+
+<ol class="steps" start="3">
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">"새 배포" 창이 열립니다. 왼쪽 <span class="red">⚙ 아이콘을 클릭</span>한 후 <span class="red">"웹 앱"</span>을 선택합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-6.%20웹앱.png" alt="웹 앱 선택"></div>
+
+<ol class="steps" start="4">
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">아래 두 가지 설정을 확인합니다.<br>
+    &nbsp;&nbsp;• "다음 사용자로 실행" → <span class="red">나(본인 이메일 주소)</span><br>
+    &nbsp;&nbsp;• "액세스 권한" → <span class="red">모든 사용자</span></div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-7.%20설정.png" alt="배포 설정 화면"></div>
+
+<div class="box box-warn mt8">
+  <div class="box-title">⚠️ "Google 계정 있는 모든 사용자"로 두면 안 됨</div>
+  반드시 <span class="red">"모든 사용자"</span>를 선택해야 합니다. "Google 계정 있는 모든 사용자"로 설정하면 대시보드에서 401 인증 오류로 데이터를 불러올 수 없습니다.
+</div>
+
+<ol class="steps" start="5">
+  <li>
+    <div class="step-num">5</div>
+    <div class="step-content"><span class="red">"배포"</span> 버튼을 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="section-title mt16">액세스 승인</div>
+
+<ol class="steps" start="6">
+  <li>
+    <div class="step-num">6</div>
+    <div class="step-content"><span class="red">"액세스 승인"</span> 버튼이 나타나면 클릭합니다. 구글 계정 선택 창이 뜨면 <span class="red">본인 계정</span>을 선택합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-9.%20액세스승인.png" alt="액세스 승인"></div>
+
+<ol class="steps" start="7">
+  <li>
+    <div class="step-num">7</div>
+    <div class="step-content">"Google이 확인하지 않은 앱" 경고 화면이 나타납니다.<br>
+    <span class="red">왼쪽 하단 "고급"을 클릭</span>한 후, <span class="red">"[프로젝트명](으)로 이동"</span>을 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-10.%20고급.png" alt="고급 클릭"></div>
+<div class="img-ss"><img src="가이드북%20사진/05-10.%20이동.png" alt="프로젝트로 이동 클릭"></div>
+
+<div class="box box-warn">
+  <div class="box-title">⚠️ "고급" 버튼이 보이지 않는 경우</div>
+  상황에 따라 바로 허용 버튼이 보일 수 있습니다. 그 경우 8번으로 넘어가세요.
+</div>
+
+<ol class="steps" start="8">
+  <li>
+    <div class="step-num">8</div>
+    <div class="step-content">권한 요청 목록이 나타납니다. 시트·드라이브·캘린더 권한을 모두 요청할 수 있으니 <span class="red">"허용"</span>을 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-11.%20컨티뉴.png" alt="허용 클릭"></div>
+
+<div class="section-title mt16">URL 복사</div>
+
+<ol class="steps" start="9">
+  <li>
+    <div class="step-num">9</div>
+    <div class="step-content">배포가 완료되면 <span class="red">"웹 앱 URL"</span>이 표시됩니다. <span class="red">URL 옆 복사 아이콘을 클릭</span>하여 복사합니다.<br>
+    <span class="mono" style="font-size:9.5pt;">https://script.google.com/macros/s/…/exec</span> 형태의 주소입니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/05-12%20웹앱URL.png" alt="웹 앱 URL 복사"></div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 기존 사용자: 기존 배포를 업데이트하는 경우</div>
+  기존에 배포해둔 게 있다면 "새 배포" 대신 <span class="accent">"배포 관리 → 기존 배포 옆 ✏️ → 버전: 새 버전 → 배포"</span>로 업데이트하면 됩니다. 이렇게 하면 <span class="red">웹 앱 URL이 그대로 유지</span>되므로 대시보드 설정을 다시 입력하지 않아도 됩니다.
+</div>
+
+<!-- ══════════════════════════════════════════
+     6장. 대시보드 기본 설정
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch6"></div>
+<div class="chapter-header">
+  <div class="chapter-num">6</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 6</div>
+    <div class="chapter-title">대시보드 기본 설정</div>
+  </div>
+</div>
+
+<p>대시보드 우측 상단 위젯바의 <span class="red">⚙ 설정 버튼</span>을 클릭하면 설정 창이 열립니다. v2 설정 모달은 6개 탭으로 구성됐어요.</p>
+
+<img src="가이드북 사진/v2-09-대시보드기본설정.png" alt="대시보드 기본 설정 — 우상단 ⚙ 설정 버튼" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<div class="box box-new mt8">
+  <div class="box-title"><span class="badge-v2">v2</span> 설정 모달 6개 탭</div>
+  <ul class="bullets">
+    <li><span class="mono">✅ 할 일 & D-Day</span> — 투두 추가·순서·태그·삭제 + D-Day 추가·삭제</li>
+    <li><span class="mono">📅 캘린더</span> — 구글 캘린더 iCal URL 연동, 색상·필터 설정</li>
+    <li><span class="mono">🏫 학교 정보</span> — 학교명/날씨/내 학년 (NEIS 학교 검색)</li>
+    <li><span class="mono">🤖 AI</span> — AI 모델 확인 (키 이미 박혀있어 별도 설정 불필요) <span class="badge-new">NEW</span></li>
+    <li><span class="mono">📊 구글시트 연동</span> — Apps Script URL 입력, 연동 진단</li>
+    <li><span class="mono">💾 백업</span> — 설정파일 내보내기/가져오기, 클라우드 백업</li>
+  </ul>
+  <p class="mt8">참고: 기존 버전의 <span class="mono">🎨 디자인</span> 탭은 우상단 🎨 디자인 패널로 이관됐습니다 (7장).</p>
+</div>
+
+<div class="section-title">6-1. 학교 정보 설정</div>
+<p>설정 창에서 <span class="red">🏫 학교 정보</span> 탭을 클릭합니다.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content"><span class="red">🔎 내 학교 검색</span>에 학교명을 입력하고 "검색" 버튼을 클릭합니다.<br>
+    (예: "능북초" 또는 "능북초등학교")</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">검색 결과 목록에서 <span class="red">본인 학교를 클릭</span>합니다.<br>
+    학교 이름, 날씨 지역이 자동으로 입력됩니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/06-1-1.%20학교검색.png" alt="학교 검색 결과"></div>
+
+<ol class="steps" start="3">
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">비조리교(직접 조리하지 않고 다른 학교에서 급식을 받는 경우)인 경우:<br>
+    <span class="red">🍽️ 급식 학교 검색</span>에서 급식을 제공하는 <span class="red">조리교 학교명</span>을 검색하여 선택합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content"><span class="red">🏷️ 내 학년</span>에 담당 학년 숫자만 입력합니다. (예: 3학년이면 <span class="mono">3</span>)</div>
+  </li>
+  <li>
+    <div class="step-num">5</div>
+    <div class="step-content"><span class="red">💾 저장 및 새로고침</span> 버튼을 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/06-1-2.%20학교정보저장.png" alt="학교 정보 저장"></div>
+
+<div class="section-title mt16">6-2. 구글시트 연동</div>
+<p>설정 창에서 <span class="red">📊 구글시트 연동</span> 탭을 클릭합니다.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content"><span class="red">5장에서 복사한 Apps Script URL</span>을 입력칸에 붙여넣기(Ctrl+V) 합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content"><span class="red">💾 저장</span> 버튼을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content"><span class="red">🔍 연동 진단</span> 버튼을 클릭하여 연결이 정상인지 확인합니다.<br>
+    <span class="red">"✅ 정상 연결"</span> 메시지가 표시되면 성공입니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/06-2.%20구글시트연동.png" alt="구글시트 연동 성공"></div>
+
+<div class="box box-warn mt8">
+  <div class="box-title">⚠️ 연동 실패가 표시되는 경우</div>
+  <ul class="bullets">
+    <li>URL이 정확한지 다시 확인해 주세요.</li>
+    <li>5장 배포 단계에서 "액세스 권한"을 <span class="red">"모든 사용자"</span>로 설정했는지 확인해 주세요.</li>
+    <li>구글 시트 탭 이름 (<span class="mono">학생 명렬표</span>)이 정확한지 확인해 주세요.</li>
+  </ul>
+</div>
+
+<div class="section-title mt16">6-3. 구글 캘린더 연동</div>
+<p>설정 창에서 <span class="red">📅 캘린더</span> 탭을 클릭합니다.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">Chrome에서 구글 캘린더(calendar.google.com)를 열고 오른쪽 위 <span class="red">⚙ 설정</span>을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">왼쪽 목록에서 연동할 <span class="red">캘린더 이름</span>을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">스크롤을 내려 <span class="red">"비공개 주소(iCal)"</span> 옆의 <span class="red">복사 아이콘</span>을 클릭합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/06-3-1%20구글캘린더%20비공개주소.png" alt="구글 캘린더 비공개 주소 복사"></div>
+
+<ol class="steps" start="4">
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">대시보드 설정 → 📅 캘린더 탭에서 URL란에 붙여넣기, 이름 입력 후 <span class="red">"추가"</span> 클릭 → <span class="red">💾 저장 및 적용</span>을 클릭합니다.</div>
+  </li>
+</ol>
+
+<img src="가이드북 사진/v2-10-캘린더설정.png" alt="캘린더 설정 탭 — iCal URL 추가 및 쓰기 가능 캘린더" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<div class="box box-new mt8">
+  <div class="box-title"><span class="badge-v2">v2</span> 양방향 편집 자동 활성화</div>
+  v2부터는 iCal URL을 추가하면 <span class="accent">자동으로 양방향 편집(➕ 일정 추가·수정·삭제)이 활성화</span>됩니다. 별도 설정 없이 캘린더 헤더 우측의 <span class="accent">➕ 버튼</span>으로 새 일정을 만들 수 있어요. 자세한 사용법은 <a href="#ch9" style="color:#7a4a2a;font-weight:700;">9장. 캘린더 양방향 편집</a> 참고.
+</div>
+
+<div class="section-title mt16">6-4. AI 도구 <span class="badge-new">NEW</span></div>
+
+<div class="box box-new">
+  <div class="box-title">✨ AI 기능은 이미 활성화돼 있어요</div>
+  대시보드 파일에 AI 키가 미리 박혀있어서 <span class="accent">별도 설정 없이 바로 사용 가능</span>합니다. 위젯바의 <span class="mono">✨ AI 도구</span> 버튼을 누르면 공문 추출·학부모 메시지 변환이 곧장 동작해요. 자세한 사용법은 <a href="#ch8" style="color:#7a4a2a;font-weight:700;">8장. AI 기능 활용</a>을 참고하세요.
+</div>
+
+<p class="mt8">설정 창의 <span class="red">🤖 AI</span> 탭에서는 모델 종류(기본 <span class="mono">gemini-2.5-flash</span>)와 키 상태를 확인할 수 있습니다. 평소엔 손댈 필요 없어요.</p>
+
+<img src="가이드북 사진/v2-설정AI탭.png" alt="설정 모달 AI 탭" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<!-- ══════════════════════════════════════════
+     7장. 디자인 커스터마이징
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch7"></div>
+<div class="chapter-header new">
+  <div class="chapter-num">7</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 7 · NEW</div>
+    <div class="chapter-title">🎨 디자인 커스터마이징 (디자인 패널)</div>
+  </div>
+</div>
+
+<p>v2부터는 디자인 관련 설정이 모두 <span class="accent">우상단 🎨 디자인 패널</span>로 이관됐습니다. 위젯바 첫 번째 🎨 버튼을 클릭하면 슬라이드 패널이 열립니다.</p>
+
+<img src="가이드북 사진/v2-01-디자인패널.png" alt="🎨 디자인 패널 펼친 모습" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<div class="section-title">7-1. 라이트 / 다크 모드 전환</div>
+<p>패널 최상단의 <span class="red">"라이트 / 다크"</span> 세그먼티드 컨트롤로 모드를 전환합니다. 모드를 바꾸면 그 아래 컬러 팔레트가 해당 모드 전용으로 자동 필터됩니다.</p>
+
+<div class="section-title mt16">7-2. 7테마 컬러 팔레트</div>
+<p>라이트 4종 + 다크 3종 = 총 7테마가 제공됩니다. 팔레트의 점을 클릭하면 즉시 전체 대시보드에 적용됩니다.</p>
+
+<div class="theme-grid">
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#f5ebe0;"></div>
+      <div class="theme-dot" style="background:#d97706;"></div>
+      <div class="theme-dot" style="background:#84a98c;"></div>
+    </div>
+    <div class="theme-name">default</div>
+    <div class="theme-tag">웜 베이지·앰버·세이지 (기본)</div>
+  </div>
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#eef2eb;"></div>
+      <div class="theme-dot" style="background:#7ba075;"></div>
+      <div class="theme-dot" style="background:#a8c4a2;"></div>
+    </div>
+    <div class="theme-name">light-sage</div>
+    <div class="theme-tag">차분한 세이지 그린</div>
+  </div>
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#fdf0ee;"></div>
+      <div class="theme-dot" style="background:#c97062;"></div>
+      <div class="theme-dot" style="background:#e8a89b;"></div>
+    </div>
+    <div class="theme-name">light-rose</div>
+    <div class="theme-tag">부드러운 로즈 핑크</div>
+  </div>
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#ecf4f1;"></div>
+      <div class="theme-dot" style="background:#3aa78a;"></div>
+      <div class="theme-dot" style="background:#7fc8b3;"></div>
+    </div>
+    <div class="theme-name">light-mint</div>
+    <div class="theme-tag">청량한 민트</div>
+  </div>
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#2a201a;"></div>
+      <div class="theme-dot" style="background:#d4a574;"></div>
+      <div class="theme-dot" style="background:#a8896a;"></div>
+    </div>
+    <div class="theme-name">dark-warm</div>
+    <div class="theme-tag">웜 톤 다크</div>
+  </div>
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#1a2622;"></div>
+      <div class="theme-dot" style="background:#5dccaa;"></div>
+      <div class="theme-dot" style="background:#3a9d7c;"></div>
+    </div>
+    <div class="theme-name">dark-mint</div>
+    <div class="theme-tag">민트 톤 다크</div>
+  </div>
+  <div class="theme-card">
+    <div class="theme-swatch">
+      <div class="theme-dot" style="background:#1c1f2e;"></div>
+      <div class="theme-dot" style="background:#8b9fec;"></div>
+      <div class="theme-dot" style="background:#6271c7;"></div>
+    </div>
+    <div class="theme-name">dark-indigo</div>
+    <div class="theme-tag">인디고 다크</div>
+  </div>
+</div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 테마 미리보기</div>
+  위의 색상 스와치를 참고하세요. 실제 대시보드에서 팔레트의 점을 클릭하면 즉시 전체 화면에 적용되므로 직접 눌러보며 취향에 맞는 테마를 골라보세요!
+</div>
+
+<div class="section-title mt16">7-3. 🖥️ 바탕화면 모드 & 여백 슬라이더</div>
+<p>대시보드 좌측 아이콘 영역과 하단 작업표시줄을 위한 여백을 조절할 수 있습니다.</p>
+
+<ul class="bullets">
+  <li><span class="bold">바탕화면 모드 토글</span> — 한 번에 320/56 (기본) ↔ 0/0 (전체 화면)로 전환</li>
+  <li><span class="bold">아이콘 영역 슬라이더</span> — 좌측 여백을 0~500px 사이에서 세밀 조정</li>
+  <li><span class="bold">작업표시줄 슬라이더</span> — 하단 여백을 0~120px 사이에서 세밀 조정</li>
+</ul>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 추천 설정</div>
+  바탕화면 아이콘이 많다면 <span class="accent">기본 320/56</span> 권장. 깔끔하게 대시보드만 보고 싶다면 <span class="accent">바탕화면 모드 토글 OFF (0/0)</span>로 전체 화면 사용.
+</div>
+
+<div class="section-title mt16">7-4. 🕐 24시간 형식 토글</div>
+<p>시계 카드의 시간 표시를 24시간(<span class="mono">14:30</span>) ↔ 12시간(<span class="mono">오후 2:30</span>) 형식으로 전환합니다.</p>
+
+<div class="section-title mt16">7-5. 🕐 시계 카드 3분할 — 새 구성</div>
+<p>v2부터 시계 카드가 3분할로 바뀌었어요. 각 영역은 자동으로 채워집니다.</p>
+
+<table class="data-table mt8">
+  <tr><th>영역</th><th>내용</th></tr>
+  <tr><td><span class="bold accent">좌: 📅 다음 일정</span></td><td>오늘~내일 캘린더 이벤트 최대 3개 미리보기. 매 분 0초마다 갱신.</td></tr>
+  <tr><td><span class="bold accent">중: 시계</span></td><td>현재 시간 · 날짜 · 요일</td></tr>
+  <tr><td><span class="bold accent">우: 요일별 인사말</span></td><td>요일×시간대 매트릭스로 자동 선택되는 50종 인사말</td></tr>
+</table>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 인사말 매트릭스란?</div>
+  평일(월~금)은 8슬롯(새벽/출근전/오전/점심/오후/퇴근/저녁/밤), 주말(토·일)은 5슬롯으로 나뉘어 총 50종의 인사말이 요일·시간대에 맞춰 자동으로 표시됩니다. 슬롯 경계(예: 17시)를 넘는 순간 즉시 바뀌어요.
+</div>
+
+<img src="가이드북 사진/v2-03-시계카드3분할.png" alt="시계 카드 3분할 (다음 일정·시계·인사말)" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<!-- ══════════════════════════════════════════
+     8장. AI 기능
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch8"></div>
+<div class="chapter-header new">
+  <div class="chapter-num">8</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 8 · NEW</div>
+    <div class="chapter-title">🤖 AI 기능 활용</div>
+  </div>
+</div>
+
+<p>위젯바의 <span class="red">✨ AI 도구</span> 버튼을 클릭하면 AI 통합 모달이 열립니다. 모달 안에 두 탭이 있어요:</p>
+
+<ul class="bullets">
+  <li><span class="bold accent">🪄 AI 할일 추출</span> — 공문 · 쪽지 · 이미지를 분석해서 투두로 자동 등록</li>
+  <li><span class="bold accent">💬 학부모 메시지 변환</span> — 거친 메모를 5가지 톤으로 정중한 학부모 메시지로 변환</li>
+</ul>
+
+<div class="box box-new mt8">
+  <div class="box-title">✅ 별도 준비 불필요</div>
+  AI 키가 대시보드에 미리 박혀있어서 <span class="accent">곧장 사용</span>할 수 있어요. 설치만 마쳤다면 위젯바 ✨ AI 도구 버튼을 바로 눌러보세요.
+</div>
+
+<div class="section-title">8-1. 🪄 AI 할일 추출 (공문/이미지 → 투두)</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">위젯바 <span class="red">✨ AI 도구</span> 클릭 → <span class="red">🪄 AI 할일 추출</span> 탭 선택</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">아래 3가지 방법 중 하나로 입력합니다:
+      <ul class="bullets mt8">
+        <li><span class="bold">텍스트 붙여넣기</span> — 공문 본문을 textarea에 Ctrl+V</li>
+        <li><span class="bold">이미지 붙여넣기</span> — 캡쳐한 이미지를 Ctrl+V (Print Screen 후 바로)</li>
+        <li><span class="bold">드래그앤드롭</span> — 이미지 파일을 드롭존에 끌어다 놓기</li>
+        <li><span class="bold">파일 선택</span> — 드롭존 클릭 → 파일 탐색기에서 이미지 선택 (다중 가능)</li>
+      </ul>
+    </div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content"><span class="red">"분석"</span> 버튼 클릭 → Gemini가 액션 아이템을 자동 추출합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">추출된 후보 리스트에서 <span class="red">원하는 항목만 체크</span>합니다. 텍스트는 인라인으로 편집 가능.</div>
+  </li>
+  <li>
+    <div class="step-num">5</div>
+    <div class="step-content"><span class="red">"✅ 선택한 항목 투두에 추가"</span> 클릭 → 메인 패널 투두에 자동 등록 + 모달 닫힘</div>
+  </li>
+</ol>
+
+<img src="가이드북 사진/v2-04-AI추출-입력.png" alt="AI 할일 추출 — 입력 화면" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 0.8rem;">
+
+<img src="가이드북 사진/v2-05-AI추출-결과.png" alt="AI 할일 추출 — 결과 화면" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0 0 1.5rem;">
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 활용 팁</div>
+  공문 PDF를 캡쳐해서 붙여넣거나, 메신저로 받은 쪽지를 스샷 떠서 던져넣으면 액션 아이템만 깔끔하게 정리해줘요. 마감일이 명시돼 있으면 텍스트에 함께 표시됩니다.
+</div>
+
+<div class="section-title mt16">8-2. 💬 학부모 메시지 변환</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">위젯바 <span class="red">✨ AI 도구</span> 클릭 → <span class="red">💬 학부모 메시지 변환</span> 탭 선택</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content"><span class="red">원본 메모</span>를 textarea에 입력합니다. (반말, 메모체, 거친 표현도 OK)<br>
+    예: <span class="mono">"오늘 영수 수업 중에 친구랑 다툼. 곧 사과시켰음. 부모님께도 알려야 할 듯"</span></div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content"><span class="red">톤 5종</span> 중 하나를 선택합니다:
+      <ul class="bullets mt8">
+        <li><span class="bold">정중</span> — 가장 공손한 격식체</li>
+        <li><span class="bold">친근하지만 공손</span> — 일상적이면서도 예의 있게</li>
+        <li><span class="bold">사실 전달 공지</span> — 감정 배제, 정보 위주</li>
+        <li><span class="bold">사과·양해 요청</span> — 학교 측 사과나 양해 요청</li>
+        <li><span class="bold">긴급 안내</span> — 빠른 행동 필요한 공지</li>
+      </ul>
+    </div>
+  </li>
+  <li>
+    <div class="step-num">4</div>
+    <div class="step-content">필요시 <span class="red">옵션</span>을 체크합니다:
+      <ul class="bullets mt8">
+        <li><span class="bold">학생 이름 마스킹(○○)</span> — 다인 메시지로 일괄 발송할 때</li>
+        <li><span class="bold">이모지 살짝</span> — 부드러운 분위기 첨가</li>
+        <li><span class="bold">짧게 (2~3문장)</span> — 문자/카톡에 적합한 길이</li>
+      </ul>
+    </div>
+  </li>
+  <li>
+    <div class="step-num">5</div>
+    <div class="step-content"><span class="red">"변환"</span> 클릭 → 결과 확인 → 마음에 안 들면 <span class="red">"다시 생성"</span> (다른 표현)<br>
+    <span class="red">"📋 복사"</span> 버튼으로 클립보드에 복사 후 카톡/문자에 붙여넣기</div>
+  </li>
+</ol>
+
+<img src="가이드북 사진/v2-06-AI학부모메시지.png" alt="학부모 메시지 변환 — 변환 결과" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 톤 선택 기억</div>
+  마지막에 선택한 톤은 자동으로 저장돼서 다음에 모달을 열 때 기본값으로 나타납니다.
+</div>
+
+<!-- ══════════════════════════════════════════
+     9장. 캘린더 양방향 편집
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch9"></div>
+<div class="chapter-header new">
+  <div class="chapter-num">9</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 9 · NEW</div>
+    <div class="chapter-title">📅 캘린더 양방향 편집</div>
+  </div>
+</div>
+
+<p>v2부터 대시보드에서 구글 캘린더 일정을 직접 추가·수정·삭제할 수 있습니다. 따로 calendar.google.com을 열 필요 없이 대시보드 안에서 모두 처리돼요.</p>
+
+<div class="box box-warn mt8">
+  <div class="box-title">⚠️ 사전 조건</div>
+  <ul class="bullets">
+    <li>5장에서 Apps Script <span class="accent">v2 통합본</span>이 배포되어 있어야 합니다 (캘린더 액션 5개 포함).</li>
+    <li>6-3에서 <span class="accent">iCal URL이 등록</span>되어 있어야 합니다 (등록 시 자동으로 양방향 편집 활성화).</li>
+  </ul>
+</div>
+
+<div class="section-title">9-1. 새 일정 추가</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">캘린더 패널 헤더 우측의 <span class="red">➕ 버튼</span>을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">"새 일정" 모달이 열립니다. 다음 항목을 입력하세요:
+      <ul class="bullets mt8">
+        <li><span class="bold">캘린더 선택</span> — 등록된 캘린더 중 하나 선택</li>
+        <li><span class="bold">제목</span> — 일정 제목 (필수)</li>
+        <li><span class="bold">종일 토글</span> — 종일 이벤트는 시간 입력 없이 날짜만</li>
+        <li><span class="bold">시작·종료</span> — 종일이면 날짜만, 시간 이벤트면 날짜+시간</li>
+        <li><span class="bold">장소 / 설명</span> — 선택 입력</li>
+      </ul>
+    </div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content"><span class="red">"저장"</span> 클릭 → 일정이 즉시 구글 캘린더에 등록되고, 대시보드 캘린더에도 반영됩니다.</div>
+  </li>
+</ol>
+
+<img src="가이드북 사진/v2-07-캘린더추가.png" alt="캘린더 새 일정 추가 모달" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<div class="section-title mt16">9-2. 일정 수정 / 삭제</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">캘린더에서 <span class="red">수정하고 싶은 일정 블록을 클릭</span>합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content">편집 모달이 열립니다. 제목·시간·장소·설명을 수정하고 <span class="red">"저장"</span> 클릭.</div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">삭제하려면 모달 하단의 <span class="red">"🗑 삭제"</span> 버튼 클릭 → 확인 → 즉시 삭제됩니다.</div>
+  </li>
+</ol>
+
+<img src="가이드북 사진/v2-08-캘린더편집.png" alt="캘린더 일정 편집 모달" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 편집 가능한 일정 vs 읽기 전용</div>
+  iCal URL을 통해 가져온 캘린더 중 본인 소유인 것만 편집 가능합니다. 공유 받은 캘린더(공휴일·학사일정 등 외부)는 클릭해도 편집 모달이 열리지 않거나 읽기 전용으로 표시됩니다.
+</div>
+
+<div class="section-title mt16">9-3. 종일 vs 시간 이벤트</div>
+<p>종일 토글 상태에 따라 입력 폼이 바뀝니다:</p>
+
+<table class="data-table mt8">
+  <tr><th>유형</th><th>입력</th><th>예시</th></tr>
+  <tr><td><span class="bold accent">종일 이벤트</span></td><td>시작 날짜 + 종료 날짜만</td><td>학사일정, 출장, 휴가 (5/18 ~ 5/20)</td></tr>
+  <tr><td><span class="bold accent">시간 이벤트</span></td><td>시작 일시 + 종료 일시</td><td>회의, 수업, 약속 (5/18 14:00 ~ 15:00)</td></tr>
+</table>
+
+<!-- ══════════════════════════════════════════
+     10장. 할 일 & D-Day
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch10"></div>
+<div class="chapter-header">
+  <div class="chapter-num">10</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 10</div>
+    <div class="chapter-title">✅ 할 일 & D-Day 관리</div>
+  </div>
+</div>
+
+<p>v2부터 할 일과 D-Day가 같은 설정 탭에서 통합 관리됩니다. 설정 → <span class="red">✅ 할 일 & D-Day</span> 탭.</p>
+
+<div class="section-title">10-1. 할 일 (To-Do)</div>
+
+<ul class="bullets">
+  <li><span class="bold">빠른 추가</span> — 메인 패널 입력칸 또는 설정 탭에서 텍스트 입력 후 Enter</li>
+  <li><span class="bold">태그</span> — 입력 전 태그 선택 (긴급/학급/업무/개인) 또는 항목별 +태그 배지 클릭 → 태그 순환</li>
+  <li><span class="bold">완료 체크</span> — 항목 좌측 체크박스 클릭</li>
+  <li><span class="bold">순서 변경</span> — 설정 탭에서 ▲▼ 버튼</li>
+  <li><span class="bold">삭제</span> — 항목 우측 ✕ 버튼</li>
+</ul>
+
+<div class="section-title mt16">10-2. D-Day</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">설정 → ✅ 할 일 & D-Day 탭 하단의 <span class="red">D-Day 추가 폼</span>에 이름과 날짜(<span class="mono">YYYY-MM-DD</span>) 입력</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content"><span class="red">"추가"</span> 클릭 → 좌측 D-Day 패널과 설정 리스트에 동시 표시됩니다.</div>
+  </li>
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">D-N (남은 일수) 또는 D+N (지난 일수)이 자동 계산됩니다. 좌측 패널에 상위 3개만 보이고, 전체 관리는 설정에서.</div>
+  </li>
+</ol>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 자동 클라우드 동기화</div>
+  Apps Script URL이 등록되어 있다면 할 일·D-Day 변경 사항이 <span class="accent">5초 후 자동으로 구글 시트에 백업</span>됩니다. 다른 PC에서 같은 시트와 연동된 대시보드를 열면 동일한 데이터가 복원돼요.
+</div>
+
+<!-- ══════════════════════════════════════════
+     11장. 설정 백업
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch11"></div>
+<div class="chapter-header">
+  <div class="chapter-num">11</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 11</div>
+    <div class="chapter-title">설정 백업</div>
+  </div>
+</div>
+
+<p>설정을 완료한 후 반드시 백업 파일을 만들어 두세요. PC를 교체하거나 Lively를 재설치해도 설정이 자동으로 복구됩니다.</p>
+
+<div class="section-title">백업 파일 만들기</div>
+<ol class="steps">
+  <li>
+    <div class="step-num">1</div>
+    <div class="step-content">대시보드 ⚙ 설정 → <span class="red">💾 백업</span> 탭을 클릭합니다.</div>
+  </li>
+  <li>
+    <div class="step-num">2</div>
+    <div class="step-content"><span class="red">"설정파일 내보내기"</span> 버튼을 클릭합니다. 파일이 자동으로 다운로드됩니다.</div>
+  </li>
+</ol>
+
+<img src="가이드북 사진/v2-11-백업파일만들기.png" alt="설정파일 내보내기 — 백업 탭" style="width:100%;border-radius:10px;border:1.5px solid #e0d4c0;box-shadow:0 3px 12px rgba(0,0,0,0.12);display:block;margin:0.5rem 0 1.5rem;">
+
+<ol class="steps" start="3">
+  <li>
+    <div class="step-num">3</div>
+    <div class="step-content">다운로드된 파일을 <span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span> 파일과 <span class="red">같은 폴더</span>에 저장합니다.</div>
+  </li>
+</ol>
+
+<div class="img-ss"><img src="가이드북%20사진/07-2.%20JSON%20같은%20폴더%20저장.png" alt="같은 폴더에 파일 보관"></div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 자동 복구 효과</div>
+  <span class="red">대시보드_설정.json</span> 파일이 같은 폴더에 있으면, Lively 재설치 또는 PC 교체 후에도 <strong>모든 설정이 자동으로 복원</strong>됩니다.<br>
+  설정을 변경할 때마다 다시 내보내기 하면 항상 최신 상태를 유지할 수 있습니다.
+</div>
+
+<div class="box box-tip mt8">
+  <div class="box-title">💡 클라우드 자동 백업</div>
+  Apps Script URL이 등록되어 있으면 <strong>설정 변경 시 구글 시트에도 자동으로 백업</strong>됩니다. 새 PC에서 URL만 입력하면 모든 설정이 복원됩니다.
+</div>
+
+<div class="box box-new mt8">
+  <div class="box-title"><span class="badge-v2">v2</span> 새로 백업되는 항목들</div>
+  v2부터 다음 항목들도 자동으로 백업·복원됩니다:
+  <ul class="bullets">
+    <li><span class="mono">theme</span> — 선택한 7테마 (default/light-sage/rose/mint/dark-warm/mint/indigo)</li>
+    <li><span class="mono">iconArea</span> / <span class="mono">taskbar</span> — 디자인 패널 여백 슬라이더 값</li>
+    <li><span class="mono">timeFormat24</span> — 24시간 형식 토글</li>
+    <li><span class="mono">geminiApiKey</span> / <span class="mono">geminiModel</span> — AI 설정</li>
+    <li><span class="mono">editableCalendars</span> — 양방향 편집 가능한 캘린더 맵</li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════════════════
+     12장. FAQ
+══════════════════════════════════════════ -->
+<div class="page-break"></div>
+<div id="ch12"></div>
+<div class="chapter-header">
+  <div class="chapter-num">12</div>
+  <div class="chapter-title-wrap">
+    <div class="chapter-label">CHAPTER 12</div>
+    <div class="chapter-title">자주 묻는 질문 (FAQ)</div>
+  </div>
+</div>
+
+<div class="section-title">기본 설정 관련</div>
+
+<div class="faq-item">
+  <div class="faq-q">날씨와 급식이 안 나와요.</div>
+  <div class="faq-a">6-1 학교 정보 탭에서 학교 검색 후 <span class="red">저장</span>을 눌렀는지 확인해 주세요. 저장 없이 닫으면 적용되지 않습니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">명렬표·내선번호가 안 불러와져요.</div>
+  <div class="faq-a">설정 → 📊 구글시트 연동 탭에서 <span class="red">"🔍 연동 진단"</span>을 클릭해 오류 내용을 확인하세요. 구글 시트 탭 이름(<span class="red mono">학생 명렬표</span>, <span class="red mono">내선번호</span>)이 정확한지 확인하세요.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">Lively를 재시작했더니 설정이 초기화됐어요.</div>
+  <div class="faq-a">11장의 백업 절차를 따라 <span class="red mono">대시보드_설정.json</span> 파일을 HTML과 <span class="red">같은 폴더</span>에 저장해 두면 자동으로 복구됩니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">Apps Script 배포 중 권한 화면이 안 나와요.</div>
+  <div class="faq-a">이미 이전에 권한을 부여한 경우에는 권한 화면이 다시 뜨지 않습니다. 정상입니다. URL이 생성되었다면 바로 사용 가능합니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">내선번호가 안 나와요.</div>
+  <div class="faq-a">구글 시트 <span class="mono">내선번호</span> 탭의 B열 색상 값을 확인하세요. <span class="red">반드시 소문자 영어</span>여야 합니다 (<span class="mono red">green</span>, <span class="mono red">orange</span>, <span class="mono red">purple</span>, <span class="mono red">yellow</span>).</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">학생 메모를 저장했는데 다음 날 사라졌어요.</div>
+  <div class="faq-a">메모는 <span class="red">날짜별로 저장</span>됩니다. 다음 날에는 새 날짜의 빈 메모가 표시됩니다. 이전 날짜 기록은 구글 시트 <span class="mono">누가기록</span> 탭에서 확인 가능합니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">급식을 받는 학교가 따로 있어요 (비조리교).</div>
+  <div class="faq-a">6-1 설정에서 <span class="red">🍽️ 급식 학교 검색</span>을 별도로 사용해 주세요. 급식을 조리·제공하는 학교를 검색하여 선택하면 그 학교의 급식이 표시됩니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">구글 캘린더 일정이 안 나와요.</div>
+  <div class="faq-a">구글 캘린더 설정에서 <span class="red">"비공개 주소(iCal)"</span>를 복사했는지 확인하세요. 일반 공유 주소와 다릅니다. 복사 후 대시보드에 저장 필요.</div>
+</div>
+
+<div class="section-title mt16">v2 신규 기능 관련</div>
+
+<div class="faq-item">
+  <div class="faq-q">이전 버전의 "🎨 디자인" 탭이 사라졌어요.</div>
+  <div class="faq-a">v2에서 디자인 관련 설정은 모두 <span class="red">우상단 🎨 디자인 패널</span>로 이관됐습니다. 위젯바 첫 번째 🎨 버튼을 클릭하면 슬라이드 패널이 열립니다. (7장 참고)</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">디자인 패널의 🎨 버튼이 안 보여요.</div>
+  <div class="faq-a">위젯바(우상단)의 가장 첫 번째 버튼이 🎨입니다. 위젯바 자체가 안 보인다면 마우스를 화면 우상단으로 가져가 보세요. 그래도 안 보이면 새로고침(F5)을 시도하세요.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">다크 모드로 바꿨는데 캘린더 이벤트 색이 이상해요.</div>
+  <div class="faq-a">테마 전환 시 캘린더가 자동으로 다시 그려져 색이 맞춰지지만, 가끔 잔여 캐시가 남는 경우가 있습니다. 모드 토글을 한 번 더 눌렀다 되돌리거나 새로고침(F5)으로 해결됩니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">AI 기능이 동작 안 해요 / 401·403 오류가 떠요.</div>
+  <div class="faq-a">기본 키가 미리 박혀있지만, 만에 하나 본인 키로 바꿔 쓰는 경우 키 형식이 <span class="mono">AIza...</span>로 시작하는지 확인하세요. Google AI Studio에서 발급받은 키여야 하며 OpenAI 등 다른 서비스 키는 사용할 수 없습니다. 기본 키 상태에서 오류가 난다면 일시적 서버 이슈일 가능성이 높으니 잠시 후 다시 시도해 주세요.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">AI가 응답을 안 하거나 자꾸 끊겨요.</div>
+  <div class="faq-a">Gemini 서버가 일시적으로 혼잡한 경우가 있습니다. 대시보드는 자동으로 fallback 모델(gemini-3-flash-preview)로 재시도합니다. 그래도 실패하면 잠시 후 다시 시도해 주세요. 안전 필터로 차단된 경우엔 입력 텍스트를 다듬어 재시도하세요.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">캘린더에 ➕ 버튼이 안 보여요.</div>
+  <div class="faq-a">설정 → 📅 캘린더 탭에서 iCal URL이 하나 이상 등록되어 있어야 ➕ 버튼이 활성화됩니다. 또한 Apps Script가 v2 통합본으로 배포되어 있는지 확인하세요 (5장 참고).</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">캘린더에서 일정 추가/수정이 저장이 안 돼요.</div>
+  <div class="faq-a">대부분 Apps Script 권한 문제입니다. 5장의 권한 승인 절차에서 <span class="red">캘린더 권한도 함께 허용</span>했는지 확인하세요. 거부했다면 Apps Script 편집기에서 <span class="mono">getCalendarList</span> 함수를 한 번 직접 실행해서 권한 요청을 다시 띄울 수 있습니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">시계 카드 왼쪽 "다음 일정"이 비어있어요.</div>
+  <div class="faq-a">오늘과 내일 사이에 표시할 캘린더 이벤트가 없거나, 캘린더가 아직 로드되지 않은 경우입니다. iCal URL이 등록되어 있고 일정이 있다면 1~2초 안에 자동으로 채워집니다.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">5월 마지막 주가 캘린더에서 안 보여요.</div>
+  <div class="faq-a">일정이 너무 많아 한 주의 높이가 부풀면 다음 주가 가려질 수 있습니다. v2.0에서는 캘린더 카드 높이에 맞춰 자동으로 표시 개수를 조정하고 "+N more"로 접도록 개선됐습니다. 그래도 좁다면 디자인 패널에서 작업표시줄 여백을 줄여 캘린더 카드를 키워보세요.</div>
+</div>
+<div class="faq-item">
+  <div class="faq-q">투두에 추가한 항목이 다른 PC에서 안 보여요.</div>
+  <div class="faq-a">변경 후 5초 정도 기다린 후 다른 PC에서 새로고침하면 동기화됩니다. (자동 백업이 5초 디바운싱으로 동작) Apps Script URL이 양쪽 대시보드 모두 동일한지 확인하세요.</div>
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid #ddd;text-align:center;color:#888;font-size:10pt;">
+  팍쌤의 교사용 대시보드 설정 가이드 &nbsp;·&nbsp; ver 2.0 &nbsp;·&nbsp; 2026.5<br>
+  문의 및 피드백은 <a href="https://joo.is/팍쌤바이브" style="color:#a85a1e;">joo.is/팍쌤바이브</a> 로 연락주세요.
+</div>
+
+<script>
+(function(){
+  const btns = document.querySelectorAll('.guide-tab-btn');
+  const topbar = document.querySelector('.guide-topbar');
+  const tabNav = document.querySelector('.guide-tab-nav');
+  const offset = () => (topbar ? topbar.offsetHeight : 0) + (tabNav ? tabNav.offsetHeight : 0) + 8;
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = document.getElementById(btn.dataset.target);
+      if(!el) return;
+      window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - offset(), behavior:'smooth'});
+    });
+  });
+
+  const ids = ['migration','ch1','ch2','ch3','ch4','ch5','ch6','ch7','ch8','ch9','ch10','ch11','ch12'];
+  const setActive = id => {
+    btns.forEach(b => b.classList.toggle('active', b.dataset.target === id));
+    const active = document.querySelector(`.guide-tab-btn[data-target="${id}"]`);
+    if(active) active.scrollIntoView({block:'nearest', inline:'center'});
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) setActive(e.target.id); });
+  }, {rootMargin: `-${offset()}px 0px -55% 0px`, threshold: 0});
+
+  ids.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+})();
+</script>
+</body>
+</html>
