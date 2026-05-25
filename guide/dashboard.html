@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교사용 클래스룸 대시보드 ver2.0 설정 가이드</title>
-<meta name="description" content="교사용 바탕화면 대시보드 v2.0 설치·설정 가이드 — 12챕터 허브형. 디자인 패널·AI 기능·캘린더 양방향 편집 포함.">
+<title>쌤보드 ver2.3 설정 가이드</title>
+<meta name="description" content="쌤보드 v2.3 설치·설정 가이드 — 13챕터 허브형. 시간표 페이지·디자인 패널·AI 기능·캘린더 양방향 편집 포함.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -363,8 +363,8 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
 <div class="topbar">
   <a class="topbar-back" href="../index.html">← 메인으로</a>
   <span class="topbar-sep">/</span>
-  <span class="topbar-title">교사용 대시보드 설정 가이드</span>
-  <span class="topbar-badge">ver 2.0</span>
+  <span class="topbar-title">쌤보드 설정 가이드</span>
+  <span class="topbar-badge">ver 2.3</span>
 </div>
 
 <!-- ═══════════ HUB VIEW ═══════════ -->
@@ -372,12 +372,12 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
   <div class="container">
     <div class="hub-cover">
       <div class="hub-cover-icon">🖥️</div>
-      <div class="hub-cover-badge">TEACHER DASHBOARD · v2.0</div>
-      <div class="hub-cover-title">교사용 대시보드 설정 가이드</div>
+      <div class="hub-cover-badge">SSAMBOARD · v2.3</div>
+      <div class="hub-cover-title">쌤보드 설정 가이드</div>
       <div class="hub-cover-sub">팍쌤의 바이브코딩 저장소</div>
       <div class="hub-cover-tags">
-        <span class="hub-cover-tag">🎨 디자인 대변혁</span>
-        <span class="hub-cover-tag">🤖 AI 기능</span>
+        <span class="hub-cover-tag">🗓 시간표 페이지</span>
+        <span class="hub-cover-tag">🪄 AI 시간표 추출</span>
         <span class="hub-cover-tag">📅 캘린더 양방향</span>
       </div>
     </div>
@@ -513,8 +513,21 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
           </div>
         </a>
         <a href="#ch10" class="hub-card" data-chapter="ch10">
+          <div class="new-dot"></div>
           <div class="progress-indicator">✓</div>
           <div class="hub-card-num">10</div>
+          <div class="hub-card-icon">🗓</div>
+          <div class="hub-card-title">시간표 페이지</div>
+          <div class="hub-card-sub">AI 이미지 추출 + 수동 편집</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip star">NEW v2.3</span>
+            <span class="hub-card-chip">AI 추출</span>
+          </div>
+        </a>
+        <a href="#ch11" class="hub-card" data-chapter="ch11">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">11</div>
           <div class="hub-card-icon">✅</div>
           <div class="hub-card-title">할 일 & D-Day</div>
           <div class="hub-card-sub">체크리스트 + D-Day 카운트</div>
@@ -529,9 +542,9 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
     <div class="hub-section">
       <div class="hub-section-title">GROUP 5 · 유지보수</div>
       <div class="hub-grid">
-        <a href="#ch11" class="hub-card" data-chapter="ch11">
+        <a href="#ch12" class="hub-card" data-chapter="ch12">
           <div class="progress-indicator">✓</div>
-          <div class="hub-card-num">11</div>
+          <div class="hub-card-num">12</div>
           <div class="hub-card-icon">💾</div>
           <div class="hub-card-title">설정 백업</div>
           <div class="hub-card-sub">JSON 파일 + 클라우드 자동</div>
@@ -540,9 +553,9 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
             <span class="hub-card-chip">이미지 1</span>
           </div>
         </a>
-        <a href="#ch12" class="hub-card" data-chapter="ch12">
+        <a href="#ch13" class="hub-card" data-chapter="ch13">
           <div class="progress-indicator">✓</div>
-          <div class="hub-card-num">12</div>
+          <div class="hub-card-num">13</div>
           <div class="hub-card-icon">❓</div>
           <div class="hub-card-title">자주 묻는 질문 (FAQ)</div>
           <div class="hub-card-sub">기본 설정 · v2 신규 기능</div>
@@ -584,7 +597,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
 
       <div class="section-title">제공되는 파일</div>
       <ul class="bullets">
-        <li><span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span> — 메인 대시보드 파일</li>
+        <li><span class="mono red">쌤보드_ver2.3.html</span> — 메인 대시보드 파일</li>
         <li><span class="mono">LWP_Setup.exe</span> — Lively Wallpaper 설치 파일</li>
         <li>구글 시트 사본 링크 — 명렬표 · 내선번호 · 누가기록 데이터 저장소</li>
         <li>Apps Script 코드 — 시트·캘린더 연동용</li>
@@ -708,7 +721,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
         </li>
         <li>
           <div class="step-num">4</div>
-          <div class="step-content">파일 탐색기에서 <span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
+          <div class="step-content">파일 탐색기에서 <span class="mono red">쌤보드_ver2.3.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
         </li>
         <li>
           <div class="step-num">5</div>
@@ -775,7 +788,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
 
       <div class="box box-tip mt8">
         <div class="box-title">💡 참고</div>
-        디스크 캐시를 켜도 <span class="red">11장의 백업 파일(대시보드_설정.json)</span>을 만들어두면 이중으로 보호됩니다. 둘 다 설정하는 것을 권장합니다.
+        디스크 캐시를 켜도 <span class="red">12장의 백업 파일(대시보드_설정.json)</span>을 만들어두면 이중으로 보호됩니다. 둘 다 설정하는 것을 권장합니다.
       </div>
 
       <div class="img-ss"><img src="../images/guide/03-4.%20디스크캐시.png" alt="디스크 캐시 활성화" loading="lazy" decoding="async"></div>
@@ -878,6 +891,20 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
 
       <div class="img-ss"><img src="../images/guide/04-3.%20내선번호입력.png" alt="내선번호 입력 예시" loading="lazy" decoding="async"></div>
 
+      <div class="section-title mt16">4-4. 누가기록 시트 <span class="badge-new">v2.3</span></div>
+      <p><span class="mono">누가기록</span> 탭은 학생 메모 저장 시 <span class="accent">자동으로 생성</span>되므로 미리 만들 필요는 없어요. 다만 한 학년에 여러 반이 있는 학교(예: 3학년 1~10반)는 <span class="red">'반' 컬럼을 1회 수동으로 추가</span>해 두면 다른 반 학생과 번호가 겹쳐도 충돌 없이 누적됩니다.</p>
+
+      <table class="data-table mt8">
+        <tr><th>A — 학년</th><th>B — 반</th><th>C — 번호</th><th>D — 이름</th><th>E — 날짜</th><th>F — 내용</th></tr>
+        <tr><td>3</td><td>2</td><td>1</td><td>김철수</td><td>2026-05-26</td><td>알림장 챙김</td></tr>
+        <tr><td>3</td><td>2</td><td>2</td><td>이영희</td><td>2026-05-26</td><td>독서 활동 우수</td></tr>
+      </table>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 작은 학교(한 학년 한 반)는 신경 안 써도 됨</div>
+        '반' 컬럼이 없어도 정상 동작합니다. Apps Script가 헤더를 자동 인식해서 있을 때만 사용해요. 6장 학교 정보 설정에서 <span class="mono">내 반</span>을 비워두면 학년 전체로 동작합니다.
+      </div>
+
       <div class="progress-row"><button class="complete-btn" data-chapter="ch4">○ 완료로 표시</button></div>
       <div class="chapter-nav">
         <a href="#ch3" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>3장. 대시보드 실행</span></a>
@@ -950,13 +977,14 @@ function doGet(e){
   const action = (e.parameter && e.parameter.action) || 'read';
   const grade  = (e.parameter && e.parameter.grade)  || '';
   const date   = (e.parameter && e.parameter.date)   || '';
+  const cls    = (e.parameter && e.parameter.cls)    || '';
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if(action === 'roster')         return getRoster(ss);
   if(action === 'loadSettings')   return loadSettings(ss);
   if(action === 'phone')          return getPhone(ss);
   if(action === 'calendarList')   return getCalendarList();
   if(action === 'calendarEvents') return getCalendarEvents(e.parameter || {});
-  return getMemos(ss, grade, date);
+  return getMemos(ss, grade, date, cls);
 }
 
 function doPost(e){
@@ -967,36 +995,63 @@ function doPost(e){
     if(body.action === 'calendarCreate')  return calendarCreate(body);
     if(body.action === 'calendarUpdate')  return calendarUpdate(body);
     if(body.action === 'calendarDelete')  return calendarDelete(body);
-    // 기본: 누가기록 저장 (기존 동작)
+    // 기본: 누가기록 저장
     const data  = body.data || {};
+    const cls   = String(body.cls || '').trim();
     const today = body.date || Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
     let sh = ss.getSheetByName('누가기록');
     if(!sh){
       sh = ss.insertSheet('누가기록');
-      sh.appendRow(['번호','이름','날짜','내용']);
+      sh.appendRow(['학년','반','번호','이름','날짜','내용']);
+    }
+    const allRows = sh.getDataRange().getValues();
+    const hdr = allRows[0].map(h => String(h).trim());
+    const iGrade   = hdr.indexOf('학년');   // 없으면 -1 (backward compat)
+    const iCls     = hdr.indexOf('반');     // 없으면 -1
+    const iNo      = hdr.indexOf('번호');
+    const iName    = hdr.indexOf('이름');
+    const iDate    = hdr.indexOf('날짜');
+    const iContent = hdr.indexOf('내용');
+    if(iNo < 0 || iDate < 0 || iContent < 0){
+      return _json({error: '누가기록 시트 헤더에 번호/날짜/내용 컬럼이 필요합니다'});
     }
     for(const [grade, memos] of Object.entries(data)){
-      const students   = getStudentsForGrade(ss, grade);
+      const gradeKey   = _normalizeGrade(grade);
+      const students   = getStudentsForGrade(ss, gradeKey, cls);
       const studentMap = {};
       students.forEach(s => { studentMap[String(s.no)] = s.name; });
-      const allRows = sh.getDataRange().getValues();
       for(const [no, content] of Object.entries(memos)){
         const noStr  = String(no).trim();
         const conStr = String(content || '').trim();
         if(!conStr) continue;
         let foundRow = -1;
         for(let r = 1; r < allRows.length; r++){
-          const rowNo   = String(allRows[r][0]).trim();
-          const rowH    = allRows[r][2];
-          const rowDate = rowH instanceof Date
+          const rowNo    = String(allRows[r][iNo]).trim();
+          const rowH     = allRows[r][iDate];
+          const rowGrade = iGrade >= 0 ? _normalizeGrade(allRows[r][iGrade]) : '';
+          const rowCls   = iCls   >= 0 ? String(allRows[r][iCls]).trim() : '';
+          const rowDate  = rowH instanceof Date
             ? Utilities.formatDate(rowH, 'Asia/Seoul', 'yyyy-MM-dd')
             : String(rowH).trim();
-          if(rowNo === noStr && rowDate === today){ foundRow = r + 1; break; }
+          // 학년/반 컬럼 있으면 매칭, 없으면 무시 (backward compat)
+          const gradeMatch = iGrade < 0 || rowGrade === gradeKey;
+          const clsMatch   = iCls   < 0 || !cls || rowCls === cls;
+          if(rowNo === noStr && rowDate === today && gradeMatch && clsMatch){
+            foundRow = r + 1; break;
+          }
         }
         if(foundRow > 0){
-          sh.getRange(foundRow, 4).setValue(conStr);
+          sh.getRange(foundRow, iContent + 1).setValue(conStr);
         } else {
-          sh.appendRow([noStr, studentMap[noStr] || '', today, conStr]);
+          // 새 행: 헤더 순서 맞춰서 동적 구성
+          const newRow = new Array(hdr.length).fill('');
+          if(iGrade   >= 0) newRow[iGrade]   = gradeKey;
+          if(iCls     >= 0) newRow[iCls]     = cls;
+          newRow[iNo]      = noStr;
+          newRow[iName]    = studentMap[noStr] || '';
+          newRow[iDate]    = today;
+          newRow[iContent] = conStr;
+          sh.appendRow(newRow);
         }
       }
     }
@@ -1078,17 +1133,18 @@ function calendarCreate(body){
   }catch(err){ return _json({error:err.message}); }
 }
 
+// 픽스 18-B: _findEventStrong 사용으로 Calendar API getEventById quirk 우회
 function calendarUpdate(body){
   try{
     const cal = _getCal(body.calendarId);
     if(!cal) return _json(_calNotFoundError(body.calendarId));
-    let ev = cal.getEventById(body.eventId);
-    // iCal UID 형식 변형 (xxx@google.com → xxx)에 대비
-    if(!ev && body.eventId){
-      const alt = body.eventId.replace(/@google\.com$/,'');
-      try{ ev = cal.getEventById(alt); }catch(e){}
-    }
-    if(!ev) return _json({error:'일정을 찾을 수 없습니다', requestedEventId: body.eventId});
+    const ev = _findEventStrong(cal, body.eventId);
+    if(!ev) return _json({
+      error: '캘린더 일정이 존재하지 않거나 이미 삭제되었습니다',
+      requestedEventId: body.eventId,
+      calendarId: body.calendarId,
+      calendarName: cal.getName()
+    });
     if(body.title !== undefined) ev.setTitle(String(body.title || '(제목 없음)'));
     if(body.description !== undefined) ev.setDescription(body.description || '');
     if(body.location !== undefined) ev.setLocation(body.location || '');
@@ -1096,7 +1152,6 @@ function calendarUpdate(body){
       if(body.allDay){
         const s = new Date(body.start);
         let e = body.end ? new Date(body.end) : new Date(s.getTime() + 86400000);
-        // 종일 이벤트는 end exclusive — end<=start이면 +1일 보정
         if(e.getTime() <= s.getTime()) e = new Date(s.getTime() + 86400000);
         ev.setAllDayDates(s, e);
       } else {
@@ -1107,23 +1162,25 @@ function calendarUpdate(body){
   }catch(err){ return _json({error:err.message}); }
 }
 
+// 픽스 18-B: _findEventStrong 사용으로 Calendar API getEventById quirk 우회
 function calendarDelete(body){
   try{
     const cal = _getCal(body.calendarId);
     if(!cal) return _json(_calNotFoundError(body.calendarId));
-    let ev = cal.getEventById(body.eventId);
-    if(!ev && body.eventId){
-      const alt = body.eventId.replace(/@google\.com$/,'');
-      try{ ev = cal.getEventById(alt); }catch(e){}
-    }
-    if(!ev) return _json({error:'일정을 찾을 수 없습니다', requestedEventId: body.eventId});
+    const ev = _findEventStrong(cal, body.eventId);
+    if(!ev) return _json({
+      error: '캘린더 일정이 존재하지 않거나 이미 삭제되었습니다',
+      requestedEventId: body.eventId,
+      calendarId: body.calendarId,
+      calendarName: cal.getName()
+    });
     ev.deleteEvent();
     return _json({ok:true});
   }catch(err){ return _json({error:err.message}); }
 }
 
 // ============================================================
-//  캘린더 헬퍼 — 4단계 fallback으로 견고하게
+//  캘린더 헬퍼
 // ============================================================
 function _getCal(id){
   if(!id) return CalendarApp.getDefaultCalendar();
@@ -1132,7 +1189,7 @@ function _getCal(id){
   var cal = null;
   try{ cal = CalendarApp.getCalendarById(id); }catch(e){}
   if(cal) return cal;
-  // 2차: getAllCalendars 매칭 — 공유 받은 캘린더 포함, getCalendarList에서 이미 사용 중인 메서드
+  // 2차: getAllCalendars 매칭 — 공유 받은 캘린더 포함
   try{
     var all = CalendarApp.getAllCalendars();
     for(var i=0; i<all.length; i++){
@@ -1142,10 +1199,36 @@ function _getCal(id){
   return null;
 }
 
+// 픽스 18-B: 이벤트 ID 4단 fallback (Calendar API getEventById quirk 우회)
+function _findEventStrong(cal, eventId){
+  if(!eventId) return null;
+  // 1. 그대로 시도
+  try{ var ev = cal.getEventById(eventId); if(ev) return ev; }catch(e){}
+  // 2. @google.com 제거 후 시도
+  try{ var alt1 = eventId.replace(/@google\.com$/,''); var ev2 = cal.getEventById(alt1); if(ev2) return ev2; }catch(e){}
+  // 3. @google.com 추가 후 시도
+  if(!/@google\.com$/.test(eventId)){
+    try{ var alt2 = eventId + '@google.com'; var ev3 = cal.getEventById(alt2); if(ev3) return ev3; }catch(e){}
+  }
+  // 4. getEvents 범위 순회 — getEventById가 fail해도 직접 매칭 (느리지만 확실)
+  try{
+    var start = new Date(Date.now() - 365*86400000);
+    var end   = new Date(Date.now() + 365*86400000);
+    var events = cal.getEvents(start, end);
+    var clean = eventId.replace(/@google\.com$/,'');
+    for(var i=0; i<events.length; i++){
+      var rid = events[i].getId();
+      var rclean = rid.replace(/@google\.com$/,'');
+      if(rid === eventId || rclean === clean) return events[i];
+    }
+  }catch(e){}
+  return null;
+}
+
 function _calNotFoundError(id){
   var available = [];
   try{
-    var all = CalendarApp.getAllCalendars();  // 본인 소유 + 공유 받은 것 모두
+    var all = CalendarApp.getAllCalendars();
     available = all.map(function(c){
       return { id: c.getId(), name: c.getName() };
     });
@@ -1163,7 +1246,18 @@ function _json(obj){
 }
 
 // ============================================================
-//  이하 기존 함수 (변경 없음)
+//  공통 헬퍼
+// ============================================================
+// 학년 정규화 — "3" / "3학년" 둘 다 "3학년"으로 통일
+function _normalizeGrade(g){
+  g = String(g || '').trim();
+  if(!g) return '';
+  if(/^\d+$/.test(g)) g += '학년';
+  return g;
+}
+
+// ============================================================
+//  명렬표 / 내선번호 / 누가기록 / 설정
 // ============================================================
 function getRoster(ss){
   try{
@@ -1181,13 +1275,12 @@ function getRoster(ss){
     const result = {};
     for(let r = 1; r < data.length; r++){
       const row    = data[r];
-      let   grade  = String(row[iGrade]  || '').trim();
+      const grade  = _normalizeGrade(row[iGrade]);
       const cls    = iCls >= 0 ? String(row[iCls] || '').trim() : '';
       const no     = String(row[iNo]     || '').trim();
       const name   = String(row[iName]   || '').trim();
       const gender = iGender >= 0 ? String(row[iGender] || '남').trim() : '남';
       if(!grade || !no || !name) continue;
-      if(/^\d+$/.test(grade)) grade += '학년';
       if(!result[grade]) result[grade] = [];
       result[grade].push({no, cls, name, gender});
     }
@@ -1203,7 +1296,7 @@ function getPhone(ss){
   }catch(err){ return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT); }
 }
 
-function getMemos(ss, grade, dateOverride){
+function getMemos(ss, grade, dateOverride, cls){
   try{
     const sh = ss.getSheetByName('누가기록');
     if(!sh) return _json({});
@@ -1211,12 +1304,15 @@ function getMemos(ss, grade, dateOverride){
     const data  = sh.getDataRange().getValues();
     if(data.length < 2) return _json({});
     const headers  = data[0].map(h => String(h).trim());
+    const iGrade   = headers.findIndex(h => h === '학년');   // 없으면 -1
+    const iCls     = headers.findIndex(h => h === '반');     // 없으면 -1
     const iNo      = headers.findIndex(h => h === '번호');
     const iDate    = headers.findIndex(h => h === '날짜');
     const iContent = headers.findIndex(h => h === '내용');
     if(iNo < 0 || iDate < 0 || iContent < 0) return _json({});
-    const gradeStudents = grade ? getStudentsForGrade(ss, grade) : null;
-    const gradeNos = gradeStudents ? new Set(gradeStudents.map(s => String(s.no))) : null;
+    const gradeKey      = grade ? _normalizeGrade(grade) : '';
+    const gradeStudents = grade ? getStudentsForGrade(ss, gradeKey, cls) : null;
+    const gradeNos      = gradeStudents ? new Set(gradeStudents.map(s => String(s.no))) : null;
     const memos = {};
     for(let r = 1; r < data.length; r++){
       const no  = String(data[r][iNo]  || '').trim();
@@ -1226,7 +1322,18 @@ function getMemos(ss, grade, dateOverride){
         : String(h).trim();
       const con = String(data[r][iContent] || '').trim();
       if(ds !== today) continue;
-      if(gradeNos && !gradeNos.has(no)) continue;
+      // 학년 컬럼 있으면 학년 매칭 (정확성 ↑)
+      if(iGrade >= 0 && gradeKey){
+        const rowGrade = _normalizeGrade(data[r][iGrade]);
+        if(rowGrade !== gradeKey) continue;
+      }
+      // 학년 컬럼 없으면 명렬표 기반 fallback 매칭 (backward compat)
+      else if(gradeNos && !gradeNos.has(no)) continue;
+      // 반 컬럼 있고 cls 보냈으면 반 매칭
+      if(iCls >= 0 && cls){
+        const rowCls = String(data[r][iCls] || '').trim();
+        if(rowCls !== cls) continue;
+      }
       if(!no || !con) continue;
       memos[no] = con;
     }
@@ -1268,7 +1375,7 @@ function saveSettings(ss, body){
   }catch(err){ return _json({error:err.message}); }
 }
 
-function getStudentsForGrade(ss, grade){
+function getStudentsForGrade(ss, grade, cls){
   try{
     const sh = ss.getSheetByName('학생 명렬표');
     if(!sh) return [];
@@ -1276,15 +1383,20 @@ function getStudentsForGrade(ss, grade){
     if(data.length < 2) return [];
     const headers = data[0].map(h => String(h).trim());
     const iGrade  = headers.findIndex(h => h === '학년');
+    const iCls    = headers.findIndex(h => h === '반');
     const iNo     = headers.findIndex(h => h === '번호');
     const iName   = headers.findIndex(h => h === '이름' || h === '성명');
     if(iGrade < 0 || iNo < 0 || iName < 0) return [];
+    const gradeKey = _normalizeGrade(grade);
     const students = [];
     for(let r = 1; r < data.length; r++){
       const row = data[r];
-      let   g   = String(row[iGrade] || '').trim();
-      if(/^\d+$/.test(g)) g += '학년';
-      if(g !== grade) continue;
+      const g   = _normalizeGrade(row[iGrade]);
+      if(g !== gradeKey) continue;
+      if(cls && iCls >= 0){
+        const rowCls = String(row[iCls] || '').trim();
+        if(rowCls !== cls) continue;
+      }
       const no   = String(row[iNo]   || '').trim();
       const name = String(row[iName] || '').trim();
       if(no && name) students.push({no, name});
@@ -1455,7 +1567,7 @@ function sheetToCsv(sh, rowsOverride){
           <li><span class="mono">✅ 할 일 & D-Day</span> — 투두 추가·순서·태그·삭제 + D-Day 추가·삭제</li>
           <li><span class="mono">📅 캘린더</span> — 구글 캘린더 iCal URL 연동, 색상·필터 설정</li>
           <li><span class="mono">🏫 학교 정보</span> — 학교명/날씨/내 학년 (NEIS 학교 검색)</li>
-          <li><span class="mono">🤖 AI</span> — AI 모델 확인 (키 이미 박혀있어 별도 설정 불필요) <span class="badge-new">NEW</span></li>
+          <li><span class="mono">🤖 AI</span> — AI 키 상태 확인 (키 이미 박혀있어 별도 설정 불필요)</li>
           <li><span class="mono">📊 구글시트 연동</span> — Apps Script URL 입력, 연동 진단</li>
           <li><span class="mono">💾 백업</span> — 설정파일 내보내기/가져오기, 클라우드 백업</li>
         </ul>
@@ -1492,6 +1604,11 @@ function sheetToCsv(sh, rowsOverride){
         </li>
         <li>
           <div class="step-num">5</div>
+          <div class="step-content"><span class="red">🏷️ 내 반</span>에 담당 반 숫자만 입력합니다. (예: 2반이면 <span class="mono">2</span>) <span class="badge-new">v2.3</span><br>
+          <span class="accent">큰 학교(한 학년 다반)에서 학생 번호 충돌 방지용</span>. 한 학년 한 반인 작은 학교는 비워두면 학년 전체로 동작해요.</div>
+        </li>
+        <li>
+          <div class="step-num">6</div>
           <div class="step-content"><span class="red">💾 저장 및 새로고침</span> 버튼을 클릭합니다.</div>
         </li>
       </ol>
@@ -1508,16 +1625,12 @@ function sheetToCsv(sh, rowsOverride){
         </li>
         <li>
           <div class="step-num">2</div>
-          <div class="step-content"><span class="red">💾 저장</span> 버튼을 클릭합니다.</div>
-        </li>
-        <li>
-          <div class="step-num">3</div>
-          <div class="step-content"><span class="red">🔍 연동 진단</span> 버튼을 클릭하여 연결이 정상인지 확인합니다.<br>
-          <span class="red">"✅ 정상 연결"</span> 메시지가 표시되면 성공입니다.</div>
+          <div class="step-content"><span class="red">💾 저장 & 연동 확인</span> 버튼을 클릭합니다. <span class="badge-new">v2.3</span><br>
+          저장과 동시에 연동 검증이 진행되며, <span class="red">"✅ 정상 연결"</span> 메시지가 표시되면 성공입니다.</div>
         </li>
       </ol>
 
-      <div class="img-ss"><img src="../images/guide/06-2.%20구글시트연동.png" alt="구글시트 연동 성공" loading="lazy" decoding="async"></div>
+      <div class="img-ss"><img src="../images/guide/v2.3-구글시트연동.png" alt="구글시트 연동 성공" loading="lazy" decoding="async"></div>
 
       <div class="box box-warn mt8">
         <div class="box-title">⚠️ 연동 실패가 표시되는 경우</div>
@@ -1555,7 +1668,7 @@ function sheetToCsv(sh, rowsOverride){
         </li>
       </ol>
 
-      <div class="img-ss"><img src="../images/guide/v2-10-캘린더설정.png" alt="캘린더 설정 탭 — iCal URL 추가 및 쓰기 가능 캘린더" loading="lazy" decoding="async"></div>
+      <div class="img-ss"><img src="../images/guide/v2.3-구글캘린더.png" alt="캘린더 설정 탭 — iCal URL 추가 및 쓰기 가능 캘린더" loading="lazy" decoding="async"></div>
 
       <div class="box box-new mt8">
         <div class="box-title"><span class="badge-v2">v2</span> 양방향 편집 자동 활성화</div>
@@ -1569,9 +1682,9 @@ function sheetToCsv(sh, rowsOverride){
         대시보드 파일에 AI 키가 미리 박혀있어서 <span class="accent">별도 설정 없이 바로 사용 가능</span>합니다. 위젯바의 <span class="mono">✨ AI 도구</span> 버튼을 누르면 공문 추출·학부모 메시지 변환이 곧장 동작해요. 자세한 사용법은 <a href="#ch8" class="accent">8장. AI 기능 활용</a>을 참고하세요.
       </div>
 
-      <p class="mt8">설정 창의 <span class="red">🤖 AI</span> 탭에서는 모델 종류(기본 <span class="mono">gemini-2.5-flash</span>)와 키 상태를 확인할 수 있습니다. 평소엔 손댈 필요 없어요.</p>
+      <p class="mt8">설정 창의 <span class="red">🤖 AI</span> 탭에서는 키 상태만 확인할 수 있어요 (모델은 <span class="mono">gemini-3.5-flash</span> 자동 선택, v2.3에서 모델 선택 UI는 제거됨). 평소엔 손댈 필요 없어요.</p>
 
-      <div class="img-ss"><img src="../images/guide/v2-설정AI탭.png" alt="설정 모달 AI 탭" loading="lazy" decoding="async"></div>
+      <div class="img-ss"><img src="../images/guide/v2.3-AI기능.png" alt="설정 모달 AI 탭" loading="lazy" decoding="async"></div>
 
       <div class="progress-row"><button class="complete-btn" data-chapter="ch6">○ 완료로 표시</button></div>
       <div class="chapter-nav">
@@ -1793,6 +1906,15 @@ function sheetToCsv(sh, rowsOverride){
         마지막에 선택한 톤은 자동으로 저장돼서 다음에 모달을 열 때 기본값으로 나타납니다.
       </div>
 
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ Lively 환경에서 사용 시 알아둘 것 <span class="badge-v2">v2.3</span></div>
+        <ul class="bullets">
+          <li><span class="bold">📁 외부 파일 드래그&드롭은 동작하지 않습니다</span> — Lively WebView2 자체 제약이라 우회 불가. 모달 안의 <span class="mono">📋 Ctrl+V 영역</span>을 클릭한 뒤 Ctrl+V로 캡쳐 이미지 붙여넣기, 또는 <span class="mono">📁 파일 찾기</span>로 선택하는 방법을 사용하세요.</li>
+          <li><span class="bold">권한 허용창은 30초 정도 기다린 후 클릭</span> — Lively wallpaper z-order 제약으로 권한 dialog 첫 클릭이 무시될 수 있어요. <span class="accent">한 번 허용하면 다음부터는 즉시 동작</span>합니다. (📋 클립보드 가져오기 버튼 사용 시에만 발생)</li>
+          <li><span class="bold">모달 바깥 클릭으로는 안 닫힘</span> — 바탕화면 파일을 클릭하려고 모달 영역 밖을 눌러도 모달이 닫히지 않아요. <span class="red">✕ 버튼 또는 ESC</span>로만 닫힙니다.</li>
+        </ul>
+      </div>
+
       <div class="progress-row"><button class="complete-btn" data-chapter="ch8">○ 완료로 표시</button></div>
       <div class="chapter-nav">
         <a href="#ch7" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>7장. 🎨 디자인</span></a>
@@ -1899,7 +2021,7 @@ function sheetToCsv(sh, rowsOverride){
       <div class="chapter-nav">
         <a href="#ch8" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>8장. 🤖 AI 기능</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
-        <a href="#ch10" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>10장. ✅ 할 일 & D-Day</span></a>
+        <a href="#ch10" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>10장. 🗓 시간표</span></a>
       </div>
     </div>
   </div>
@@ -1909,10 +2031,125 @@ function sheetToCsv(sh, rowsOverride){
 <div class="view" data-view="ch10">
   <div class="container">
     <div class="chapter-page">
-      <div class="chapter-header">
+      <div class="chapter-header new">
         <div class="chapter-num">10</div>
         <div>
-          <div class="chapter-label">CHAPTER 10</div>
+          <div class="chapter-label">CHAPTER 10 · NEW v2.3</div>
+          <div class="chapter-title">🗓 시간표 페이지</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>대시보드는 3페이지 구조 — <span class="accent">대시보드 / 시간표 / 학생 메모</span>.</li>
+          <li>주간학습안내 이미지를 <span class="accent">AI가 자동 표로 변환</span>.</li>
+          <li>과목별 컬러 자동 + <span class="accent">현재 교시 NOW 뱃지</span> 표시.</li>
+        </ul>
+      </div>
+
+      <p>v2.2부터 시간표 페이지가 추가됐어요. 위젯바 우측의 페이지 인디케이터(점 3개)로 전환하거나 좌우 ←/→ 키로 이동합니다. v2.3에서 디자인이 한 번 더 다듬어졌고 셀 안에 수업 내용·페이지까지 함께 표시돼요.</p>
+
+      <div class="section-title">10-1. 페이지 전환</div>
+      <ul class="bullets">
+        <li><span class="bold accent">1페이지 📊 대시보드</span> — 시계 + 캘린더 (기본)</li>
+        <li><span class="bold accent">2페이지 🗓 시간표</span> — 시계 + 시간표 <span class="badge-v2">v2.2</span></li>
+        <li><span class="bold accent">3페이지 📝 학생 메모</span> — 메모만</li>
+      </ul>
+      <p class="mt8">시계 카드는 1·2페이지에서 공유돼서 시간표 페이지에서도 항상 시간을 볼 수 있어요. 3페이지는 메모만 집중할 수 있게 시계는 숨겨집니다.</p>
+
+      <div class="section-title mt16">10-2. AI 시간표 추출 (이미지 → 표)</div>
+      <p>주간학습안내 PDF·이미지를 그대로 시간표로 만들 수 있어요. 매주 시간표 다시 입력하지 않아도 됩니다.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">위젯바 <span class="red">✨ AI 도구</span> → <span class="red">🗓 시간표 추출</span> 버튼 클릭.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">주간학습안내 이미지를 추가합니다. 3가지 방법:
+            <ul class="bullets mt8">
+              <li><span class="mono">📋 Ctrl+V 영역</span> 클릭 후 캡쳐 이미지 붙여넣기 (Lively 권장)</li>
+              <li><span class="mono">📁 파일 찾기</span>로 PDF·이미지 선택</li>
+              <li>드래그&드롭 (Chrome 환경만)</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content"><span class="red">🤖 시간표 추출하기</span> 클릭 → 잠시 대기 → 결과 미리보기 표시.</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content"><span class="red">✅ 이 시간표 적용</span> 클릭 → 자동으로 시간표 페이지로 이동하고 표가 채워집니다.</div>
+        </li>
+      </ol>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 AI가 페이지까지 같이 추출해줘요</div>
+        주간학습안내에 <span class="mono">국어 친구와 사이좋게 (12-15쪽)</span>처럼 페이지가 적혀있으면 셀에 <span class="accent">과목 / 수업 내용 / 페이지</span> 3단으로 자동 분리 표시됩니다. 본 교과서 + 서브 교과서 페이지(<span class="mono">90-91(58-59)쪽</span> 같은 형식)도 인식해요.
+      </div>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ AI가 가끔 없는 교시를 채우기도 해요</div>
+        예: 목요일 5교시까지인데 다른 요일이 6교시라고 6교시로 늘려 채우는 경우. 추출 결과 미리보기에서 확인하고, 이상하면 적용 후 <span class="red">✏️ 수동 편집</span>으로 즉시 수정하세요. 자세한 건 <a href="#ch13" class="accent">13장 FAQ</a> 참고.
+      </div>
+
+      <div class="section-title mt16">10-3. 수동 편집 (직접 입력·수정)</div>
+      <p>AI 추출이 잘 안 되거나 처음부터 직접 입력하고 싶다면 시간표 패널 헤더 우측의 <span class="red">✏️ 수동 편집</span> 버튼을 클릭합니다.</p>
+
+      <ul class="bullets">
+        <li><span class="bold">요일·교시 수 선택</span> — 월~토 체크박스 + 교시 수(1~10)</li>
+        <li><span class="bold">시정 입력</span> — 1교시 시작 시간 입력 후 탭으로 이동하면 <span class="accent">종료 시간이 +40분 자동 채움</span> (초등학교 기본). 콜론 없이 <span class="mono">0910</span>이라 쳐도 <span class="mono">09:10</span>으로 자동 포맷됩니다.</li>
+        <li><span class="bold">셀당 입력 3개</span> — 과목 / 수업 내용 / 페이지 (가로 1줄로 배치)</li>
+        <li><span class="bold">페이지 입력</span> — 숫자만 적으면 자동으로 <span class="mono">쪽</span> 추가. 예: <span class="mono">94-95</span> → 저장 시 <span class="mono">(94-95쪽)</span>으로 합쳐짐</li>
+        <li><span class="bold">💾 저장</span> 후에는 모달이 자동으로 닫히지 않아요 — ✕로 직접 닫으세요. 추가 셀 수정 가능</li>
+      </ul>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 시정 한 번 만들어두면 AI 재추출해도 유지됨</div>
+        교시 시간(시정)은 학교마다 고정이라 한 번 만들어두면 다음에 AI 시간표 추출해도 <span class="accent">시정은 보존</span>되고 셀 내용(과목·수업 주제·페이지)만 새로 채워집니다.
+      </div>
+
+      <div class="section-title mt16">10-4. 셀 디자인 — 과목별 컬러 자동 <span class="badge-v2">v2.3</span></div>
+      <p>과목명에 따라 9종 컬러가 자동으로 적용돼서 한눈에 구분하기 쉬워요:</p>
+
+      <table class="data-table mt8">
+        <tr><th>과목</th><th>톤</th></tr>
+        <tr><td>국어</td><td>로즈</td></tr>
+        <tr><td>수학</td><td>스카이</td></tr>
+        <tr><td>과학</td><td>세이지</td></tr>
+        <tr><td>사회</td><td>액센트</td></tr>
+        <tr><td>영어 / 음악 / 미술 / 체육 / 자율·창체</td><td>각각 다른 톤 (9종 자동 분류)</td></tr>
+      </table>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 셀에 마우스 올리면 hover tooltip</div>
+        셀이 좁아서 내용이 잘리면 마우스를 올렸을 때 큰 tooltip으로 과목 · 수업 내용 · 페이지가 보기 좋게 표시됩니다.
+      </div>
+
+      <div class="section-title mt16">10-5. 현재 교시 자동 하이라이트</div>
+      <p>현재 시각이 어느 교시 범위에 속하는지 자동으로 계산해서 해당 셀에 <span class="accent">NOW 뱃지</span>가 표시됩니다. 1분 단위로 갱신돼요.</p>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch10">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch9" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>9장. 📅 캘린더</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch11" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>11장. ✅ 할 일 & D-Day</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH11 ═══════════ -->
+<div class="view" data-view="ch11">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">11</div>
+        <div>
+          <div class="chapter-label">CHAPTER 11</div>
           <div class="chapter-title">✅ 할 일 & D-Day 관리</div>
         </div>
       </div>
@@ -1960,24 +2197,24 @@ function sheetToCsv(sh, rowsOverride){
         Apps Script URL이 등록되어 있다면 할 일·D-Day 변경 사항이 <span class="accent">5초 후 자동으로 구글 시트에 백업</span>됩니다. 다른 PC에서 같은 시트와 연동된 대시보드를 열면 동일한 데이터가 복원돼요.
       </div>
 
-      <div class="progress-row"><button class="complete-btn" data-chapter="ch10">○ 완료로 표시</button></div>
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch11">○ 완료로 표시</button></div>
       <div class="chapter-nav">
-        <a href="#ch9" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>9장. 📅 캘린더</span></a>
+        <a href="#ch10" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>10장. 🗓 시간표</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
-        <a href="#ch11" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>11장. 💾 설정 백업</span></a>
+        <a href="#ch12" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>12장. 💾 설정 백업</span></a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ CH11 ═══════════ -->
-<div class="view" data-view="ch11">
+<!-- ═══════════ CH12 ═══════════ -->
+<div class="view" data-view="ch12">
   <div class="container">
     <div class="chapter-page">
       <div class="chapter-header">
-        <div class="chapter-num">11</div>
+        <div class="chapter-num">12</div>
         <div>
-          <div class="chapter-label">CHAPTER 11</div>
+          <div class="chapter-label">CHAPTER 12</div>
           <div class="chapter-title">설정 백업</div>
         </div>
       </div>
@@ -2010,7 +2247,7 @@ function sheetToCsv(sh, rowsOverride){
       <ol class="steps" start="3">
         <li>
           <div class="step-num">3</div>
-          <div class="step-content">다운로드된 파일을 <span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span> 파일과 <span class="red">같은 폴더</span>에 저장합니다.</div>
+          <div class="step-content">다운로드된 파일을 <span class="mono red">쌤보드_ver2.3.html</span> 파일과 <span class="red">같은 폴더</span>에 저장합니다.</div>
         </li>
       </ol>
 
@@ -2034,29 +2271,33 @@ function sheetToCsv(sh, rowsOverride){
           <li><span class="mono">theme</span> — 선택한 7테마 (default/light-sage/rose/mint/dark-warm/mint/indigo)</li>
           <li><span class="mono">iconArea</span> / <span class="mono">taskbar</span> — 디자인 패널 여백 슬라이더 값</li>
           <li><span class="mono">timeFormat24</span> — 24시간 형식 토글</li>
-          <li><span class="mono">geminiApiKey</span> / <span class="mono">geminiModel</span> — AI 설정</li>
+          <li><span class="mono">geminiApiKey</span> — AI 키 (모델은 자동 선택)</li>
           <li><span class="mono">editableCalendars</span> — 양방향 편집 가능한 캘린더 맵</li>
+          <li><span class="mono">myClass</span> — 내 반 (큰 학교 사용자) <span class="badge-v2">v2.3</span></li>
+          <li><span class="mono">weeklySchedule</span> — 시간표 데이터 (요일·교시·과목·내용·페이지) <span class="badge-v2">v2.2</span></li>
+          <li><span class="mono">portalUrl</span> — 업무포털 수동 오버라이드 URL <span class="badge-v2">v2.2</span></li>
+          <li><span class="mono">memos_lastDate</span> — 학생 메모 마지막 입력 날짜 (자정 자동 초기화 트리거) <span class="badge-v2">v2.3</span></li>
         </ul>
       </div>
 
-      <div class="progress-row"><button class="complete-btn" data-chapter="ch11">○ 완료로 표시</button></div>
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch12">○ 완료로 표시</button></div>
       <div class="chapter-nav">
-        <a href="#ch10" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>10장. ✅ 할 일 & D-Day</span></a>
+        <a href="#ch11" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>11장. ✅ 할 일 & D-Day</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
-        <a href="#ch12" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>12장. FAQ</span></a>
+        <a href="#ch13" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>13장. FAQ</span></a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ CH12 ═══════════ -->
-<div class="view" data-view="ch12">
+<!-- ═══════════ CH13 ═══════════ -->
+<div class="view" data-view="ch13">
   <div class="container">
     <div class="chapter-page">
       <div class="chapter-header">
-        <div class="chapter-num">12</div>
+        <div class="chapter-num">13</div>
         <div>
-          <div class="chapter-label">CHAPTER 12</div>
+          <div class="chapter-label">CHAPTER 13</div>
           <div class="chapter-title">자주 묻는 질문 (FAQ)</div>
         </div>
       </div>
@@ -2082,7 +2323,7 @@ function sheetToCsv(sh, rowsOverride){
       </div>
       <div class="faq-item">
         <div class="faq-q">Lively를 재시작했더니 설정이 초기화됐어요.</div>
-        <div class="faq-a">11장의 백업 절차를 따라 <span class="red mono">대시보드_설정.json</span> 파일을 HTML과 <span class="red">같은 폴더</span>에 저장해 두면 자동으로 복구됩니다.</div>
+        <div class="faq-a">12장의 백업 절차를 따라 <span class="red mono">대시보드_설정.json</span> 파일을 HTML과 <span class="red">같은 폴더</span>에 저장해 두면 자동으로 복구됩니다.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Apps Script 배포 중 권한 화면이 안 나와요.</div>
@@ -2093,8 +2334,8 @@ function sheetToCsv(sh, rowsOverride){
         <div class="faq-a">구글 시트 <span class="mono">내선번호</span> 탭의 B열 색상 값을 확인하세요. <span class="red">반드시 소문자 영어</span>여야 합니다 (<span class="mono red">green</span>, <span class="mono red">orange</span>, <span class="mono red">purple</span>, <span class="mono red">yellow</span>).</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">학생 메모를 저장했는데 다음 날 사라졌어요.</div>
-        <div class="faq-a">메모는 <span class="red">날짜별로 저장</span>됩니다. 다음 날에는 새 날짜의 빈 메모가 표시됩니다. 이전 날짜 기록은 구글 시트 <span class="mono">누가기록</span> 탭에서 확인 가능합니다.</div>
+        <div class="faq-q">학생 메모가 다음 날 사라졌어요.</div>
+        <div class="faq-a">v2.3부터 <span class="red">자정 넘어가면 작성 중이던 메모가 자동으로 초기화</span>돼요 (의도된 동작 — "오늘 기록" 의미를 살리기 위함). 단 <span class="red">"저장" 버튼을 누른 메모만</span> 구글 시트 <span class="mono">누가기록</span> 탭에 영구 저장됩니다. 저장 안 한 typo·잘못 입력 메모는 자정에 함께 사라져요. 다음 날엔 새 빈 메모로 시작.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">급식을 받는 학교가 따로 있어요 (비조리교).</div>
@@ -2125,7 +2366,7 @@ function sheetToCsv(sh, rowsOverride){
       </div>
       <div class="faq-item">
         <div class="faq-q">AI가 응답을 안 하거나 자꾸 끊겨요.</div>
-        <div class="faq-a">Gemini 서버가 일시적으로 혼잡한 경우가 있습니다. 대시보드는 자동으로 fallback 모델(gemini-3-flash-preview)로 재시도합니다. 그래도 실패하면 잠시 후 다시 시도해 주세요. 안전 필터로 차단된 경우엔 입력 텍스트를 다듬어 재시도하세요.</div>
+        <div class="faq-a">Gemini 서버가 일시적으로 혼잡한 경우가 있습니다. 대시보드는 자동으로 fallback 모델로 재시도합니다 (같은 모델 1회 백오프 재시도 + 다른 모델 fallback). 그래도 실패하면 잠시 후 다시 시도해 주세요. 안전 필터로 차단된 경우엔 입력 텍스트를 다듬어 재시도하세요.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">캘린더에 ➕ 버튼이 안 보여요.</div>
@@ -2141,21 +2382,39 @@ function sheetToCsv(sh, rowsOverride){
       </div>
       <div class="faq-item">
         <div class="faq-q">5월 마지막 주가 캘린더에서 안 보여요.</div>
-        <div class="faq-a">일정이 너무 많아 한 주의 높이가 부풀면 다음 주가 가려질 수 있습니다. v2.0에서는 캘린더 카드 높이에 맞춰 자동으로 표시 개수를 조정하고 "+N more"로 접도록 개선됐습니다. 그래도 좁다면 디자인 패널에서 작업표시줄 여백을 줄여 캘린더 카드를 키워보세요.</div>
+        <div class="faq-a">일정이 너무 많아 한 주의 높이가 부풀면 다음 주가 가려질 수 있습니다. v2부터는 캘린더 카드 높이에 맞춰 자동으로 표시 개수를 조정하고 "+N more"로 접도록 개선됐습니다. 그래도 좁다면 디자인 패널에서 작업표시줄 여백을 줄여 캘린더 카드를 키워보세요.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">투두에 추가한 항목이 다른 PC에서 안 보여요.</div>
         <div class="faq-a">변경 후 5초 정도 기다린 후 다른 PC에서 새로고침하면 동기화됩니다. (자동 백업이 5초 디바운싱으로 동작) Apps Script URL이 양쪽 대시보드 모두 동일한지 확인하세요.</div>
       </div>
+      <div class="faq-item">
+        <div class="faq-q">명렬표가 우리 반만 보여요 — 다른 반·전교생도 보고 싶어요. <span class="badge-v2">v2.3</span></div>
+        <div class="faq-a">명렬표 모달 상단의 <span class="red">토글 3개</span>로 전환하세요: <span class="bold">우리 반</span>(myClass 학생만) / <span class="bold">우리 학년</span>(myGrade 전체, 우리 반 강조 표시) / <span class="bold">전교생</span>(모든 학년). 토글 기본값은 <span class="mono">myClass</span> 설정 여부에 따라 자동 선택돼요. <span class="mono">내 반</span>을 비워두면 학년 전체로 동작.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">큰 학교(한 학년 8~10반)에서 학생 번호가 다른 반과 겹쳐요. <span class="badge-v2">v2.3</span></div>
+        <div class="faq-a">학생 메모를 시트에 저장할 때 같은 번호의 다른 반 메모가 충돌할 수 있어요. 해결법:
+          <ol class="bullets mt8" style="padding-left:18px;">
+            <li><a href="#ch4" class="accent">4-4. 누가기록 시트</a>에 <span class="red">'반' 컬럼을 1회 수동 추가</span> (헤더 행)</li>
+            <li><a href="#ch6" class="accent">6-1 학교 정보</a>에서 <span class="red">'내 반' 입력</span> + 저장</li>
+          </ol>
+          Apps Script도 v2.3 최신 코드로 재배포 필수 (헤더 동적 인식 + 반 매칭 지원).
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">AI 시간표 추출에서 없는 교시(예: 6교시)가 채워져요. <span class="badge-v2">v2.3</span></div>
+        <div class="faq-a">Gemini Vision의 시각 인식 한계로 가끔 발생하는 알려진 이슈입니다. 다른 요일이 6교시까지 있으면 5교시까지인 요일도 자동으로 6교시를 만들어내는 경향이 있어요. 해결: 적용 후 시간표 패널 헤더 우측의 <span class="red">✏️ 수동 편집</span> 버튼으로 잘못 채워진 셀을 직접 비우세요. (자세한 시간표 사용법은 <a href="#ch10" class="accent">10장</a> 참고)</div>
+      </div>
 
       <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--line);text-align:center;color:var(--ink-mute);font-size:13px;">
-        팍쌤의 교사용 대시보드 설정 가이드 &nbsp;·&nbsp; ver 2.0 &nbsp;·&nbsp; 2026.5<br>
+        팍쌤의 쌤보드 설정 가이드 &nbsp;·&nbsp; ver 2.3 &nbsp;·&nbsp; 2026.5<br>
         문의 및 피드백은 <a href="https://joo.is/팍쌤바이브" style="color:var(--accent);" target="_blank" rel="noopener">joo.is/팍쌤바이브</a> 로 연락주세요.
       </div>
 
-      <div class="progress-row"><button class="complete-btn" data-chapter="ch12">○ 완료로 표시</button></div>
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch13">○ 완료로 표시</button></div>
       <div class="chapter-nav">
-        <a href="#ch11" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>11장. 💾 설정 백업</span></a>
+        <a href="#ch12" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>12장. 💾 설정 백업</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
         <button class="chapter-nav-btn next disabled"><span class="nav-dir">다음 (끝)</span></button>
       </div>
@@ -2178,7 +2437,7 @@ function sheetToCsv(sh, rowsOverride){
       <div class="box box-new mt8">
         <div class="box-title">🚀 3줄 요약</div>
         <ol class="bullets" style="padding-left:18px;">
-          <li>기존 <span class="mono">교사용 바탕화면 대시보드_ver1.0.0.html</span>을 새 <span class="mono red">교사용 바탕화면 대시보드_ver2.0.html</span>로 교체합니다.</li>
+          <li>기존 <span class="mono">교사용 바탕화면 대시보드_ver1.0.0.html</span>을 새 <span class="mono red">쌤보드_ver2.3.html</span>로 교체합니다.</li>
           <li>Lively Wallpaper에서 배경화면을 <span class="accent">새 HTML 파일로 다시 등록</span>합니다.</li>
           <li><span class="mono">대시보드_설정.json</span> 파일이 같은 폴더에 있다면, <span class="accent">기존 설정이 모두 자동 복원</span>됩니다.</li>
         </ol>
@@ -2186,8 +2445,19 @@ function sheetToCsv(sh, rowsOverride){
 
       <p>이미 기존 버전을 잘 쓰고 있었다면 1장부터 다시 할 필요 없어요. <span class="accent">HTML 파일 하나만 교체하면 끝</span>이고, 기존 설정은 모두 자동으로 복원됩니다.</p>
 
+      <div class="box box-new mt8">
+        <div class="box-title">🆕 v2.3에서 달라진 점 핵심 요약</div>
+        <ul class="bullets">
+          <li><span class="bold">🗓 시간표 페이지 신설</span> — AI가 주간학습안내 이미지를 자동으로 표로 변환. 사용법은 <a href="#ch10" class="accent">10장</a> 참고.</li>
+          <li><span class="bold">🏷️ '내 반' 입력 + 누가기록 시트 '반' 컬럼</span> — 큰 학교(한 학년 다반) 학생 번호 충돌 방지. <a href="#ch4" class="accent">4-4</a> + <a href="#ch6" class="accent">6-1</a> 참고. <span class="accent">작은 학교(한 학년 한 반) 사용자는 신경 안 써도 됨.</span></li>
+          <li><span class="bold">📅 캘린더 안정성 강화</span> — 일정 삭제 시 "찾을 수 없습니다" 에러 해결, 5분 캐시로 로딩 속도 개선. (Apps Script 재배포 필수)</li>
+          <li><span class="bold">📝 학생 메모 자정 자동 초기화</span> — "오늘 기록" 의미를 살리기 위해 자정에 자동 비워짐. 저장 누른 메모만 영구. <a href="#ch13" class="accent">13장 FAQ</a> 참고.</li>
+          <li><span class="bold">🎨 디자인 정돈</span> — 시간표·학생 메모·AI 모달 디자인 업그레이드, 명렬표 토글 3개(우리 반/우리 학년/전교생), AI 모델 선택 UI 제거.</li>
+        </ul>
+      </div>
+
       <div class="section-title mt16">⚠️ Apps Script 코드도 업데이트 후 재배포 필요</div>
-      <p>구글 캘린더 <span class="accent">양방향 편집</span>(일정 추가·수정·삭제) 기능을 쓰려면 Apps Script 코드도 새 버전으로 업데이트해야 합니다.</p>
+      <p>구글 캘린더 <span class="accent">양방향 편집</span> + v2.3 픽스(<span class="accent">반 컬럼 지원</span>, <span class="accent">캘린더 삭제 quirk 우회</span>)를 쓰려면 Apps Script 코드도 새 버전으로 업데이트해야 합니다. <span class="red">기존 사용자도 반드시 1회 재배포</span>하세요.</p>
 
       <div class="box box-tip">
         <div class="box-title">💡 Apps Script 업데이트 절차</div>
