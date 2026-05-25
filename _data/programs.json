@@ -41,7 +41,7 @@
     },
     {
       "id": "teacher-wallpaper",
-      "title": "교사용 배경화면 대시보드",
+      "title": "쌤보드",
       "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록 등 교사에게 필요한 기능이 한 화면에! 매일 아침 정보를 찾아다닐 필요가 없습니다.",
       "status": "completed",
       "tags": [
@@ -53,10 +53,19 @@
       "site_url": "",
       "download_url": "",
       "thumbnail": "/images/스크린샷 2026-05-17 235152.png",
-      "version": "2.1",
-      "release_date": "2026-05-18",
+      "version": "2.3",
+      "release_date": "2026-05-26",
       "order": 2,
       "changelog": [
+        {
+          "version": "2.3",
+          "date": "2026-05-26",
+          "changes": [
+            "[시간표] 기능 추가",
+            "[시간표] 주간학습안내 이미지 AI 분석 기능 탑재",
+            "[캘린더][D-Day] 순서 조정 기능 추가"
+          ]
+        },
         {
           "version": "2.1",
           "date": "2026-05-18",
@@ -84,8 +93,8 @@
           ]
         }
       ],
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
     },
     {
       "id": "plan-generator",
@@ -158,8 +167,8 @@
           ]
         }
       ],
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
