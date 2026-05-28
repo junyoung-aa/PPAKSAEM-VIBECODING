@@ -1,0 +1,9 @@
+# 팍쌤의 바이브코딩 저장소 — robots.txt
+User-agent: *
+Allow: /
+
+# 검색 노출 제외 (관리자 / 통계 페이지)
+Disallow: /admin/
+Disallow: /stats-local.html
+
+Sitemap: https://ppaksaem-vibecoding.pages.dev/sitemap.xml
