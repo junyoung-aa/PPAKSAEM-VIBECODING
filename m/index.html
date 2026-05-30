@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<!-- 쌤보드 모바일 미니 대시보드 ver1.0 (PC 대시보드 v2.4 연동) — 투두/D-Day/학생메모 양방향 + 오늘 시간표.
+     데이터: 각 교사의 Apps Script URL(?u=). Apps Script 무수정 (loadSettings/roster/read GET + saveSettings/누가기록 POST). -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="theme-color" content="#E89215">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="쌤보드">
+<title>쌤보드 모바일</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23E89215'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%8B%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23E89215'/%3E%3Ctext x='50' y='70' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%8B%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#FBF7F0; --card:#FFFFFF; --card-soft:#FAF6EE; --border:#ECE3D2; --border-strong:#DCD0B8;
+    --text:#1F1B16; --text-soft:#5B5247; --text-mute:#9C9183;
+    --accent:#E89215; --accent-ink:#7A4E08; --accent-soft:#FCE8C0;
+    --sage:#8FA771; --sage-soft:#E2EAD0; --sage-ink:#4A5D33;
+    --rose:#E47A82; --rose-soft:#FAD9DC; --rose-ink:#82323A;
+    --sky:#6FA9C8; --sky-soft:#D6E7F0; --sky-ink:#2E5C76;
+    --lilac:#9F8DC0; --lilac-soft:#E5DEEF; --lilac-ink:#4F3E72;
+    --urgent:#C84545; --urgent-soft:#F7D9D9;
+    --r:16px; --r-sm:11px;
+    --shadow:0 1px 3px rgba(40,30,15,.06), 0 8px 20px -10px rgba(40,30,15,.12);
+    --font:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font); background:var(--bg); color:var(--text);
+    font-size:15px; line-height:1.5; -webkit-text-size-adjust:100%;
+    padding-bottom:env(safe-area-inset-bottom);
+    overscroll-behavior-y:contain;
+  }
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+  input{font-family:inherit; font-size:16px;} /* 16px → iOS 자동 줌 방지 */
+
+  /* ── 헤더 ── */
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:color-mix(in srgb, var(--card) 92%, transparent);
+    -webkit-backdrop-filter:saturate(1.4) blur(8px); backdrop-filter:saturate(1.4) blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:calc(env(safe-area-inset-top) + 9px) 14px 9px;
+    display:flex; align-items:center; gap:9px;
+  }
+  .topbar .logo{width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:16px;flex:0 0 auto;}
+  .topbar .ttl{font-weight:800;font-size:15px;letter-spacing:-.01em;line-height:1.15;}
+  .topbar .sub{font-size:10.5px;color:var(--text-mute);line-height:1.2;}
+  .topbar .grow{flex:1;min-width:0;}
+  .topbar .refresh{width:34px;height:34px;border-radius:10px;background:var(--card-soft);border:1px solid var(--border);display:grid;place-items:center;font-size:16px;flex:0 0 auto;}
+  .topbar .refresh:active{background:var(--accent-soft);}
+  .topbar .refresh.spin{animation:sp 1s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+
+  .status{font-size:11px;color:var(--text-mute);text-align:center;padding:5px 12px 0;min-height:18px;transition:color .2s;}
+  .status.ok{color:var(--sage-ink);} .status.err{color:var(--urgent);} .status.saving{color:var(--accent-ink);}
+
+  .wrap{padding:10px 12px 40px; max-width:560px; margin:0 auto;}
+
+  /* ── 카드 ── */
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow); padding:14px; margin-bottom:12px;}
+  .card-h{display:flex;align-items:center;gap:7px;margin:0 0 10px;}
+  .card-h .ic{font-size:17px;}
+  .card-h h2{font-size:14.5px;font-weight:800;margin:0;letter-spacing:-.01em;}
+  .card-h .meta{margin-left:auto;font-size:11.5px;color:var(--text-mute);font-weight:600;}
+
+  /* ── 투두 ── */
+  .todo{display:flex;align-items:flex-start;gap:10px;padding:9px 2px;border-bottom:1px solid var(--card-soft);}
+  .todo:last-child{border-bottom:none;}
+  .chk{width:23px;height:23px;border-radius:7px;border:2px solid var(--border-strong);flex:0 0 auto;margin-top:1px;display:grid;place-items:center;transition:.15s;}
+  .chk.on{background:var(--accent);border-color:var(--accent);}
+  .chk.on::after{content:'✓';color:#fff;font-size:14px;font-weight:800;}
+  .todo .body{flex:1;min-width:0;}
+  .todo .txt{font-size:14.5px;word-break:break-word;}
+  .todo.done .txt{text-decoration:line-through;color:var(--text-mute);}
+  .todo .tags{margin-top:3px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+  .tag{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);}
+  .tag.urgent{background:var(--urgent-soft);color:var(--urgent);}
+  .tag.sage{background:var(--sage-soft);color:var(--sage-ink);}
+  .tag.accent{background:#FCE8C0;color:#7A4E08;}
+  .tag.lilac{background:var(--lilac-soft);color:var(--lilac-ink);}
+  .tag.due{background:var(--sky-soft);color:var(--sky-ink);}
+  .del{width:28px;height:28px;border-radius:8px;flex:0 0 auto;color:var(--text-mute);font-size:15px;display:grid;place-items:center;}
+  .del:active{background:var(--urgent-soft);color:var(--urgent);}
+
+  /* ── D-Day ── */
+  .dday{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--card-soft);}
+  .dday:last-child{border-bottom:none;}
+  .dday .mk{width:42px;height:42px;border-radius:11px;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;flex:0 0 auto;font-weight:800;font-size:16px;line-height:1;}
+  .dday .mk .mm{font-size:9px;font-weight:700;opacity:.85;}
+  .dday .info{flex:1;min-width:0;}
+  .dday .nm{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dday .dt{font-size:11px;color:var(--text-mute);}
+  .dday .cnt{font-size:14px;font-weight:800;color:var(--accent);flex:0 0 auto;}
+  .dday .cnt.past{color:var(--text-mute);}
+
+  /* ── 학생 메모 ── */
+  .memo{display:flex;align-items:center;gap:8px;padding:6px 0;}
+  .memo .no{width:26px;height:24px;border-radius:7px;background:var(--card-soft);border:1px solid var(--border);color:var(--text-soft);font-size:11.5px;font-weight:700;display:grid;place-items:center;flex:0 0 auto;}
+  .memo.has .no{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .memo .nm{font-size:13px;font-weight:600;flex:0 0 auto;min-width:50px;max-width:74px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .memo .nm.m{color:var(--sky-ink);} .memo .nm.f{color:var(--rose-ink);}
+  .memo input{flex:1;min-width:0;border:1px solid var(--border);border-radius:9px;padding:7px 9px;background:var(--card-soft);font-size:14px;color:var(--text);}
+  .memo input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  .memo-save-row{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid var(--card-soft);}
+  #memoSaveInfo{flex:1;min-width:0;font-size:11.5px;color:var(--accent-ink);font-weight:600;}
+  .memo-save-btn{flex:0 0 auto;background:var(--card-soft);border:1px solid var(--border);color:var(--text-soft);font-weight:800;border-radius:10px;padding:9px 18px;font-size:14px;transition:.15s;}
+  .memo-save-btn.dirty{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .memo-save-btn:active{opacity:.85;}
+  .memo-save-btn:disabled{opacity:.6;}
+
+  /* ── 시간표 ── */
+  .sc{display:flex;align-items:baseline;gap:10px;padding:8px 2px;border-bottom:1px solid var(--card-soft);}
+  .sc:last-child{border-bottom:none;}
+  .sc .pn{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--card-soft);border:1px solid var(--border);color:var(--text-soft);font-size:12px;font-weight:800;display:grid;place-items:center;align-self:center;}
+  .sc.now .pn{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sc .info{flex:1;min-width:0;}
+  .sc .subj{font-size:14px;font-weight:700;}
+  .sc .cont{font-size:12px;color:var(--text-soft);word-break:break-word;}
+  .sc .tm{flex:0 0 auto;font-size:10.5px;color:var(--text-mute);font-variant-numeric:tabular-nums;align-self:center;}
+
+  /* ── 추가 입력 행 ── */
+  .addrow{display:flex;gap:7px;margin-top:11px;}
+  .addrow input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--card-soft);}
+  .addrow input[type=date]{border:1px solid var(--border);border-radius:10px;padding:9px 10px;background:var(--card-soft);color:var(--text);}
+  .addrow input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  .addrow .go{flex:0 0 auto;background:var(--accent);color:#fff;font-weight:800;border-radius:10px;padding:0 16px;font-size:15px;}
+  .addrow .go:active{background:var(--accent-ink);}
+  .tagpick{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .tagpick button{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--card-soft);border:1px solid var(--border);color:var(--text-soft);}
+  .tagpick button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);}
+
+  .empty{text-align:center;color:var(--text-mute);font-size:13px;padding:18px 6px;line-height:1.6;}
+
+  /* ── 연결 화면 ── */
+  #connect{display:none;padding:calc(env(safe-area-inset-top) + 30px) 22px 40px;max-width:480px;margin:0 auto;}
+  #connect.show{display:block;}
+  #connect .hero{text-align:center;margin-bottom:22px;}
+  #connect .hero .big{width:62px;height:62px;border-radius:18px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:32px;margin:0 auto 12px;box-shadow:var(--shadow);}
+  #connect h1{font-size:21px;font-weight:800;margin:0 0 6px;}
+  #connect p{color:var(--text-soft);font-size:14px;margin:0 auto;max-width:340px;}
+  #connect .box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
+  #connect label{font-size:12.5px;font-weight:700;color:var(--text-soft);display:block;margin-bottom:7px;}
+  #connect input{width:100%;border:1px solid var(--border);border-radius:11px;padding:12px;background:var(--card-soft);font-size:14px;}
+  #connect input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  #connect .go{width:100%;margin-top:11px;background:var(--accent);color:#fff;font-weight:800;border-radius:12px;padding:13px;font-size:15.5px;}
+  #connect .go:active{background:var(--accent-ink);}
+  #connect .tip{font-size:12px;color:var(--text-mute);margin-top:14px;line-height:1.6;text-align:center;}
+  #connectMsg{font-size:12.5px;color:var(--urgent);min-height:18px;margin-top:8px;text-align:center;}
+
+  .footlink{text-align:center;margin-top:6px;}
+  .footlink button{font-size:11.5px;color:var(--text-mute);text-decoration:underline;padding:6px;}
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1A1714; --card:#262019; --card-soft:#2E2720; --border:#3A3128; --border-strong:#4A3F33;
+      --text:#F2EBE0; --text-soft:#C3B7A6; --text-mute:#8A7E6E; --accent:#F0A330; --accent-ink:#FBD89B; --accent-soft:#43331C;
+      --sage-soft:#2C3320; --sage-ink:#C2D8A2; --rose-soft:#3A2326; --rose-ink:#F2B5BB; --sky-soft:#22323C; --sky-ink:#A5D2E4; --lilac-soft:#2E2740; --lilac-ink:#D4C7E8; --urgent:#E8736F; --urgent-soft:#3A2422;
+    }
+    .tag.accent{background:#43331C;color:#FBD89B;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 연결 화면 (URL 없을 때) -->
+<div id="connect">
+  <div class="hero">
+    <div class="big">📋</div>
+    <h1>쌤보드 모바일</h1>
+    <p>내 PC 대시보드의 투두·D-Day·학생 메모를 핸드폰에서 보고 편집해요.</p>
+  </div>
+  <div class="box">
+    <label for="urlInput">Apps Script 웹앱 URL</label>
+    <input id="urlInput" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"
+           placeholder="https://script.google.com/macros/s/.../exec"/>
+    <button class="go" onclick="connectManual()">연결하기</button>
+    <div id="connectMsg"></div>
+    <div class="tip">💡 PC 대시보드 → ⚙️ 설정 → <b>구글시트 연동</b> 탭의<br>📱 <b>핸드폰에서 보기</b> QR을 스캔하면 자동 연결돼요.</div>
+  </div>
+</div>
+
+<!-- 메인 앱 -->
+<div id="app" style="display:none;">
+  <div class="topbar">
+    <div class="logo">📋</div>
+    <div class="grow">
+      <div class="ttl" id="appTitle">쌤보드</div>
+      <div class="sub" id="appSub">오늘</div>
+    </div>
+    <button class="refresh" id="refreshBtn" onclick="manualRefresh()" aria-label="새로고침">↻</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="wrap">
+
+    <!-- 투두 -->
+    <div class="card">
+      <div class="card-h"><span class="ic">✅</span><h2>할 일</h2><span class="meta" id="todoMeta"></span></div>
+      <div id="todoList"></div>
+      <div class="tagpick" id="tagPick">
+        <button data-tag="" class="on" onclick="pickTag('')">없음</button>
+        <button data-tag="긴급" onclick="pickTag('긴급')">긴급</button>
+        <button data-tag="학급" onclick="pickTag('학급')">학급</button>
+        <button data-tag="업무" onclick="pickTag('업무')">업무</button>
+        <button data-tag="개인" onclick="pickTag('개인')">개인</button>
+      </div>
+      <div class="addrow">
+        <input type="text" id="todoInput" placeholder="할 일 추가..." enterkeyhint="done" onkeydown="if(event.key==='Enter')addTodo()"/>
+        <button class="go" onclick="addTodo()">추가</button>
+      </div>
+    </div>
+
+    <!-- D-Day -->
+    <div class="card">
+      <div class="card-h"><span class="ic">📌</span><h2>D-Day</h2><span class="meta" id="ddayMeta"></span></div>
+      <div id="ddayList"></div>
+      <div class="addrow">
+        <input type="text" id="ddayName" placeholder="이름 (예: 현장학습)" style="flex:1.3;"/>
+        <input type="date" id="ddayDate"/>
+      </div>
+      <div class="addrow" style="margin-top:7px;">
+        <button class="go" style="flex:1;padding:10px;" onclick="addDday()">D-Day 추가</button>
+      </div>
+    </div>
+
+    <!-- 학생 메모 -->
+    <div class="card">
+      <div class="card-h"><span class="ic">📝</span><h2 id="memoTitle">학생 메모</h2><span class="meta" id="memoMeta"></span></div>
+      <div id="memoList"></div>
+      <div class="memo-save-row" id="memoSaveRow" style="display:none;">
+        <span id="memoSaveInfo"></span>
+        <button class="memo-save-btn" id="memoSaveBtn" onclick="saveMemos()">💾 메모 저장</button>
+      </div>
+    </div>
+
+    <!-- 오늘 시간표 -->
+    <div class="card">
+      <div class="card-h"><span class="ic">🗓</span><h2 id="schedTitle">오늘 시간표</h2></div>
+      <div id="schedList"></div>
+    </div>
+
+    <div class="footlink"><button onclick="disconnect()">다른 시트에 연결 / 연결 끊기</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+// ============================================================
+//  쌤보드 모바일 — PC 대시보드 v2.4 데이터 모델 그대로 사용
+//  Apps Script 무수정: GET loadSettings/roster/read · POST saveSettings/누가기록
+// ============================================================
+const STORAGE_KEY = 'sbm_url';
+const DAY_KO = ['일','월','화','수','목','금','토'];
+const MONTH_ABBR = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; // PC 대시보드와 동일 표기
+const DAY_TO_IDX = {'일':0,'월':1,'화':2,'수':3,'목':4,'금':5,'토':6};
+const TAG_TONE = {'긴급':'urgent','학급':'sage','업무':'accent','개인':'lilac'};
+const POLL_MS = 30000;
+
+const qs = (s)=>document.querySelector(s);
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ── URL 파싱 (?s= 스크립트ID 또는 ?u= 전체URL) + localStorage 자가복구 ──
+function parseUrlParam(){
+  // ?s= : 표준 exec URL을 스크립트 ID만으로 전달 (QR 짧게). 여기서 전체 URL로 복원.
+  const ms = location.search.match(/[?&]s=([^&]*)/);
+  if(ms && ms[1]) return 'https://script.google.com/macros/s/' + decodeURIComponent(ms[1]) + '/exec';
+  // ?u= : 전체 URL (비표준 URL 호환)
+  const mu = location.search.match(/[?&]u=([^&]*)/);
+  return mu ? decodeURIComponent(mu[1]) : null;
+}
+const IS_MOCK = /[?&]mock=1/.test(location.search);
+let API_URL = '';
+
+// ── 상태 ──
+const state = {
+  settings:{}, todos:[], ddays:[], schedule:null,
+  myGrade:'', myClass:'', schoolName:'',
+  roster:{}, rosterReady:false,
+  memoSheet:{}, memoLocal:{},          // no→content
+  todosTs:0, ddaysTs:0,
+  dirtyTodos:false, dirtyDdays:false,
+  selTag:'', saving:false, _saveTimer:null, memoDirty:{},
+};
+
+// ── API ──
+function apiGet(action, params){
+  const sep = API_URL.includes('?') ? '&' : '?';
+  let u = API_URL + sep + 'action=' + encodeURIComponent(action);
+  if(params) for(const k in params){ if(params[k]!==undefined && params[k]!=='') u += '&' + k + '=' + encodeURIComponent(params[k]); }
+  return fetch(u, {cache:'no-store'}).then(r=>r.text()).then(t=>{ try{return JSON.parse(t);}catch(e){return {};} });
+}
+function apiPost(body){
+  return fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(body) })
+    .then(r=>r.text()).then(t=>{ try{return JSON.parse(t);}catch(e){return {};} });
+}
+
+// ── 상태표시 ──
+let _statusTimer=null;
+function setStatus(msg, cls){
+  const el=qs('#status'); if(!el) return;
+  el.textContent=msg||''; el.className='status'+(cls?' '+cls:'');
+  clearTimeout(_statusTimer);
+  if(msg && cls!=='saving') _statusTimer=setTimeout(()=>{ el.textContent=''; el.className='status'; }, 2600);
+}
+
+// ── 날짜(서울) ──
+function seoulNow(){ try{ return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'})); }catch(e){ return new Date(); } }
+function gradeKey(){ const g=String(state.myGrade||'').trim(); return g ? (/\d+$/.test(g)&&!/학년$/.test(g) ? g+'학년' : g) : ''; }
+
+// ============================================================
+//  렌더
+// ============================================================
+function render(){ renderTodos(); renderDdays(); renderMemos(); renderSchedule(); renderHeader(); }
+
+function renderHeader(){
+  qs('#appTitle').textContent = state.schoolName || '쌤보드';
+  const n=seoulNow();
+  qs('#appSub').textContent = `${n.getMonth()+1}.${n.getDate()}.(${DAY_KO[n.getDay()]}) · 핸드폰 보기`;
+}
+
+function renderTodos(){
+  const el=qs('#todoList'); const t=state.todos||[];
+  const done=t.filter(x=>x.done).length;
+  qs('#todoMeta').textContent = t.length ? `${done}/${t.length}` : '';
+  if(!t.length){ el.innerHTML='<div class="empty">할 일이 없어요 🎉</div>'; return; }
+  el.innerHTML = t.map((x,i)=>{
+    const tone = x.tagTone || TAG_TONE[x.tag] || '';
+    const tag = x.tag ? `<span class="tag ${esc(tone)}">${esc(x.tag)}</span>` : '';
+    const due = x.due ? `<span class="tag due">${esc(x.due)}</span>` : '';
+    const tags = (x.tag||x.due) ? `<div class="tags">${tag}${due}</div>` : '';
+    return `<div class="todo${x.done?' done':''}">
+      <div class="chk${x.done?' on':''}" onclick="toggleTodo(${i})" role="checkbox" aria-checked="${x.done?'true':'false'}"></div>
+      <div class="body"><div class="txt">${esc(x.text)}</div>${tags}</div>
+      <button class="del" onclick="delTodo(${i})" aria-label="삭제">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function renderDdays(){
+  const el=qs('#ddayList'); const list=(state.ddays||[]).slice();
+  qs('#ddayMeta').textContent = list.length ? `${list.length}개` : '';
+  if(!list.length){ el.innerHTML='<div class="empty">D-Day가 없어요</div>'; return; }
+  const today=seoulNow(); today.setHours(0,0,0,0);
+  // 원본 인덱스 보존하며 날짜순 정렬
+  const idx=list.map((d,i)=>i).sort((a,b)=> new Date(list[a].date)-new Date(list[b].date));
+  el.innerHTML = idx.map(i=>{
+    const it=list[i]; const t=new Date(it.date); t.setHours(0,0,0,0);
+    const diff=Math.ceil((t-today)/86400000);
+    const cnt = diff===0?'D-Day':diff>0?`D-${diff}`:`D+${Math.abs(diff)}`;
+    const dd=String(t.getDate()).padStart(2,'0'); const mm=MONTH_ABBR[t.getMonth()];
+    const ds=`${t.getFullYear()}.${String(t.getMonth()+1).padStart(2,'0')}.${dd}`;
+    return `<div class="dday">
+      <div class="mk">${dd}<span class="mm">${mm}</span></div>
+      <div class="info"><div class="nm">${esc(it.name)}</div><div class="dt">${ds}</div></div>
+      <div class="cnt ${diff<0?'past':''}">${cnt}</div>
+      <button class="del" onclick="delDday(${i})" aria-label="삭제">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function renderMemos(){
+  const el=qs('#memoList'); const gk=gradeKey();
+  const _sr=qs('#memoSaveRow'); if(_sr) _sr.style.display='none';   // 학생 목록 있을 때만 저장줄 표시
+  qs('#memoTitle').textContent = '학생 메모' + (gk ? ` · ${state.myClass?gk+' '+state.myClass+'반':gk}` : '');
+  if(!gk){ el.innerHTML='<div class="empty">PC 설정 → 학교 정보에서<br>\'내 학년\'을 먼저 지정해주세요</div>'; qs('#memoMeta').textContent=''; return; }
+  if(!state.rosterReady){ el.innerHTML='<div class="empty">📡 명렬표 불러오는 중...</div>'; return; }
+  let students=(state.roster[gk]||[]).slice();
+  if(state.myClass) students=students.filter(s=>!s.cls || String(s.cls)===String(state.myClass));
+  if(!students.length){ el.innerHTML='<div class="empty">학생 명단이 없어요<br><small>구글시트 \'학생 명렬표\' 탭 확인</small></div>'; qs('#memoMeta').textContent=''; return; }
+  students.sort((a,b)=>Number(a.no)-Number(b.no));
+  const val=(no)=> (no in state.memoLocal) ? state.memoLocal[no] : (state.memoSheet[no]||'');
+  let filled=0; students.forEach(s=>{ if(String(val(String(s.no))).trim()) filled++; });
+  qs('#memoMeta').textContent = `${filled}/${students.length}명`;
+  el.innerHTML = students.map(s=>{
+    const no=String(s.no); const v=val(no); const has=String(v).trim().length>0;
+    const nc = s.gender==='남'?'nm m':s.gender==='여'?'nm f':'nm';
+    return `<div class="memo${has?' has':''}">
+      <span class="no">${esc(no.padStart(2,'0'))}</span>
+      <span class="${nc}">${esc(s.name)}</span>
+      <input type="text" value="${esc(v)}" placeholder="오늘 기록..." enterkeyhint="done"
+             data-no="${esc(no)}" oninput="onMemoInput(this)"/>
+    </div>`;
+  }).join('');
+  if(_sr) _sr.style.display='flex';
+  updateMemoSaveUI();
+}
+
+function renderSchedule(){
+  const el=qs('#schedList'); const ws=state.schedule;
+  const n=seoulNow(); const dayIdx=n.getDay();
+  qs('#schedTitle').textContent = `오늘 시간표 (${DAY_KO[dayIdx]})`;
+  if(!ws || !ws.table || !ws.days || !ws.days.length){ el.innerHTML='<div class="empty">시간표가 없어요</div>'; return; }
+  const todayKey = ws.days.find(d=>DAY_TO_IDX[d]===dayIdx);
+  if(!todayKey){ el.innerHTML='<div class="empty">오늘은 수업이 없어요 🌿</div>'; return; }
+  const periods = (ws.periods&&ws.periods.length)?ws.periods:[];
+  if(!periods.length){ el.innerHTML='<div class="empty">교시 정보가 없어요</div>'; return; }
+  const nowMin=n.getHours()*60+n.getMinutes();
+  let rows='';
+  periods.forEach(p=>{
+    const raw = ws.table[todayKey] && (ws.table[todayKey][p.n]!=null?ws.table[todayKey][p.n]:ws.table[todayKey][String(p.n)]);
+    const cell = normCell(raw);
+    const sm=hhmm(p.start), em=hhmm(p.end);
+    const isNow = sm!=null && em!=null && nowMin>=sm && nowMin<em;
+    const time = (p.start&&p.end)?`${p.start}~${p.end}`:(p.start||'');
+    if(!cell.subject && !cell.content) return; // 빈 교시 생략
+    rows += `<div class="sc${isNow?' now':''}">
+      <div class="pn">${esc(String(p.n))}</div>
+      <div class="info"><div class="subj">${esc(cell.subject)||'&nbsp;'}</div>${cell.content?`<div class="cont">${esc(cell.content)}</div>`:''}</div>
+      ${time?`<div class="tm">${esc(time)}</div>`:''}
+    </div>`;
+  });
+  el.innerHTML = rows || '<div class="empty">오늘 등록된 수업이 없어요</div>';
+}
+function normCell(v){ if(v==null) return {subject:'',content:''}; if(typeof v==='string') return {subject:v,content:''}; if(typeof v==='object') return {subject:typeof v.subject==='string'?v.subject:'', content:typeof v.content==='string'?v.content:''}; return {subject:'',content:''}; }
+function hhmm(s){ if(!s) return null; const m=/^(\d{1,2}):(\d{2})$/.exec(String(s).trim()); return m?parseInt(m[1],10)*60+parseInt(m[2],10):null; }
+
+// ============================================================
+//  편집 — 투두 / D-Day  (설정 블롭 + 타임스탬프)
+// ============================================================
+window.pickTag = function(tag){ state.selTag=tag; document.querySelectorAll('#tagPick button').forEach(b=>b.classList.toggle('on', b.getAttribute('data-tag')===tag)); };
+
+window.addTodo = function(){
+  const inp=qs('#todoInput'); const txt=(inp.value||'').trim(); if(!txt) return;
+  const item={text:txt,done:false};
+  if(state.selTag){ item.tag=state.selTag; item.tagTone=TAG_TONE[state.selTag]||''; }
+  state.todos.push(item); inp.value=''; pickTag('');
+  state.todosTs=Date.now(); state.dirtyTodos=true;
+  renderTodos(); scheduleSave();
+};
+window.toggleTodo = function(i){ if(!state.todos[i]) return; state.todos[i].done=!state.todos[i].done; state.todosTs=Date.now(); state.dirtyTodos=true; renderTodos(); scheduleSave(); };
+window.delTodo = function(i){ if(!state.todos[i]) return; state.todos.splice(i,1); state.todosTs=Date.now(); state.dirtyTodos=true; renderTodos(); scheduleSave(); };
+
+window.addDday = function(){
+  const nm=(qs('#ddayName').value||'').trim(); const dt=(qs('#ddayDate').value||'').trim();
+  if(!nm){ setStatus('이름을 입력하세요','err'); return; }
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){ setStatus('날짜를 선택하세요','err'); return; }
+  state.ddays.push({name:nm,date:dt}); qs('#ddayName').value=''; qs('#ddayDate').value='';
+  state.ddaysTs=Date.now(); state.dirtyDdays=true;
+  renderDdays(); scheduleSave();
+};
+window.delDday = function(i){ if(!state.ddays[i]) return; state.ddays.splice(i,1); state.ddaysTs=Date.now(); state.dirtyDdays=true; renderDdays(); scheduleSave(); };
+
+function scheduleSave(){ clearTimeout(state._saveTimer); state._saveTimer=setTimeout(saveBlob, 700); }
+
+// 저장 직전 시트 전체를 새로 받아 dirty 섹션만 덮어쓰고 나머진 최신값 보존 → 다른 키/섹션 클로버 방지
+async function saveBlob(){
+  if(IS_MOCK){ setStatus('✅ (mock) 저장 안 함','ok'); state.dirtyTodos=state.dirtyDdays=false; return; }
+  if(state.saving){ scheduleSave(); return; }     // 진행 중이면 잠시 후 재시도
+  state.saving=true; setStatus('저장 중...','saving');
+  try{
+    let blob = await apiGet('loadSettings');
+    if(!blob || typeof blob!=='object' || Array.isArray(blob)) blob={};
+    if(state.dirtyTodos){ blob.todos=state.todos; blob.todosUpdatedAt=state.todosTs; }
+    else { if(Array.isArray(blob.todos)){ state.todos=blob.todos; } state.todosTs=Number(blob.todosUpdatedAt||state.todosTs||0); }
+    if(state.dirtyDdays){ blob.ddays=state.ddays; blob.ddaysUpdatedAt=state.ddaysTs; }
+    else { if(Array.isArray(blob.ddays)){ state.ddays=blob.ddays; } state.ddaysTs=Number(blob.ddaysUpdatedAt||state.ddaysTs||0); }
+    const res = await apiPost({action:'saveSettings', settings:blob});
+    state.settings=blob;
+    state.dirtyTodos=false; state.dirtyDdays=false;
+    renderTodos(); renderDdays();
+    setStatus(res&&res.ok?'✅ 저장됨':'⚠️ 저장 실패','ok');
+  }catch(e){ setStatus('⚠️ 저장 실패 — 잠시 후 다시','err'); }
+  finally{ state.saving=false; }
+}
+
+// ============================================================
+//  편집 — 학생 메모 (누가기록 upsert, 학생 행 단위)
+// ============================================================
+// 입력은 로컬에만 모아두고(저장 안 함), '💾 메모 저장' 버튼 누를 때 한 번에 저장 (PC와 동일한 수동 저장 모델)
+window.onMemoInput = function(input){
+  const no=String(input.dataset.no); const val=input.value;
+  state.memoLocal[no]=val;
+  state.memoDirty[no]=true;
+  const item=input.closest('.memo'); if(item) item.classList.toggle('has', val.trim().length>0);
+  updateMemoSaveUI();
+};
+function updateMemoSaveUI(){
+  const n=Object.keys(state.memoDirty).length;
+  const btn=qs('#memoSaveBtn'), info=qs('#memoSaveInfo');
+  if(btn) btn.classList.toggle('dirty', n>0);
+  if(info) info.textContent = n>0 ? ('저장 안 된 변경 '+n+'개') : '✅ 모두 저장됨';
+}
+window.saveMemos = async function(){
+  const gk=gradeKey();
+  if(!gk){ setStatus('학년이 설정되지 않았어요','err'); return; }
+  const nos=Object.keys(state.memoDirty);
+  if(!nos.length){ setStatus('저장할 변경이 없어요','ok'); return; }
+  // 비어있지 않은 메모만 (Apps Script는 빈 내용을 무시)
+  const data={}; let any=false;
+  nos.forEach(no=>{ const c=String(state.memoLocal[no]||'').trim(); if(c){ data[no]=c; any=true; } });
+  if(IS_MOCK){ state.memoDirty={}; updateMemoSaveUI(); setStatus('✅ (mock) 저장됨','ok'); return; }
+  if(!any){ setStatus('빈 메모는 저장되지 않아요 (PC에서 비우기)','err'); state.memoDirty={}; updateMemoSaveUI(); return; }
+  const btn=qs('#memoSaveBtn'); if(btn){ btn.disabled=true; btn.textContent='저장 중...'; }
+  setStatus('메모 저장 중...','saving');
+  try{
+    const res=await apiPost({ data:{ [gk]: data }, cls: state.myClass||'' });
+    if(res && res.ok){
+      Object.keys(data).forEach(no=>{ state.memoSheet[no]=data[no]; });
+      state.memoDirty={};
+      setStatus('✅ 메모 저장됨','ok');
+    } else setStatus('⚠️ 메모 저장 실패','err');
+  }catch(e){ setStatus('⚠️ 메모 저장 실패','err'); }
+  finally{ if(btn){ btn.disabled=false; btn.textContent='💾 메모 저장'; } updateMemoSaveUI(); }
+};
+
+// ============================================================
+//  로드 / 폴링
+// ============================================================
+async function loadAll(){
+  if(IS_MOCK){ loadMock(); render(); setStatus('🧪 mock 모드','ok'); return; }
+  setStatus('불러오는 중...','saving');
+  try{
+    const [settings, roster] = await Promise.all([ apiGet('loadSettings'), apiGet('roster') ]);
+    applySettings(settings);
+    if(roster && typeof roster==='object' && !roster.error){ state.roster=roster; state.rosterReady=true; }
+    render();
+    await loadMemos();
+    setStatus('✅ 불러왔어요','ok');
+  }catch(e){ setStatus('⚠️ 연결 실패 — URL을 확인하세요','err'); }
+}
+
+function applySettings(s){
+  if(!s || typeof s!=='object' || Array.isArray(s)) s={};
+  state.settings=s;
+  if(Array.isArray(s.todos)) state.todos=s.todos;
+  if(Array.isArray(s.ddays)) state.ddays=s.ddays;
+  state.todosTs=Number(s.todosUpdatedAt||0); state.ddaysTs=Number(s.ddaysUpdatedAt||0);
+  state.schedule = s.weeklySchedule || null;
+  state.myGrade = (s.myGrade!=null?String(s.myGrade):'').trim();
+  state.myClass = (s.myClass!=null?String(s.myClass):'').trim();
+  state.schoolName = (s.schoolName||'').toString();
+}
+
+async function loadMemos(){
+  const gk=gradeKey(); if(!gk) return;
+  try{
+    const data = await apiGet('read', {grade:gk, cls: state.myClass||''});
+    state.memoSheet = pickGradeObj(data, gk);
+    renderMemos();
+  }catch(e){}
+}
+function pickGradeObj(data, gk){
+  if(!data || typeof data!=='object') return {};
+  if(data[gk] && typeof data[gk]==='object') return data[gk];
+  // fallback: 첫 객체 값
+  for(const k in data){ if(data[k] && typeof data[k]==='object') return data[k]; }
+  return {};
+}
+
+async function poll(){
+  if(IS_MOCK) return;
+  if(state.saving) return;
+  try{
+    // (가) 투두·D-Day 블롭 타임스탬프
+    if(!state.dirtyTodos && !state.dirtyDdays){
+      const s = await apiGet('loadSettings');
+      if(s && typeof s==='object' && !Array.isArray(s)){
+        const sTodo=Number(s.todosUpdatedAt||0);
+        if(sTodo>state.todosTs && Array.isArray(s.todos)){ state.todos=s.todos; state.todosTs=sTodo; renderTodos(); }
+        const sDday=Number(s.ddaysUpdatedAt||0);
+        if(sDday>state.ddaysTs && Array.isArray(s.ddays)){ state.ddays=s.ddays; state.ddaysTs=sDday; renderDdays(); }
+        // 시간표/학교명 등도 가볍게 갱신
+        if(s.weeklySchedule!==undefined){ state.schedule=s.weeklySchedule||null; renderSchedule(); }
+        if(s.schoolName){ state.schoolName=String(s.schoolName); }
+        const ng=(s.myGrade!=null?String(s.myGrade):'').trim(), nc=(s.myClass!=null?String(s.myClass):'').trim();
+        if(ng!==state.myGrade || nc!==state.myClass){ state.myGrade=ng; state.myClass=nc; renderMemos(); loadMemos(); }
+      }
+    }
+    // (나) 메모 흡수 (입력 중 인풋만 보존)
+    await pollMemos();
+  }catch(e){}
+}
+async function pollMemos(){
+  const gk=gradeKey(); if(!gk) return;
+  const active=document.activeElement;
+  const activeNo = (active && active.dataset && active.dataset.no) ? String(active.dataset.no) : null;
+  try{
+    const data = await apiGet('read', {grade:gk, cls: state.myClass||''});
+    const sheet = pickGradeObj(data, gk);
+    if(JSON.stringify(sheet)!==JSON.stringify(state.memoSheet)){
+      state.memoSheet=sheet;
+      // 시트에 반영된(=폰이 저장 성공한) 값은 로컬 보류 해제 → 시트값 따름. 단 입력 중인 인풋은 보존.
+      for(const no in state.memoLocal){ if(no!==activeNo && String(state.memoLocal[no]).trim()===String(sheet[no]||'').trim()) delete state.memoLocal[no]; }
+      renderMemosPreserveFocus(activeNo);
+    }
+  }catch(e){}
+}
+function renderMemosPreserveFocus(activeNo){
+  if(activeNo==null){ renderMemos(); return; }
+  // 포커스 인풋 값/커서 보존
+  const inp=document.querySelector('.memo input[data-no="'+CSS.escape(activeNo)+'"]');
+  const selStart=inp?inp.selectionStart:null, selEnd=inp?inp.selectionEnd:null, v=inp?inp.value:null;
+  renderMemos();
+  const inp2=document.querySelector('.memo input[data-no="'+CSS.escape(activeNo)+'"]');
+  if(inp2 && v!=null){ inp2.value=v; try{ inp2.focus(); inp2.setSelectionRange(selStart,selEnd); }catch(e){} }
+}
+
+// ============================================================
+//  연결 / 부트스트랩
+// ============================================================
+window.manualRefresh = function(){
+  const b=qs('#refreshBtn'); b.classList.add('spin');
+  Promise.resolve(loadAll()).finally(()=>setTimeout(()=>b.classList.remove('spin'), 600));
+};
+window.connectManual = function(){
+  const v=(qs('#urlInput').value||'').trim();
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/.+/.test(v) && !/\/exec(\?|$)/.test(v)){
+    qs('#connectMsg').textContent='올바른 Apps Script URL이 아니에요 (…/exec)'; return;
+  }
+  localStorage.setItem(STORAGE_KEY, v);
+  location.href = location.pathname + '?u=' + v;   // ?u= 남겨 자가복구 보장
+};
+window.disconnect = function(){
+  if(!confirm('이 기기에서 연결을 끊을까요? (다시 QR 스캔하면 재연결돼요)')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.href = location.pathname;
+};
+
+function showConnect(prefill){
+  qs('#connect').classList.add('show'); qs('#app').style.display='none';
+  if(prefill) qs('#urlInput').value=prefill;
+}
+function showApp(){ qs('#connect').classList.remove('show'); qs('#app').style.display='block'; }
+
+function boot(){
+  if(IS_MOCK){ showApp(); loadAll(); return; }
+  const fromUrl = parseUrlParam();
+  if(fromUrl){ API_URL=fromUrl; localStorage.setItem(STORAGE_KEY, fromUrl); }
+  else { API_URL = localStorage.getItem(STORAGE_KEY) || ''; }
+  if(!API_URL){ showConnect(''); return; }
+  showApp(); loadAll();
+  setInterval(poll, POLL_MS);
+  // 앱 복귀 시 즉시 새로고침
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) loadAll(); });
+}
+
+// ── mock 데이터 (레이아웃 단독 테스트: ?mock=1) ──
+function loadMock(){
+  state.schoolName='해맑은초등학교';
+  state.myGrade='3'; state.myClass='2'; state.rosterReady=true;
+  state.todos=[
+    {text:'주간학습안내 인쇄', done:false, tag:'업무', tagTone:'accent'},
+    {text:'학부모 상담 전화 (5명)', done:false, tag:'긴급', tagTone:'urgent', due:'~금'},
+    {text:'독서록 검사', done:true, tag:'학급', tagTone:'sage'},
+    {text:'출장 복명서 제출', done:false},
+  ];
+  state.ddays=[
+    {name:'현장체험학습', date:isoPlus(5)},
+    {name:'학예회', date:isoPlus(23)},
+    {name:'1학기 개학', date:isoPlus(-3)},
+  ];
+  state.roster={'3학년':[
+    {no:'1',cls:'2',name:'김민준',gender:'남'},{no:'2',cls:'2',name:'이서연',gender:'여'},
+    {no:'3',cls:'2',name:'박도윤',gender:'남'},{no:'4',cls:'2',name:'최지우',gender:'여'},
+    {no:'5',cls:'2',name:'정하준',gender:'남'},{no:'6',cls:'1',name:'다른반학생',gender:'여'},
+  ]};
+  state.memoSheet={'1':'발표 잘함 👍','3':'친구와 다툼 — 화해 지도'};
+  const n=seoulNow(); const tk=DAY_KO[n.getDay()];
+  const days=['월','화','수','목','금']; if(!days.includes(tk)) days.push(tk); // mock: 오늘이 주말이어도 시간표 카드 확인되게
+  state.schedule={ weekLabel:'5월 4주', days:days,
+    periods:[{n:1,start:'09:00',end:'09:40'},{n:2,start:'09:50',end:'10:30'},{n:3,start:'10:40',end:'11:20'},{n:4,start:'11:30',end:'12:10'},{n:5,start:'13:00',end:'13:40'}],
+    table:{ [tk]:{ '1':{subject:'국어',content:'재미있는 이야기 (12-15쪽)'}, '2':{subject:'수학',content:'덧셈과 뺄셈 (90-91쪽)'}, '3':{subject:'통합',content:'우리 동네'}, '4':{subject:'체육',content:'피구'}, '5':{subject:'음악',content:'리코더'} } }
+  };
+}
+function isoPlus(d){ const t=seoulNow(); t.setDate(t.getDate()+d); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; }
+
+document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+</body>
+</html>
