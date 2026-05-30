@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 쌤보드 모바일 미니 대시보드 ver1.0 (PC 대시보드 v2.4 연동) — 투두/D-Day/학생메모 양방향 + 오늘 시간표.
+<!-- 쌤보드 모바일 미니 대시보드 ver1.1 (PC 대시보드 v2.4 연동) — 투두/D-Day/학생메모 양방향 (시간표 카드 제거).
      데이터: 각 교사의 Apps Script URL(?u=). Apps Script 무수정 (loadSettings/roster/read GET + saveSettings/누가기록 POST). -->
 <html lang="ko">
 <head>
@@ -23,6 +23,7 @@
     --sky:#6FA9C8; --sky-soft:#D6E7F0; --sky-ink:#2E5C76;
     --lilac:#9F8DC0; --lilac-soft:#E5DEEF; --lilac-ink:#4F3E72;
     --urgent:#C84545; --urgent-soft:#F7D9D9;
+    --field-focus:#ffffff;   /* 입력창 포커스 배경 (라이트=흰색, 다크=어두움) — 글자색은 var(--text)로 항상 대비 확보 */
     --r:16px; --r-sm:11px;
     --shadow:0 1px 3px rgba(40,30,15,.06), 0 8px 20px -10px rgba(40,30,15,.12);
     --font:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',system-ui,-apple-system,sans-serif;
@@ -105,7 +106,7 @@
   .memo .nm{font-size:13px;font-weight:600;flex:0 0 auto;min-width:50px;max-width:74px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .memo .nm.m{color:var(--sky-ink);} .memo .nm.f{color:var(--rose-ink);}
   .memo input{flex:1;min-width:0;border:1px solid var(--border);border-radius:9px;padding:7px 9px;background:var(--card-soft);font-size:14px;color:var(--text);}
-  .memo input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  .memo input:focus{outline:none;border-color:var(--accent);background:var(--field-focus);box-shadow:0 0 0 3px var(--accent-soft);}
   .memo-save-row{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid var(--card-soft);}
   #memoSaveInfo{flex:1;min-width:0;font-size:11.5px;color:var(--accent-ink);font-weight:600;}
   .memo-save-btn{flex:0 0 auto;background:var(--card-soft);border:1px solid var(--border);color:var(--text-soft);font-weight:800;border-radius:10px;padding:9px 18px;font-size:14px;transition:.15s;}
@@ -114,20 +115,12 @@
   .memo-save-btn:disabled{opacity:.6;}
 
   /* ── 시간표 ── */
-  .sc{display:flex;align-items:baseline;gap:10px;padding:8px 2px;border-bottom:1px solid var(--card-soft);}
-  .sc:last-child{border-bottom:none;}
-  .sc .pn{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--card-soft);border:1px solid var(--border);color:var(--text-soft);font-size:12px;font-weight:800;display:grid;place-items:center;align-self:center;}
-  .sc.now .pn{background:var(--accent);border-color:var(--accent);color:#fff;}
-  .sc .info{flex:1;min-width:0;}
-  .sc .subj{font-size:14px;font-weight:700;}
-  .sc .cont{font-size:12px;color:var(--text-soft);word-break:break-word;}
-  .sc .tm{flex:0 0 auto;font-size:10.5px;color:var(--text-mute);font-variant-numeric:tabular-nums;align-self:center;}
 
   /* ── 추가 입력 행 ── */
   .addrow{display:flex;gap:7px;margin-top:11px;}
   .addrow input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--card-soft);}
   .addrow input[type=date]{border:1px solid var(--border);border-radius:10px;padding:9px 10px;background:var(--card-soft);color:var(--text);}
-  .addrow input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  .addrow input:focus{outline:none;border-color:var(--accent);background:var(--field-focus);box-shadow:0 0 0 3px var(--accent-soft);}
   .addrow .go{flex:0 0 auto;background:var(--accent);color:#fff;font-weight:800;border-radius:10px;padding:0 16px;font-size:15px;}
   .addrow .go:active{background:var(--accent-ink);}
   .tagpick{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
@@ -146,7 +139,7 @@
   #connect .box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
   #connect label{font-size:12.5px;font-weight:700;color:var(--text-soft);display:block;margin-bottom:7px;}
   #connect input{width:100%;border:1px solid var(--border);border-radius:11px;padding:12px;background:var(--card-soft);font-size:14px;}
-  #connect input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  #connect input:focus{outline:none;border-color:var(--accent);background:var(--field-focus);box-shadow:0 0 0 3px var(--accent-soft);}
   #connect .go{width:100%;margin-top:11px;background:var(--accent);color:#fff;font-weight:800;border-radius:12px;padding:13px;font-size:15.5px;}
   #connect .go:active{background:var(--accent-ink);}
   #connect .tip{font-size:12px;color:var(--text-mute);margin-top:14px;line-height:1.6;text-align:center;}
@@ -159,7 +152,7 @@
     :root{
       --bg:#1A1714; --card:#262019; --card-soft:#2E2720; --border:#3A3128; --border-strong:#4A3F33;
       --text:#F2EBE0; --text-soft:#C3B7A6; --text-mute:#8A7E6E; --accent:#F0A330; --accent-ink:#FBD89B; --accent-soft:#43331C;
-      --sage-soft:#2C3320; --sage-ink:#C2D8A2; --rose-soft:#3A2326; --rose-ink:#F2B5BB; --sky-soft:#22323C; --sky-ink:#A5D2E4; --lilac-soft:#2E2740; --lilac-ink:#D4C7E8; --urgent:#E8736F; --urgent-soft:#3A2422;
+      --sage-soft:#2C3320; --sage-ink:#C2D8A2; --rose-soft:#3A2326; --rose-ink:#F2B5BB; --sky-soft:#22323C; --sky-ink:#A5D2E4; --lilac-soft:#2E2740; --lilac-ink:#D4C7E8; --urgent:#E8736F; --urgent-soft:#3A2422; --field-focus:#0f0d0b;
     }
     .tag.accent{background:#43331C;color:#FBD89B;}
   }
@@ -237,11 +230,6 @@
       </div>
     </div>
 
-    <!-- 오늘 시간표 -->
-    <div class="card">
-      <div class="card-h"><span class="ic">🗓</span><h2 id="schedTitle">오늘 시간표</h2></div>
-      <div id="schedList"></div>
-    </div>
 
     <div class="footlink"><button onclick="disconnect()">다른 시트에 연결 / 연결 끊기</button></div>
   </div>
@@ -278,7 +266,7 @@ let API_URL = '';
 
 // ── 상태 ──
 const state = {
-  settings:{}, todos:[], ddays:[], schedule:null,
+  settings:{}, todos:[], ddays:[],
   myGrade:'', myClass:'', schoolName:'',
   roster:{}, rosterReady:false,
   memoSheet:{}, memoLocal:{},          // no→content
@@ -315,7 +303,7 @@ function gradeKey(){ const g=String(state.myGrade||'').trim(); return g ? (/\d+$
 // ============================================================
 //  렌더
 // ============================================================
-function render(){ renderTodos(); renderDdays(); renderMemos(); renderSchedule(); renderHeader(); }
+function render(){ renderTodos(); renderDdays(); renderMemos(); renderHeader(); }
 
 function renderHeader(){
   qs('#appTitle').textContent = state.schoolName || '쌤보드';
@@ -390,34 +378,6 @@ function renderMemos(){
   updateMemoSaveUI();
 }
 
-function renderSchedule(){
-  const el=qs('#schedList'); const ws=state.schedule;
-  const n=seoulNow(); const dayIdx=n.getDay();
-  qs('#schedTitle').textContent = `오늘 시간표 (${DAY_KO[dayIdx]})`;
-  if(!ws || !ws.table || !ws.days || !ws.days.length){ el.innerHTML='<div class="empty">시간표가 없어요</div>'; return; }
-  const todayKey = ws.days.find(d=>DAY_TO_IDX[d]===dayIdx);
-  if(!todayKey){ el.innerHTML='<div class="empty">오늘은 수업이 없어요 🌿</div>'; return; }
-  const periods = (ws.periods&&ws.periods.length)?ws.periods:[];
-  if(!periods.length){ el.innerHTML='<div class="empty">교시 정보가 없어요</div>'; return; }
-  const nowMin=n.getHours()*60+n.getMinutes();
-  let rows='';
-  periods.forEach(p=>{
-    const raw = ws.table[todayKey] && (ws.table[todayKey][p.n]!=null?ws.table[todayKey][p.n]:ws.table[todayKey][String(p.n)]);
-    const cell = normCell(raw);
-    const sm=hhmm(p.start), em=hhmm(p.end);
-    const isNow = sm!=null && em!=null && nowMin>=sm && nowMin<em;
-    const time = (p.start&&p.end)?`${p.start}~${p.end}`:(p.start||'');
-    if(!cell.subject && !cell.content) return; // 빈 교시 생략
-    rows += `<div class="sc${isNow?' now':''}">
-      <div class="pn">${esc(String(p.n))}</div>
-      <div class="info"><div class="subj">${esc(cell.subject)||'&nbsp;'}</div>${cell.content?`<div class="cont">${esc(cell.content)}</div>`:''}</div>
-      ${time?`<div class="tm">${esc(time)}</div>`:''}
-    </div>`;
-  });
-  el.innerHTML = rows || '<div class="empty">오늘 등록된 수업이 없어요</div>';
-}
-function normCell(v){ if(v==null) return {subject:'',content:''}; if(typeof v==='string') return {subject:v,content:''}; if(typeof v==='object') return {subject:typeof v.subject==='string'?v.subject:'', content:typeof v.content==='string'?v.content:''}; return {subject:'',content:''}; }
-function hhmm(s){ if(!s) return null; const m=/^(\d{1,2}):(\d{2})$/.exec(String(s).trim()); return m?parseInt(m[1],10)*60+parseInt(m[2],10):null; }
 
 // ============================================================
 //  편집 — 투두 / D-Day  (설정 블롭 + 타임스탬프)
@@ -530,7 +490,6 @@ function applySettings(s){
   if(Array.isArray(s.todos)) state.todos=s.todos;
   if(Array.isArray(s.ddays)) state.ddays=s.ddays;
   state.todosTs=Number(s.todosUpdatedAt||0); state.ddaysTs=Number(s.ddaysUpdatedAt||0);
-  state.schedule = s.weeklySchedule || null;
   state.myGrade = (s.myGrade!=null?String(s.myGrade):'').trim();
   state.myClass = (s.myClass!=null?String(s.myClass):'').trim();
   state.schoolName = (s.schoolName||'').toString();
@@ -565,7 +524,6 @@ async function poll(){
         const sDday=Number(s.ddaysUpdatedAt||0);
         if(sDday>state.ddaysTs && Array.isArray(s.ddays)){ state.ddays=s.ddays; state.ddaysTs=sDday; renderDdays(); }
         // 시간표/학교명 등도 가볍게 갱신
-        if(s.weeklySchedule!==undefined){ state.schedule=s.weeklySchedule||null; renderSchedule(); }
         if(s.schoolName){ state.schoolName=String(s.schoolName); }
         const ng=(s.myGrade!=null?String(s.myGrade):'').trim(), nc=(s.myClass!=null?String(s.myClass):'').trim();
         if(ng!==state.myGrade || nc!==state.myClass){ state.myGrade=ng; state.myClass=nc; renderMemos(); loadMemos(); }
@@ -660,12 +618,6 @@ function loadMock(){
     {no:'5',cls:'2',name:'정하준',gender:'남'},{no:'6',cls:'1',name:'다른반학생',gender:'여'},
   ]};
   state.memoSheet={'1':'발표 잘함 👍','3':'친구와 다툼 — 화해 지도'};
-  const n=seoulNow(); const tk=DAY_KO[n.getDay()];
-  const days=['월','화','수','목','금']; if(!days.includes(tk)) days.push(tk); // mock: 오늘이 주말이어도 시간표 카드 확인되게
-  state.schedule={ weekLabel:'5월 4주', days:days,
-    periods:[{n:1,start:'09:00',end:'09:40'},{n:2,start:'09:50',end:'10:30'},{n:3,start:'10:40',end:'11:20'},{n:4,start:'11:30',end:'12:10'},{n:5,start:'13:00',end:'13:40'}],
-    table:{ [tk]:{ '1':{subject:'국어',content:'재미있는 이야기 (12-15쪽)'}, '2':{subject:'수학',content:'덧셈과 뺄셈 (90-91쪽)'}, '3':{subject:'통합',content:'우리 동네'}, '4':{subject:'체육',content:'피구'}, '5':{subject:'음악',content:'리코더'} } }
-  };
 }
 function isoPlus(d){ const t=seoulNow(); t.setDate(t.getDate()+d); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; }
 
