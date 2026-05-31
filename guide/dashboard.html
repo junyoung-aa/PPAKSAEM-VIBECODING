@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>쌤보드 ver2.3 설정 가이드</title>
-<meta name="description" content="쌤보드 v2.3 설치·설정 가이드 — 13챕터 허브형. 시간표 페이지·디자인 패널·AI 기능·캘린더 양방향 편집 포함.">
+<title>쌤보드 ver2.4 설정 가이드</title>
+<meta name="description" content="쌤보드 v2.4 설치·설정 가이드 — 14챕터 허브형. 핸드폰 연동·시간표 페이지·디자인 패널·AI 기능·캘린더 양방향 편집 포함.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -364,7 +364,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
   <a class="topbar-back" href="../index.html">← 메인으로</a>
   <span class="topbar-sep">/</span>
   <span class="topbar-title">쌤보드 설정 가이드</span>
-  <span class="topbar-badge">ver 2.3</span>
+  <span class="topbar-badge">ver 2.4</span>
 </div>
 
 <!-- ═══════════ HUB VIEW ═══════════ -->
@@ -372,10 +372,11 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
   <div class="container">
     <div class="hub-cover">
       <div class="hub-cover-icon">🖥️</div>
-      <div class="hub-cover-badge">SSAMBOARD · v2.3</div>
+      <div class="hub-cover-badge">SSAMBOARD · v2.4</div>
       <div class="hub-cover-title">쌤보드 설정 가이드</div>
       <div class="hub-cover-sub">팍쌤의 바이브코딩 저장소</div>
       <div class="hub-cover-tags">
+        <span class="hub-cover-tag">📱 핸드폰 연동</span>
         <span class="hub-cover-tag">🗓 시간표 페이지</span>
         <span class="hub-cover-tag">🪄 AI 시간표 추출</span>
         <span class="hub-cover-tag">📅 캘린더 양방향</span>
@@ -534,6 +535,19 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
           <div class="hub-card-meta">
             <span class="hub-card-chip time">~3분</span>
             <span class="hub-card-chip">텍스트</span>
+          </div>
+        </a>
+        <a href="#ch-mobile" class="hub-card" data-chapter="ch-mobile">
+          <div class="new-dot"></div>
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">📱</div>
+          <div class="hub-card-icon">📱</div>
+          <div class="hub-card-title">핸드폰 연동</div>
+          <div class="hub-card-sub">투두·D-Day·메모 폰에서 양방향</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~5분</span>
+            <span class="hub-card-chip star">NEW v2.4</span>
+            <span class="hub-card-chip">QR 스캔</span>
           </div>
         </a>
       </div>
@@ -2217,6 +2231,76 @@ function sheetToCsv(sh, rowsOverride){
       <div class="chapter-nav">
         <a href="#ch10" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>10장. 🗓 시간표</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch-mobile" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>📱 핸드폰 연동</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH-MOBILE (NEW v2.4) ═══════════ -->
+<div class="view" data-view="ch-mobile">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header new">
+        <div class="chapter-num">📱</div>
+        <div>
+          <div class="chapter-label">NEW · v2.4</div>
+          <div class="chapter-title">핸드폰 연동</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">📱 폰에서 할 수 있는 것</div>
+        <ul class="bullets">
+          <li><span class="bold">✅ 투두</span> — 체크·추가, 긴급/학급/업무/개인 태그 필터</li>
+          <li><span class="bold">📅 D-Day</span> — 남은 날짜 카운트 확인</li>
+          <li><span class="bold">📝 학생 메모</span> — 학생별 누가기록 열람·작성</li>
+        </ul>
+        <p class="mt8">PC ↔ 폰 <span class="accent">양방향 동기화</span> — 한쪽에서 수정하면 약 30초 후 다른 쪽에 반영됩니다.</p>
+      </div>
+
+      <div class="box box-warn mt16">
+        <div class="box-title">⚠️ 사전 조건</div>
+        구글시트 연동(<a href="#ch5" class="accent">5장</a> Apps Script 배포)이 완료된 상태여야 핸드폰 연동을 사용할 수 있습니다.
+      </div>
+
+      <div class="section-title mt16">1회 연결 방법</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">대시보드 우측 상단 ⚙ 설정 → <span class="accent">📱 모바일</span> 탭으로 이동</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">화면에 표시된 <span class="red">QR 코드</span>를 폰 기본 카메라 앱으로 스캔</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">열린 페이지에서 <span class="accent">"홈 화면에 추가"</span> → 이후로는 앱처럼 아이콘으로 접속</div>
+        </li>
+      </ol>
+
+      <div class="section-title mt16">사용법</div>
+      <p>홈 화면 아이콘으로 실행하면 투두·D-Day·학생 메모 3개 카드가 뜹니다.</p>
+      <ul class="bullets mt8">
+        <li><span class="bold">✅ 투두</span> — 항목을 탭하면 체크/해제. 오른쪽 상단에서 태그 필터로 종류별로 볼 수 있어요.</li>
+        <li><span class="bold">📅 D-Day</span> — 등록된 D-Day 카드가 날짜 순으로 표시됩니다.</li>
+        <li><span class="bold">📝 학생 메모</span> — 학생 이름을 탭하면 오늘의 누가기록 입력칸이 열립니다. 작성 후 반드시 <span class="red">💾 메모 저장</span> 버튼을 눌러야 저장됩니다. (자동 저장 X)</li>
+      </ul>
+
+      <div class="box box-tip mt16">
+        <div class="box-title">🔒 보안 주의</div>
+        <p>설정의 QR 코드와 URL에는 <span class="red">Apps Script exec URL</span>이 포함되어 있어 전체 설정에 접근할 수 있습니다.</p>
+        <ul class="bullets mt8">
+          <li>학생이나 외부인에게 QR·링크를 공유하지 마세요.</li>
+          <li>내 폰 홈 화면에만 추가해 두세요.</li>
+        </ul>
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch-mobile">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch11" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>11장. ✅ 할 일 & D-Day</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
         <a href="#ch12" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>12장. 💾 설정 백업</span></a>
       </div>
     </div>
@@ -2298,7 +2382,7 @@ function sheetToCsv(sh, rowsOverride){
 
       <div class="progress-row"><button class="complete-btn" data-chapter="ch12">○ 완료로 표시</button></div>
       <div class="chapter-nav">
-        <a href="#ch11" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>11장. ✅ 할 일 & D-Day</span></a>
+        <a href="#ch-mobile" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>📱 핸드폰 연동</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
         <a href="#ch13" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>13장. FAQ</span></a>
       </div>
@@ -2453,7 +2537,7 @@ function sheetToCsv(sh, rowsOverride){
       <div class="box box-new mt8">
         <div class="box-title">🚀 3줄 요약</div>
         <ol class="bullets" style="padding-left:18px;">
-          <li>기존 <span class="mono">교사용 바탕화면 대시보드_ver1.0.0.html</span>을 새 <span class="mono red">쌤보드_ver2.3.html</span>로 교체합니다.</li>
+          <li>기존 <span class="mono">쌤보드_ver2.3.html</span>을 새 <span class="mono red">쌤보드_ver2.4.html</span>로 교체합니다.</li>
           <li>Lively Wallpaper에서 배경화면을 <span class="accent">새 HTML 파일로 다시 등록</span>합니다.</li>
           <li><span class="mono">대시보드_설정.json</span> 파일이 같은 폴더에 있다면, <span class="accent">기존 설정이 모두 자동 복원</span>됩니다.</li>
         </ol>
@@ -2462,36 +2546,17 @@ function sheetToCsv(sh, rowsOverride){
       <p>이미 기존 버전을 잘 쓰고 있었다면 1장부터 다시 할 필요 없어요. <span class="accent">HTML 파일 하나만 교체하면 끝</span>이고, 기존 설정은 모두 자동으로 복원됩니다.</p>
 
       <div class="box box-new mt8">
-        <div class="box-title">🆕 v2.3에서 달라진 점 핵심 요약</div>
+        <div class="box-title">🆕 v2.4에서 달라진 점 핵심 요약</div>
         <ul class="bullets">
-          <li><span class="bold">🗓 시간표 페이지 신설</span> — AI가 주간학습안내 이미지를 자동으로 표로 변환. 사용법은 <a href="#ch10" class="accent">10장</a> 참고.</li>
-          <li><span class="bold">🏷️ '내 반' 입력 + 누가기록 시트 '반' 컬럼</span> — 큰 학교(한 학년 다반) 학생 번호 충돌 방지. <a href="#ch4" class="accent">4-4</a> + <a href="#ch6" class="accent">6-1</a> 참고. <span class="accent">작은 학교(한 학년 한 반) 사용자는 신경 안 써도 됨.</span></li>
-          <li><span class="bold">📅 캘린더 안정성 강화</span> — 일정 삭제 시 "찾을 수 없습니다" 에러 해결, 5분 캐시로 로딩 속도 개선. (Apps Script 재배포 필수)</li>
-          <li><span class="bold">📝 학생 메모 자정 자동 초기화</span> — "오늘 기록" 의미를 살리기 위해 자정에 자동 비워짐. 저장 누른 메모만 영구. <a href="#ch13" class="accent">13장 FAQ</a> 참고.</li>
-          <li><span class="bold">🎨 디자인 정돈</span> — 시간표·학생 메모·AI 모달 디자인 업그레이드, 명렬표 토글 3개(우리 반/우리 학년/전교생), AI 모델 선택 UI 제거.</li>
+          <li><span class="bold">📱 핸드폰 연동 신설 ★</span> — 설정에서 QR 코드 스캔 1번으로 폰에서 투두·D-Day·학생 메모를 양방향 편집. 홈 화면에 추가하면 앱처럼 사용. 사용법은 <a href="#ch-mobile" class="accent">핸드폰 연동 챕터</a> 참고.</li>
+          <li><span class="bold">📊 구글시트 연동 탭 개편</span> — 설정 모달에 '📱 모바일' 탭이 신설돼 QR이 여기에 표시됨. 기존 구글시트 연동 설정은 그대로.</li>
+          <li><span class="bold">📐 설정 탭 UI 정리</span> — 탭 이름이 단축돼 한 줄에 표시됨. 기능은 동일.</li>
         </ul>
       </div>
 
-      <div class="section-title mt16">⚠️ Apps Script 코드도 업데이트 후 재배포 필요</div>
-      <p>구글 캘린더 <span class="accent">양방향 편집</span> + v2.3 픽스(<span class="accent">반 컬럼 지원</span>, <span class="accent">캘린더 삭제 quirk 우회</span>)를 쓰려면 Apps Script 코드도 새 버전으로 업데이트해야 합니다. <span class="red">기존 사용자도 반드시 1회 재배포</span>하세요.</p>
-
-      <div class="box box-tip">
-        <div class="box-title">💡 Apps Script 업데이트 절차</div>
-        <ol class="bullets" style="padding-left:18px;">
-          <li>구글 시트 → <span class="mono">확장 프로그램 → Apps Script</span> 열기</li>
-          <li>기존 코드 전체를 새 Apps Script 코드로 교체 (아래에서 복사)</li>
-          <li>오른쪽 위 <span class="accent">"배포 → 배포 관리"</span> 클릭 → 기존 배포 옆 ✏️ 클릭 → <span class="accent">버전: 새 버전</span> 선택 → "배포"</li>
-          <li>웹 앱 URL은 그대로 유지되므로 대시보드 설정은 손댈 필요 없음</li>
-        </ol>
-        <p class="mt8">⚠️ 캘린더 권한 에러가 뜨면 Apps Script 편집기에서 <span class="mono">처음시작_권한부여</span> 함수를 한 번 직접 실행해 권한 dialog를 열고 "허용"을 눌러주세요. (한 번만 하면 됨)</p>
-      </div>
-
-      <div class="code-block mt16">
-        <div class="code-block-bar">
-          <span class="code-block-label">📄 Apps Script 코드 (Code.gs)</span>
-          <button class="code-copy-btn js-as-copy" id="copyAppsScriptBtnMig" type="button">📋 복사</button>
-        </div>
-        <pre><code class="js-as-display" id="appsScriptCodeDisplayMig">코드 로딩 중...</code></pre>
+      <div class="box box-tip mt8">
+        <div class="box-title">✅ v2.4는 Apps Script 재배포가 필요 없어요!</div>
+        <p>이번 업데이트는 <span class="accent">기존 Apps Script 코드를 그대로 사용</span>합니다. 재배포하지 않아도 모든 기능이 정상 동작하고, 기존 URL도 변경 없이 유지됩니다.</p>
       </div>
 
       <div class="chapter-nav">
