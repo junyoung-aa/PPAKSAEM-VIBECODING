@@ -94,13 +94,13 @@
           ]
         }
       ],
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
+      "guide_url": "/guide/dashboard.html",
+      "demo_url": "/demo/dashboard.html"
     },
     {
       "id": "teacher-class",
       "title": "쌤보드 클래스",
-      "description": "학생 자리배치(랜덤·짝꿍·모둠), 칭찬 포인트, 1인 1역할, 학생 뽑기(돌림판·카드·슬롯)까지 한 화면에! 쌤보드와 함께 듀얼모니터 2번 화면에 띄우거나 단독으로도 쓸 수 있어요.",
+      "description": "학생 자리배치도, 포인트, 1인 1역, 학생 뽑기까지 한 화면에! 쌤보드와 함께 듀얼모니터 2번 화면에 띄우거나 단독으로도 쓸 수 있어요.",
       "status": "completed",
       "tags": [
         "자리배치",
@@ -110,10 +110,10 @@
       "google_form_url": "https://forms.gle/omGGf5G74JH1w3iG8",
       "site_url": "",
       "download_url": "",
-      "thumbnail": "",
+      "thumbnail": "/images/pasted-image-1782042698521.png",
       "version": "1.0",
       "release_date": "2026-06-21",
-      "order": 2.5,
+      "order": 2,
       "changelog": [
         {
           "version": "1.0",
@@ -198,8 +198,8 @@
           ]
         }
       ],
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
