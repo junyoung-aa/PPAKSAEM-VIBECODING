@@ -98,6 +98,36 @@
       "guide_url": "/guide/dashboard.html"
     },
     {
+      "id": "teacher-class",
+      "title": "쌤보드 클래스",
+      "description": "학생 자리배치(랜덤·짝꿍·모둠), 칭찬 포인트, 1인 1역할, 학생 뽑기(돌림판·카드·슬롯)까지 한 화면에! 쌤보드와 함께 듀얼모니터 2번 화면에 띄우거나 단독으로도 쓸 수 있어요.",
+      "status": "completed",
+      "tags": [
+        "자리배치",
+        "학급운영",
+        "배경화면"
+      ],
+      "google_form_url": "https://forms.gle/omGGf5G74JH1w3iG8",
+      "site_url": "",
+      "download_url": "",
+      "thumbnail": "",
+      "version": "1.0",
+      "release_date": "2026-06-21",
+      "order": 2.5,
+      "changelog": [
+        {
+          "version": "1.0",
+          "date": "2026-06-21",
+          "changes": [
+            "최초 배포 — 학생 자리배치(랜덤·짝꿍·모둠)",
+            "칭찬 포인트 / 1인 1역할 / 학생 뽑기(돌림판·카드·슬롯)",
+            "정해진 자리(랜덤처럼 보이는 지정 배치) · 역할 이모지 직접 선택 · 뽑기 대상 선택"
+          ]
+        }
+      ],
+      "demo_url": "/demo/class.html"
+    },
+    {
       "id": "plan-generator",
       "title": "문서 생성기",
       "description": "수정하고 싶은 파일을 업로드하고 요청하면 AI가 자동으로 수정해줍니다. \n레퍼런스 파일을 넣어 문서별 참고사항을 지시해도 좋아요.",
