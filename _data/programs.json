@@ -279,6 +279,32 @@
       ]
     },
     {
+      "id": "exam-paper-transformer",
+      "title": "시험지 변형기",
+      "description": "업로드한 시험지/문제를 AI가 변형해줍니다.",
+      "status": "completed",
+      "tags": [
+        "AI",
+        "문제변형"
+      ],
+      "google_form_url": "",
+      "site_url": "https://ppaksaem-exam-paper-transformer.hf.space/",
+      "download_url": "",
+      "thumbnail": "/images/pasted-image-1782304130308.png",
+      "version": "1.0",
+      "release_date": "2026-06-24",
+      "order": 8,
+      "changelog": [
+        {
+          "version": "1.0",
+          "date": "2026-06-24",
+          "changes": [
+            "최초 배포"
+          ]
+        }
+      ]
+    },
+    {
       "id": "Hangul-Survival",
       "title": "한글 서바이벌",
       "description": "국어 공부를 게임으로 쉽고 재미있게!",
