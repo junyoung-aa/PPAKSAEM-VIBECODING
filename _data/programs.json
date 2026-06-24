@@ -120,7 +120,7 @@
       "thumbnail": "/images/pasted-image-1782042698521.png",
       "version": "1.0",
       "release_date": "2026-06-21",
-      "order": 2,
+      "order": 3,
       "changelog": [
         {
           "version": "1.0",
@@ -150,7 +150,7 @@
       "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
       "version": "1.2",
       "release_date": "2026-04-28",
-      "order": 3,
+      "order": 4,
       "changelog": [
         {
           "version": "1.2",
@@ -187,7 +187,7 @@
       "thumbnail": "/images/스크린샷 2026-05-16 011956.png",
       "version": "1.1",
       "release_date": "2026-05-01",
-      "order": 4,
+      "order": 5,
       "changelog": [
         {
           "version": "1.1",
@@ -224,7 +224,7 @@
       "thumbnail": "/images/lm-확장프로그램-사진.png",
       "version": "1.2",
       "release_date": "2026-06-24",
-      "order": 5,
+      "order": 6,
       "changelog": [
         {
           "version": "1.2",
@@ -266,7 +266,7 @@
       "thumbnail": "/images/스크린샷 2026-05-16 011950.png",
       "version": "1.0",
       "release_date": "2026-05-16",
-      "order": 6,
+      "order": 7,
       "changelog": [
         {
           "version": "1.0",
