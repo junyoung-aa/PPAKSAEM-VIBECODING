@@ -132,7 +132,8 @@
           ]
         }
       ],
-      "demo_url": "/demo/class.html"
+      "demo_url": "/demo/class.html",
+      "guide_url": "/guide/class.html"
     },
     {
       "id": "plan-generator",

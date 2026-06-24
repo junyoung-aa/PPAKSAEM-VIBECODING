@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>쌤보드 클래스 ver1.0 사용 가이드</title>
+<meta name="description" content="쌤보드 클래스 v1.0 사용 가이드 — 13챕터 허브형. 자리배치·랜덤뽑기·칭찬포인트·1인1역할·학생뽑기 전체 기능 안내.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --ink:#2c2620; --ink-soft:#4a4036; --ink-mute:#857969;
+  --line:#e8ddd0; --line-soft:#f2ebe1; --bg:#fdfaf5;
+  --accent:#a85a1e; --accent-soft:#d97706; --accent-bg:#fef3e7;
+  --warn:#c2680b; --warn-bg:#fff7e6;
+  --info:#2563eb; --info-bg:#eff6ff;
+  --danger:#c62828; --danger-bg:#fce8e6;
+  --new:#d97706;
+  --success:#2f8e6e; --success-bg:#e6f4ee;
+}
+html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+body {
+  font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Malgun Gothic',-apple-system,sans-serif;
+  color:var(--ink); background:#f4ece0; line-height:1.75;
+  letter-spacing:-0.011em; word-break:keep-all; overflow-wrap:break-word;
+}
+a { color:inherit; text-decoration:none; }
+img { max-width:100%; display:block; }
+
+/* topbar */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:rgba(255,255,255,0.94); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line); padding:12px 24px;
+  display:flex; align-items:center; gap:10px; font-size:14px;
+}
+.topbar-back { color:var(--accent); font-weight:600; }
+.topbar-back:hover { color:var(--accent-soft); }
+.topbar-sep { color:var(--line); }
+.topbar-title { font-weight:700; color:var(--ink); }
+.topbar-badge { margin-left:auto; background:var(--accent); color:#fff; border-radius:4px; padding:3px 8px; font-size:11px; font-weight:700; letter-spacing:0.5px; }
+
+/* layout */
+.container { max-width:1200px; margin:0 auto; padding:0 24px; }
+.view { display:none; }
+.view.active { display:block; animation:fadeIn .25s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+
+/* hub cover */
+.hub-cover {
+  background:linear-gradient(135deg,#3a2418 0%,#7a4a2a 55%,#b87a4a 100%);
+  color:#fff; border-radius:14px; padding:48px 40px;
+  margin:32px 0 28px; text-align:center;
+  box-shadow:0 8px 32px rgba(80,50,20,0.18);
+}
+.hub-cover-icon { font-size:46px; margin-bottom:14px; }
+.hub-cover-badge {
+  display:inline-block; background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.35); border-radius:24px;
+  padding:5px 16px; font-size:11px; letter-spacing:2px; font-weight:600;
+  color:rgba(255,255,255,0.95); margin-bottom:18px;
+}
+.hub-cover-title { font-size:34px; font-weight:800; letter-spacing:-1.5px; line-height:1.2; margin-bottom:12px; }
+.hub-cover-sub { font-size:15px; color:rgba(255,255,255,0.8); margin-bottom:20px; }
+.hub-cover-tags { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.hub-cover-tag {
+  background:rgba(255,255,255,0.16); border-radius:6px;
+  padding:5px 12px; font-size:12px; color:#fff; font-weight:500;
+}
+
+/* groups & hub grid */
+.hub-section { margin-bottom:32px; }
+.hub-section-title {
+  font-size:13px; font-weight:700; color:var(--ink-mute);
+  letter-spacing:1.8px; text-transform:uppercase;
+  margin-bottom:14px; padding-left:2px;
+  display:flex; align-items:center; gap:8px;
+}
+.hub-section-title .new {
+  display:inline-block; background:var(--new); color:#fff;
+  border-radius:4px; padding:2px 7px; font-size:10px; letter-spacing:0.5px;
+}
+.hub-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+}
+.hub-card {
+  background:#fff; border:1px solid var(--line); border-radius:14px;
+  padding:24px 22px; position:relative; cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  display:flex; flex-direction:column;
+}
+.hub-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 24px rgba(80,50,20,0.12);
+  border-color:var(--accent-soft);
+}
+.hub-card-num {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:10px;
+  background:var(--accent-bg); color:var(--accent);
+  font-size:16px; font-weight:800; margin-bottom:14px;
+}
+.hub-card-icon { font-size:22px; margin-bottom:8px; }
+.hub-card-title { font-size:17px; font-weight:700; color:var(--ink); margin-bottom:6px; line-height:1.4; }
+.hub-card-sub { font-size:13px; color:var(--ink-mute); margin-bottom:14px; }
+.hub-card-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; }
+.hub-card-chip {
+  font-size:11.5px; padding:3px 9px; border-radius:12px;
+  background:var(--line-soft); color:var(--ink-soft); font-weight:500;
+}
+.hub-card-chip.time { background:var(--accent-bg); color:var(--accent); }
+.hub-card-chip.star { background:#fff4d6; color:#a86c00; font-weight:700; }
+.hub-card .new-dot {
+  position:absolute; top:14px; right:14px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--new); box-shadow:0 0 0 4px #fff7e6;
+}
+.hub-card .progress-indicator {
+  position:absolute; top:12px; left:12px;
+  width:22px; height:22px; border-radius:50%;
+  background:var(--success); color:#fff;
+  font-size:13px; font-weight:700;
+  display:none; align-items:center; justify-content:center;
+}
+.hub-card.completed { border-color:var(--success); background:linear-gradient(180deg,#fff,#f6fbf8); }
+.hub-card.completed .progress-indicator { display:flex; }
+
+/* chapter view */
+.chapter-page {
+  background:#fff; border-radius:14px; padding:48px 56px;
+  margin:32px 0; box-shadow:0 4px 20px rgba(80,50,20,0.06);
+}
+@media (max-width:768px) { .chapter-page { padding:32px 24px; } }
+
+.chapter-header {
+  background:linear-gradient(135deg,#7a4a2a,#b87a4a); color:#fff;
+  padding:22px 26px; border-radius:10px; margin-bottom:28px;
+  display:flex; align-items:center; gap:18px;
+  box-shadow:0 4px 16px rgba(122,74,42,0.18);
+}
+.chapter-header.new { background:linear-gradient(135deg,#a85a1e,#e89154); }
+.chapter-num {
+  background:rgba(255,255,255,0.22); border-radius:50%;
+  width:46px; height:46px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:800; flex-shrink:0;
+}
+.chapter-label { font-size:11px; color:rgba(255,255,255,0.78); letter-spacing:1.5px; font-weight:600; margin-bottom:2px; }
+.chapter-title { font-size:22px; font-weight:800; line-height:1.25; letter-spacing:-0.02em; }
+
+.section-title {
+  font-size:18px; font-weight:700; color:var(--accent);
+  margin:32px 0 14px; padding-left:14px;
+  border-left:4px solid var(--accent-soft); line-height:1.4;
+}
+
+/* content elements */
+p { margin:0 0 14px; font-size:15px; line-height:1.85; }
+.steps { list-style:none; padding:0; margin:14px 0; }
+.steps li { display:flex; align-items:flex-start; gap:14px; padding:12px 0; border-bottom:1px solid var(--line-soft); }
+.steps li:last-child { border-bottom:none; }
+.step-num {
+  background:var(--accent); color:#fff; border-radius:50%;
+  width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; flex-shrink:0; margin-top:2px;
+}
+.step-content { flex:1; font-size:15px; line-height:1.85; }
+.bullets { padding-left:22px; margin:8px 0 14px; }
+.bullets li { margin-bottom:8px; font-size:15px; line-height:1.8; }
+.red { color:var(--danger); font-weight:600; }
+.accent { color:var(--accent); font-weight:600; }
+.bold { font-weight:700; }
+.mono {
+  font-family:'JetBrains Mono','D2Coding','Consolas',monospace;
+  background:#f4ece0; padding:1px 7px; border-radius:4px;
+  font-size:13.5px; color:#5a3a1e;
+}
+.badge-v2 {
+  display:inline-block; background:var(--accent); color:#fff;
+  border-radius:4px; padding:2px 8px; font-size:11px; font-weight:700;
+  vertical-align:middle; margin:0 3px;
+}
+.badge-new {
+  display:inline-block; background:var(--new); color:#fff;
+  border-radius:4px; padding:2px 7px; font-size:10.5px; font-weight:700;
+  vertical-align:middle; margin-left:4px; letter-spacing:0.5px;
+}
+.box { border-radius:8px; padding:16px 20px; margin:18px 0; font-size:15px; line-height:1.8; }
+.box-warn { background:var(--warn-bg); border-left:4px solid var(--warn); }
+.box-tip { background:var(--info-bg); border-left:4px solid var(--info); }
+.box-important { background:var(--danger-bg); border-left:4px solid var(--danger); }
+.box-new { background:var(--accent-bg); border-left:4px solid var(--accent-soft); }
+.box-title { font-weight:700; margin-bottom:6px; font-size:15.5px; }
+.mt8 { margin-top:8px; } .mt16 { margin-top:16px; }
+.img-ss { margin:16px 0; text-align:center; }
+.img-ss img {
+  display:inline-block;
+  max-width:min(100%, 600px);
+  height:auto;
+  border-radius:10px; border:1.5px solid var(--line);
+  box-shadow:0 3px 12px rgba(0,0,0,0.06);
+  cursor:zoom-in; transition:transform .15s ease, box-shadow .15s ease;
+}
+.img-ss img:hover { transform:scale(1.005); box-shadow:0 6px 18px rgba(0,0,0,0.1); }
+
+/* table */
+.data-table { width:100%; border-collapse:collapse; margin:14px 0 18px; font-size:14.5px; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(80,50,20,0.08); }
+.data-table th { background:var(--accent); color:#fff; padding:11px 14px; text-align:left; font-weight:700; font-size:14px; }
+.data-table td { padding:11px 14px; border-bottom:1px solid var(--line-soft); }
+.data-table tr:nth-child(even) td { background:#faf6f1; }
+.data-table tr:last-child td { border-bottom:none; }
+
+/* compare cards (ch1) */
+.compare-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:14px 0 18px; }
+.compare-card { background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:18px; }
+.compare-card.reco { border-color:var(--accent-soft); background:var(--accent-bg); }
+.compare-card-icon { font-size:26px; margin-bottom:8px; }
+.compare-card-title { font-weight:700; font-size:15px; margin-bottom:6px; }
+.compare-card-tag { display:inline-block; background:#fff4d6; color:#a86c00; border-radius:10px; padding:2px 9px; font-size:11px; font-weight:700; margin-bottom:8px; }
+.compare-card p { font-size:13.5px; margin-bottom:0; color:var(--ink-soft); }
+@media (max-width:768px) { .compare-grid { grid-template-columns:1fr; } }
+
+/* FAQ */
+.faq-item {
+  background:#fff; border:1px solid var(--line); border-radius:10px;
+  padding:18px 20px; margin:12px 0;
+}
+.faq-q {
+  font-weight:700; font-size:15.5px; color:var(--ink);
+  margin-bottom:8px; padding-left:28px; position:relative;
+}
+.faq-q::before {
+  content:"Q"; position:absolute; left:0; top:0;
+  color:var(--accent); font-weight:800; font-size:12px;
+  background:var(--accent-bg); width:20px; height:20px; border-radius:4px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.faq-a { font-size:14.5px; color:var(--ink-soft); line-height:1.85; padding-left:28px; position:relative; }
+.faq-a::before {
+  content:"A"; position:absolute; left:0; top:0;
+  color:var(--success); font-weight:800; font-size:12px;
+  background:var(--success-bg); width:20px; height:20px; border-radius:4px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+
+/* chapter footer nav */
+.chapter-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-top:48px; padding-top:24px;
+  border-top:1px solid var(--line);
+}
+.chapter-nav-btn {
+  flex:1; max-width:240px; padding:14px 18px;
+  background:#fff; border:1px solid var(--line); border-radius:10px;
+  font-size:13.5px; font-weight:600; color:var(--ink);
+  cursor:pointer; text-align:left; transition:all .15s ease;
+  display:flex; flex-direction:column; gap:2px;
+}
+.chapter-nav-btn:hover { border-color:var(--accent-soft); background:var(--accent-bg); color:var(--accent); }
+.chapter-nav-btn.disabled { opacity:0.4; pointer-events:none; }
+.chapter-nav-btn .nav-dir { font-size:11px; color:var(--ink-mute); letter-spacing:0.5px; }
+.chapter-nav-btn.next { text-align:right; align-items:flex-end; }
+.chapter-nav-hub {
+  padding:14px 22px;
+  background:var(--accent); color:#fff; border:none; border-radius:10px;
+  font-size:14px; font-weight:700; cursor:pointer;
+  transition:background .15s ease;
+}
+.chapter-nav-hub:hover { background:var(--accent-soft); }
+
+/* progress button */
+.progress-row { display:flex; justify-content:flex-end; margin-top:32px; }
+.complete-btn {
+  background:#fff; color:var(--ink-soft);
+  border:1.5px solid var(--line); border-radius:24px;
+  padding:8px 16px; font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .15s ease;
+}
+.complete-btn:hover { border-color:var(--success); color:var(--success); }
+.complete-btn.done { background:var(--success-bg); border-color:var(--success); color:var(--success); }
+
+/* lightbox */
+.lightbox {
+  position:fixed; inset:0; z-index:300;
+  background:rgba(20,15,10,0.92); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
+  padding:40px; cursor:zoom-out;
+}
+.lightbox[hidden] { display:none; }
+.lightbox img {
+  max-width:100%; max-height:100%; border-radius:10px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.5); cursor:default;
+}
+.lightbox-cap {
+  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+  color:#fff; background:rgba(0,0,0,0.6);
+  padding:8px 16px; border-radius:8px; font-size:13px; max-width:80%;
+}
+.lightbox-close {
+  position:absolute; top:24px; right:24px;
+  background:rgba(255,255,255,0.15); color:#fff; border:none;
+  width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer;
+  transition:background .15s ease;
+}
+.lightbox-close:hover { background:rgba(255,255,255,0.3); }
+
+/* responsive */
+@media (max-width:900px) {
+  .hub-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:600px) {
+  .hub-grid { grid-template-columns:1fr; }
+  .hub-cover { padding:32px 24px; }
+  .hub-cover-title { font-size:26px; }
+  .chapter-nav { flex-direction:column; }
+  .chapter-nav-btn { max-width:none; width:100%; }
+  .chapter-nav-btn.next { text-align:left; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-back" href="../index.html">← 메인으로</a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">쌤보드 클래스 사용 가이드</span>
+  <span class="topbar-badge">ver 1.0</span>
+</div>
+
+<!-- ═══════════ HUB VIEW ═══════════ -->
+<div class="view" data-view="hub">
+  <div class="container">
+    <div class="hub-cover">
+      <div class="hub-cover-icon">🪑</div>
+      <div class="hub-cover-badge">SSAMBOARD CLASS · v1.0</div>
+      <div class="hub-cover-title">쌤보드 클래스 사용 가이드</div>
+      <div class="hub-cover-sub">팍쌤의 바이브코딩 저장소</div>
+      <div class="hub-cover-tags">
+        <span class="hub-cover-tag">🪑 자리배치</span>
+        <span class="hub-cover-tag">⭐ 포인트</span>
+        <span class="hub-cover-tag">🧹 1인1역할</span>
+        <span class="hub-cover-tag">🎲 학생뽑기</span>
+      </div>
+    </div>
+
+    <div class="hub-section">
+      <div class="hub-section-title">GROUP 1 · 시작하기</div>
+      <div class="hub-grid">
+        <a href="#ch1" class="hub-card" data-chapter="ch1">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">1</div>
+          <div class="hub-card-title">쌤보드 클래스란?</div>
+          <div class="hub-card-sub">2가지 사용법 — 내 상황에 맞는 길 찾기</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~3분</span>
+            <span class="hub-card-chip">텍스트</span>
+          </div>
+        </a>
+        <a href="#ch2" class="hub-card" data-chapter="ch2">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">2</div>
+          <div class="hub-card-title">Lively Wallpaper 설치</div>
+          <div class="hub-card-sub">HTML 바탕화면 실행용 무료 앱</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~5분</span>
+            <span class="hub-card-chip">이미지 2</span>
+          </div>
+        </a>
+        <a href="#ch3" class="hub-card" data-chapter="ch3">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">3</div>
+          <div class="hub-card-title">바탕화면에 띄우기</div>
+          <div class="hub-card-sub">Lively 등록 · 듀얼모니터 · 디스크 캐시</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~8분</span>
+            <span class="hub-card-chip">이미지 5</span>
+          </div>
+        </a>
+        <a href="#ch4" class="hub-card" data-chapter="ch4">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">4</div>
+          <div class="hub-card-title">학생 명단 준비하기</div>
+          <div class="hub-card-sub">구글시트 연동 vs 직접 입력</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~5분</span>
+            <span class="hub-card-chip">이미지 1</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="hub-section">
+      <div class="hub-section-title">GROUP 2 · 자리배치</div>
+      <div class="hub-grid">
+        <a href="#ch5" class="hub-card" data-chapter="ch5">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">5</div>
+          <div class="hub-card-icon">🪑</div>
+          <div class="hub-card-title">자리배치 기본 화면</div>
+          <div class="hub-card-sub">낱개·짝꿍·모둠 + 자리변경 모드</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~5분</span>
+            <span class="hub-card-chip">이미지 2</span>
+          </div>
+        </a>
+        <a href="#ch6" class="hub-card" data-chapter="ch6">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">6</div>
+          <div class="hub-card-icon">🎲</div>
+          <div class="hub-card-title">랜덤 자리뽑기 & 성별 규칙</div>
+          <div class="hub-card-sub">슬롯머신 연출 + 🚻 규칙 3종</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip">이미지 2</span>
+          </div>
+        </a>
+        <a href="#ch7" class="hub-card" data-chapter="ch7">
+          <div class="new-dot"></div>
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">7</div>
+          <div class="hub-card-icon">🎯</div>
+          <div class="hub-card-title">정해진 자리</div>
+          <div class="hub-card-sub">랜덤처럼 보이지만 항상 같은 배치</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip star">★ NEW</span>
+          </div>
+        </a>
+        <a href="#ch8" class="hub-card" data-chapter="ch8">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">8</div>
+          <div class="hub-card-icon">🤫</div>
+          <div class="hub-card-title">떨어뜨리기</div>
+          <div class="hub-card-sub">붙이고 싶지 않은 학생 짝 지정</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~3분</span>
+            <span class="hub-card-chip">이미지 1</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="hub-section">
+      <div class="hub-section-title">GROUP 3 · 포인트 · 역할 · 뽑기</div>
+      <div class="hub-grid">
+        <a href="#ch9" class="hub-card" data-chapter="ch9">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">9</div>
+          <div class="hub-card-icon">⭐</div>
+          <div class="hub-card-title">칭찬 포인트</div>
+          <div class="hub-card-sub">개별 ±1 / 다중선택 일괄 부여</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip">이미지 2</span>
+          </div>
+        </a>
+        <a href="#ch10" class="hub-card" data-chapter="ch10">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">10</div>
+          <div class="hub-card-icon">🧹</div>
+          <div class="hub-card-title">1인 1역할</div>
+          <div class="hub-card-sub">이모지 직접 선택 + 학생 배정</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip">이미지 2</span>
+          </div>
+        </a>
+        <a href="#ch11" class="hub-card" data-chapter="ch11">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">11</div>
+          <div class="hub-card-icon">🎰</div>
+          <div class="hub-card-title">학생 뽑기</div>
+          <div class="hub-card-sub">돌림판 · 카드 · 슬롯 3가지 연출</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~5분</span>
+            <span class="hub-card-chip">이미지 3</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="hub-section">
+      <div class="hub-section-title">GROUP 4 · 마무리</div>
+      <div class="hub-grid">
+        <a href="#ch12" class="hub-card" data-chapter="ch12">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">12</div>
+          <div class="hub-card-icon">📐</div>
+          <div class="hub-card-title">화면 꾸미기 & 설정 정리</div>
+          <div class="hub-card-sub">하단 여백 조절 + 설정 4탭 총정리</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip">이미지 1</span>
+          </div>
+        </a>
+        <a href="#ch13" class="hub-card" data-chapter="ch13">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">13</div>
+          <div class="hub-card-icon">💾</div>
+          <div class="hub-card-title">백업 & 복구</div>
+          <div class="hub-card-sub">데이터가 날아가지 않게 — 파일로 저장</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip">이미지 1</span>
+          </div>
+        </a>
+        <a href="#ch14" class="hub-card" data-chapter="ch14">
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">14</div>
+          <div class="hub-card-icon">❓</div>
+          <div class="hub-card-title">자주 묻는 질문 (FAQ)</div>
+          <div class="hub-card-sub">듀얼모니터·동기화·Lively 관련</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">참고</span>
+            <span class="hub-card-chip">9문답</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH1 ═══════════ -->
+<div class="view" data-view="ch1">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">1</div>
+        <div>
+          <div class="chapter-label">CHAPTER 1</div>
+          <div class="chapter-title">쌤보드 클래스란?</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>학생 <span class="accent">자리배치·칭찬포인트·1인1역할·랜덤뽑기</span>를 한 화면에 모은 학급운영 도구.</li>
+          <li>사용법은 <span class="accent">2가지</span> — 듀얼모니터 2번째 화면 / 단독 사용.</li>
+          <li>어느 길로 가든 <span class="accent">기능은 100% 동일</span>, 화면에 띄우는 방식만 다름.</li>
+        </ul>
+      </div>
+
+      <p>쌤보드 클래스는 학생 자리배치(랜덤·짝꿍·모둠), 칭찬 포인트, 1인 1역할, 학생 뽑기(돌림판·카드·슬롯)까지 교실 운영에 필요한 기능을 한 화면에 모은 도구입니다. 이미 쌤보드(교사용 대시보드)를 쓰고 있다면 그 짝꿍 제품이고, 안 쓰고 있어도 단독으로 전체 기능을 사용할 수 있습니다.</p>
+
+      <div class="section-title">1-1. 나는 어떤 방법으로 써야 할까?</div>
+      <p>아래 2가지 중 본인 상황에 맞는 것을 먼저 골라보세요. 둘 다 Lively Wallpaper에 파일을 배경으로 등록해서 쓰는 방식이고, 기능은 완전히 같습니다.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card reco">
+          <div class="compare-card-icon">🖥️🖥️</div>
+          <span class="compare-card-tag">듀얼모니터</span>
+          <div class="compare-card-title">A. 듀얼모니터 2번째 화면</div>
+          <p>모니터가 2개라면 1번 화면엔 쌤보드 본체(대시보드), 2번 화면엔 쌤보드 클래스를 각각 배경으로 띄워 항시 보면서 운영할 수 있습니다. Lively에 <span class="bold">서로 다른 파일 2개</span>를 각각 등록해요.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-icon">🪑</div>
+          <span class="compare-card-tag">단독 사용</span>
+          <div class="compare-card-title">B. 쌤보드 클래스만 단독</div>
+          <p>대시보드(날씨·캘린더·할일 등)까진 필요 없고 자리배치·포인트·뽑기 기능만 쓰고 싶다면, 쌤보드 클래스 파일 하나만 Lively 배경으로 등록해서 단독으로 사용합니다.</p>
+        </div>
+      </div>
+
+      <table class="data-table mt8">
+        <tr><th>항목</th><th>A. 듀얼모니터</th><th>B. 단독 사용</th></tr>
+        <tr><td>Lively 설치 필요?</td><td>필요 (파일 2개 등록)</td><td>필요 (파일 1개 등록)</td></tr>
+        <tr><td>모니터 몇 개?</td><td>2개 권장</td><td>1개도 OK</td></tr>
+        <tr><td>학생 명단 연동</td><td>직접 설정 (4장)</td><td>직접 설정 (4장)</td></tr>
+        <tr><td>이 가이드에서 볼 장</td><td>1~14장 전체</td><td>1~14장 전체</td></tr>
+      </table>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 이미 쌤보드(본체)를 쓰고 있다면</div>
+        학생 명단을 새로 만들 필요 없이, <a href="#ch4" class="accent">4장</a>에서 <span class="bold">쌤보드 본체와 같은 구글시트 URL</span>을 그대로 입력하면 명렬표를 그대로 불러옵니다 (읽기 전용이라 본체 데이터에 영향 없음).
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch1">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <button class="chapter-nav-btn disabled"><span class="nav-dir">← 이전 (없음)</span></button>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch2" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>2장. Lively Wallpaper 설치</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH2 ═══════════ -->
+<div class="view" data-view="ch2">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">2</div>
+        <div>
+          <div class="chapter-label">CHAPTER 2</div>
+          <div class="chapter-title">Lively Wallpaper 설치</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>Lively Wallpaper는 <span class="accent">HTML 파일을 바탕화면으로 실행</span>해주는 무료 앱.</li>
+          <li><span class="mono">LWP_Setup.exe</span> 더블클릭 → <span class="accent">"현재 사용자용"</span>으로 설치.</li>
+          <li>작업표시줄 우측 하단에 Lively 아이콘이 뜨면 완료.</li>
+        </ul>
+      </div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 이미 쌤보드 본체를 Lively에 등록해서 쓰고 있다면</div>
+        Lively는 이미 설치되어 있는 상태입니다. 이 장은 건너뛰고 <a href="#ch3" class="accent">3장</a>으로 이동하세요.
+      </div>
+
+      <p>Lively Wallpaper는 HTML 파일을 바탕화면으로 실행해 주는 무료 앱입니다. 쌤보드 클래스를 듀얼모니터 2번째 화면이나 단독 배경으로 쓰려면(1장의 두 경로 모두) Lively가 필요합니다.</p>
+
+      <div class="section-title">설치 방법</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content"><span class="mono">LWP_Setup.exe</span> 파일을 <span class="red">더블클릭</span>하여 실행합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">설치 모드 선택 화면이 나타나면 <span class="red">'현재 사용자용으로 설치(추천)'</span>를 클릭합니다.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 불필요: 쌤보드 가이드 ch2와 동일한 화면 — 기존 이미지 경로 재사용 -->
+      <div class="img-ss"><img src="../images/guide/01.%20월페이퍼%20설치.png" alt="월페이퍼 설치 화면" loading="lazy" decoding="async"></div>
+
+      <ol class="steps" start="3">
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">이후 화면은 <span class="red">기본값 그대로</span> 두고 "Install" 버튼을 클릭합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content">설치가 완료되면 Lively Wallpaper가 자동으로 실행됩니다.<br>작업표시줄 우측 하단(🔔 알림 영역)에 <span style="display:inline-block;background:linear-gradient(135deg,#3a3a8c,#5a5acc);color:#fff;border-radius:4px;padding:0 6px;font-size:11.5px;font-weight:700;vertical-align:middle;letter-spacing:0.5px;">Lively</span> 아이콘이 생기면 정상입니다.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 불필요: 쌤보드 가이드 ch2와 동일한 화면 — 기존 이미지 경로 재사용 -->
+      <div class="img-ss"><img src="../images/guide/02.%20월페이퍼%20아이콘.png" alt="Lively 아이콘" loading="lazy" decoding="async"></div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch2">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch1" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>1장. 쌤보드 클래스란?</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch3" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>3장. 바탕화면에 띄우기</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH3 ═══════════ -->
+<div class="view" data-view="ch3">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">3</div>
+        <div>
+          <div class="chapter-label">CHAPTER 3</div>
+          <div class="chapter-title">바탕화면에 띄우기</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>Lively <span class="accent">"+" 버튼</span>으로 <span class="mono">쌤보드클래스_ver1.0.html</span>을 배경 등록.</li>
+          <li>듀얼모니터면 <span class="accent">두 모니터에 서로 다른 파일</span>을 각각 지정.</li>
+          <li>마우스 클릭이 씹히면 <span class="accent">"마우스 상호 작용"</span> 체크 + 디스크 캐시 켜기.</li>
+        </ul>
+      </div>
+
+      <div class="section-title">3-1. Lively에 배경화면으로 등록하기</div>
+      <p>Lively Wallpaper에 <span class="mono">쌤보드클래스_ver1.0.html</span> 파일을 배경화면으로 등록합니다. (듀얼모니터·단독 사용 모두 이 방법으로 시작합니다.)</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">작업표시줄 우측 하단의 <span class="red">Lively 아이콘을 클릭</span>하여 Lively Wallpaper를 엽니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">Lively 화면 왼쪽 상단의 <span class="red">"+" 버튼</span> (배경화면 추가)을 클릭합니다.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-01-배경화면추가.png -->
+      <div class="img-ss"><img src="../images/guide/class-01-배경화면추가.png" alt="배경화면 추가 버튼" loading="lazy" decoding="async"></div>
+
+      <ol class="steps" start="3">
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">팝업 창에서 <span class="red">"파일에서 열기"</span> 또는 하단의 파일 탐색 버튼을 클릭합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content">파일 탐색기에서 <span class="mono red">쌤보드클래스_ver1.0.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">5</div>
+          <div class="step-content">미리보기가 뜨면 <span class="red">"확인"</span>을 클릭합니다.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-02-배경화면적용.png -->
+      <div class="img-ss"><img src="../images/guide/class-02-배경화면적용.png" alt="쌤보드 클래스 배경화면 적용" loading="lazy" decoding="async"></div>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 듀얼모니터(A 경로)라면 — 두 모니터에 서로 다른 파일!</div>
+        1번 모니터에는 <span class="mono">쌤보드_ver2.4.html</span>(본체), 2번 모니터에는 <span class="mono">쌤보드클래스_ver1.0.html</span>처럼 <span class="red">서로 다른 파일</span>을 등록해야 합니다. <span class="bold">같은 파일을 두 모니터에 등록하면 Lively가 두 인스턴스의 설정값(Customise 값)을 공유</span>하기 때문에, 한쪽을 바꾸면 다른 쪽도 똑같이 바뀌어 화면 분리가 안 됩니다.
+      </div>
+
+      <p class="mt16"><span class="bold">📺 모니터별로 다르게 띄우는 순서</span></p>
+      <p>Lively 화면 오른쪽 위에 있는 <span class="red">🖥️ 디스플레이(모니터 모양) 아이콘</span>으로 어느 모니터에 적용할지 고릅니다. <span class="gray">(아래 사진의 빨간 네모 — [일반] 설정 탭에 따로 안 들어가도 메인 화면에서 바로 보여요.)</span></p>
+
+      <!-- 캡쳐 완료: class-20-듀얼모니터.png -->
+      <div class="img-ss"><img src="../images/guide/class-20-듀얼모니터.png" alt="Lively 화면 오른쪽 위 디스플레이 선택 아이콘" loading="lazy" decoding="async"></div>
+
+      <ol class="steps mt8">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">Lively 화면 오른쪽 위의 <span class="red">🖥️ 디스플레이 아이콘</span>을 클릭해, 배경을 바꿀 모니터(예: <span class="bold">1번</span>)를 선택합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">그 상태에서 1번 모니터용 파일(<span class="mono">쌤보드_ver2.4.html</span>)을 배경으로 적용합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">다시 <span class="red">🖥️ 디스플레이 아이콘</span>에서 <span class="bold">2번 모니터</span>를 선택한 뒤, <span class="mono">쌤보드클래스_ver1.0.html</span>을 적용합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content">이미 등록한 배경이라면, 라이브러리에서 썸네일을 <span class="red">우클릭 → "디스플레이 선택"</span>으로도 적용할 모니터를 바꿀 수 있습니다.</div>
+        </li>
+      </ol>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 단독 사용이라면 신경 안 써도 돼요</div>
+        모니터 1개로 쌤보드 클래스만 쓰는 <span class="bold">B 경로(단독 사용)</span>라면 이 모니터별 지정 단계는 건너뛰어도 됩니다.
+      </div>
+
+      <div class="section-title mt16">3-3. Lively 권장 설정</div>
+      <p>마우스 클릭이 씹히는 경우, 설정 패널 <span class="red">[배경화면] 탭</span> → <span class="red">"응용 프로그램이 포커싱된 경우 마우스 상호 작용"</span>을 체크하세요. (쌤보드 본체와 동일한 설정 — 이미 체크해두었다면 그대로 둡니다.)</p>
+
+      <!-- 캡쳐 완료: class-03-마우스상호작용.png -->
+      <div class="img-ss"><img src="../images/guide/class-03-마우스상호작용.png" alt="마우스 상호작용 설정" loading="lazy" decoding="async"></div>
+
+      <div class="section-title mt16">3-4. 재시작 후에도 데이터 유지 — 디스크 캐시 ✔ 필수</div>
+      <p>쌤보드 클래스는 자리배치·포인트·역할을 <span class="red">이 PC에 로컬로 저장</span>합니다. 그런데 Lively가 브라우저 데이터를 메모리에만 두면 <span class="red">PC를 재시작할 때 데이터가 날아갈 수 있어요.</span> 반드시 디스크 캐시를 켜세요.</p>
+      <p class="mt8">설정 패널 <span class="red">[배경화면] 탭</span> → <span class="red">웹 브라우저</span> 섹션 → <span class="red">"디스크 캐시"</span> 활성화</p>
+
+      <table class="data-table mt8">
+        <tr><th>상태</th><th>동작</th><th>권장</th></tr>
+        <tr>
+          <td><span class="bold red">활성화</span></td>
+          <td>브라우저 데이터(캐시·저장소)를 디스크에 보관 → PC 재시작 후에도 자리·포인트·역할 유지</td>
+          <td><span class="red">✔ 권장</span></td>
+        </tr>
+        <tr>
+          <td><span class="bold">비활성화</span></td>
+          <td>데이터가 메모리에만 남아 재시작 시 사라질 수 있음</td>
+          <td>✘</td>
+        </tr>
+      </table>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 이중 안전장치</div>
+        디스크 캐시를 켜도, <span class="red">13장의 백업 파일(쌤보드클래스_설정.json)</span>까지 만들어두면 PC 초기화·캐시 삭제 같은 사고에도 안전합니다. <span class="bold">둘 다 설정하는 것을 권장합니다.</span>
+      </div>
+
+      <!-- 캡쳐 불필요: 쌤보드 가이드 ch3와 동일한 Lively 디스크 캐시 화면 — 기존 이미지 재사용 -->
+      <div class="img-ss"><img src="../images/guide/03-4.%20디스크캐시.png" alt="Lively 디스크 캐시 활성화" loading="lazy" decoding="async"></div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch3">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch2" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>2장. Lively 설치</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch4" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>4장. 학생 명단 준비하기</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH4 ═══════════ -->
+<div class="view" data-view="ch4">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">4</div>
+        <div>
+          <div class="chapter-label">CHAPTER 4</div>
+          <div class="chapter-title">학생 명단 준비하기</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>방법은 2가지 — <span class="accent">구글시트 연동</span> 또는 <span class="accent">직접 입력</span>.</li>
+          <li>시트 연동은 <span class="accent">쌤보드 본체와 같은 URL</span>을 그대로 써도 됩니다 (새로 배포 불필요).</li>
+          <li>둘 중 아무거나 골라도 자리배치·포인트·역할·뽑기 기능은 전부 동일하게 동작.</li>
+        </ul>
+      </div>
+
+      <div class="section-title">4-1. 방법 비교</div>
+      <table class="data-table mt8">
+        <tr><th>항목</th><th>시트연동 모드</th><th>직접입력 모드</th></tr>
+        <tr><td>준비물</td><td>구글시트 Apps Script URL</td><td>없음 (학생 이름만 알면 됨)</td></tr>
+        <tr><td>설정 방법</td><td>설정 ⚙ "기본" 탭에 URL 입력</td><td>URL을 비워두고 textarea에 입력</td></tr>
+        <tr><td>새로 배포 필요?</td><td><span class="red">아니요</span> — 쌤보드 본체와 같은 URL 재사용</td><td>해당 없음</td></tr>
+        <tr><td>시트에 무언가 기록되나요?</td><td><span class="red">아니요</span> — 읽기 전용(명렬표만 불러옴)</td><td>해당 없음 (전부 로컬 저장)</td></tr>
+      </table>
+
+      <div class="section-title mt16">4-2. 시트연동 모드 설정하기</div>
+      <p>이미 쌤보드 본체에서 구글시트를 연동해 쓰고 있다면, <span class="red">그 URL을 그대로</span> 쌤보드 클래스 설정에도 입력하면 됩니다. 쌤보드 클래스는 시트에서 학생 명렬표만 읽어올 뿐, 어떤 것도 시트에 기록하지 않으므로 Apps Script를 새로 배포하거나 코드를 수정할 필요가 없습니다.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">쌤보드 클래스 화면에서 <span class="red">⚙ 설정</span> 버튼을 클릭합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content"><span class="red">⚙ 기본</span> 탭에서 Apps Script URL 입력칸에 <span class="red">쌤보드 본체와 동일한 URL</span>을 붙여넣습니다.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">학년·반을 입력하고 <span class="red">💾 저장</span>을 누르면 명렬표가 자동으로 불러와집니다.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-04-기본설정.png -->
+      <div class="img-ss"><img src="../images/guide/class-04-기본설정.png" alt="설정 기본 탭 — URL·학년·반 입력" loading="lazy" decoding="async"></div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 아직 Apps Script를 배포해본 적이 없다면</div>
+        쌤보드 본체 가이드의 <span class="bold">5장 Apps Script 배포 ★</span>를 먼저 따라 하세요. 거기서 만든 URL을 여기서도 그대로 쓰면 됩니다.
+      </div>
+
+      <div class="section-title mt16">4-3. 직접입력 모드 설정하기</div>
+      <p>구글시트 없이 바로 쓰고 싶다면, URL 칸을 비워두고 설정 ⚙ 기본 탭의 <span class="red">"학생 직접 입력"</span> textarea에 학생 이름을 한 줄에 한 명씩 입력합니다. 입력 즉시 자리배치 화면에 반영됩니다.</p>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 처음 열면 데모(가상) 학생 24명이 보여요</div>
+        직접 입력 명단도 없고 시트 연동도 안 했다면 정상적으로 가상 학생 24명이 표시됩니다(<span class="mono">?demo=1</span> 기본값). 학생을 직접 입력하거나 시트를 연동하면 데모 데이터는 자동으로 사라집니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch4">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch3" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>3장. 바탕화면에 띄우기</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch5" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>5장. 자리배치 기본 화면</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH5 ═══════════ -->
+<div class="view" data-view="ch5">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">5</div>
+        <div>
+          <div class="chapter-label">CHAPTER 5</div>
+          <div class="chapter-title">자리배치 기본 화면</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>하단 🪑 탭 화면. 레이아웃은 <span class="accent">▦낱개 / ▥짝꿍 / ◳모둠</span> 3종.</li>
+          <li><span class="accent">🔁 자리변경</span>을 켜야 좌석을 클릭해서 자리를 바꿀 수 있어요.</li>
+          <li>자리변경을 <span class="accent">끄면</span> 좌석 클릭이 학생 포인트·역할 팝업으로 바뀝니다.</li>
+        </ul>
+      </div>
+
+      <p>화면 하단에는 🪑 자리배치 / ⭐ 포인트 / 🎲 뽑기 3개 탭이 있습니다. 기본으로 열리는 🪑 자리배치 화면부터 살펴봅니다.</p>
+
+      <div class="section-title">5-1. 레이아웃 3종</div>
+      <p>화면 위쪽 세그먼트 버튼으로 좌석 배열을 바꿀 수 있습니다.</p>
+      <table class="data-table mt8">
+        <tr><th>버튼</th><th>설명</th></tr>
+        <tr><td><span class="bold">▦ 낱개</span></td><td>한 명씩 격자로 배열</td></tr>
+        <tr><td><span class="bold">▥ 짝꿍</span></td><td>2석씩 묶어서 배열</td></tr>
+        <tr><td><span class="bold">◳ 모둠</span></td><td>여러 명씩 묶음. <span class="mono">−</span>/<span class="mono">＋</span> 버튼으로 모둠당 인원(2~8명) 조절</td></tr>
+      </table>
+
+      <!-- 캡쳐 완료: 레이아웃 3종 (낱개/짝꿍/모둠) 각각 -->
+      <div class="img-ss"><img src="../images/guide/class-05-레이아웃-낱개.png" alt="▦ 낱개 레이아웃 화면" loading="lazy" decoding="async"></div>
+      <div class="img-ss"><img src="../images/guide/class-05-레이아웃-짝꿍.png" alt="▥ 짝꿍 레이아웃 화면" loading="lazy" decoding="async"></div>
+      <div class="img-ss"><img src="../images/guide/class-05-레이아웃-모둠.png" alt="◳ 모둠 레이아웃 화면" loading="lazy" decoding="async"></div>
+
+      <div class="section-title mt16">5-2. 자리변경 모드</div>
+      <p>화면 위쪽 <span class="red">🔁 자리변경</span> 토글을 켜면 안내 배너("학생을 누르고 → 바꿀 자리(또는 빈자리)를 누르세요")가 나타나며, 좌석을 클릭하는 동작이 바뀝니다.</p>
+
+      <table class="data-table mt8">
+        <tr><th>🔁 자리변경 상태</th><th>좌석 클릭 시 동작</th></tr>
+        <tr><td><span class="bold red">켜짐</span></td><td>학생을 누르고 → 바꿀 자리를 누르면 두 자리가 맞바뀜. 미배치 풀의 학생도 좌석에 투입 가능</td></tr>
+        <tr><td><span class="bold">꺼짐</span></td><td>좌석을 누르면 그 학생의 포인트·역할 팝업이 열림 (실수로 자리가 바뀌는 것을 방지)</td></tr>
+      </table>
+
+      <!-- 캡쳐 완료: class-06-자리변경모드.png -->
+      <div class="img-ss"><img src="../images/guide/class-06-자리변경모드.png" alt="자리변경 모드 안내 배너" loading="lazy" decoding="async"></div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 좌석 고정 📌</div>
+        좌석 카드의 📌 아이콘을 누르면 그 자리를 고정할 수 있어요. 고정된 자리는 6장의 랜덤 자리뽑기에서 제외됩니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch5">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch4" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>4장. 학생 명단 준비하기</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch6" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>6장. 랜덤 자리뽑기 & 성별 규칙</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH6 ═══════════ -->
+<div class="view" data-view="ch6">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">6</div>
+        <div>
+          <div class="chapter-label">CHAPTER 6</div>
+          <div class="chapter-title">랜덤 자리뽑기 & 성별 규칙</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li><span class="accent">🔁 자리변경</span>을 켜면 나타나는 <span class="accent">🎲 자리 뽑기</span> 버튼으로 랜덤 배치.</li>
+          <li>슬롯머신 셔플 → 3·2·1 카운트다운 → 좌석 공개 연출.</li>
+          <li><span class="accent">🚻 성별규칙</span> 칩을 클릭하면 끄기→지그재그→짝꿍남녀 순환.</li>
+        </ul>
+      </div>
+
+      <div class="section-title">6-1. 자리 뽑기 연출</div>
+      <p>🔁 자리변경을 켜면 나타나는 <span class="red">🎲 자리 뽑기</span> 버튼을 누르면 학생 이름이 빠르게 셔플되다가, 화면이 어두워지며 <span class="red">3·2·1</span> 카운트다운 후 "짠!" 하고 좌석이 공개됩니다. 좌석은 하나씩 눌러서 공개하거나 <span class="red">✨ 모두 공개</span> 버튼으로 한 번에 열 수 있습니다.</p>
+
+      <!-- 캡쳐 완료: class-07-자리뽑기연출.png -->
+      <div class="img-ss"><img src="../images/guide/class-07-자리뽑기연출.png" alt="자리뽑기 카운트다운 연출" loading="lazy" decoding="async"></div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 📌 고정된 자리, 🤫 떨어뜨리기 짝은 자동으로 보호됩니다</div>
+        랜덤으로 자리를 뽑아도 📌로 고정해둔 좌석과 학생은 그대로 유지되고, 8장에서 설정한 "떨어뜨리고 싶은 짝"은 최대한 떨어지도록 알아서 재시도합니다.
+      </div>
+
+      <div class="section-title mt16">6-2. 성별 자리 규칙</div>
+      <p>화면의 <span class="red">🚻 성별규칙</span> 칩을 클릭할 때마다 규칙이 순환합니다. 설정 ⚙ "🤫 추가" 탭에서도 같은 방식으로 바꿀 수 있습니다.</p>
+
+      <table class="data-table mt8">
+        <tr><th>규칙</th><th>동작</th></tr>
+        <tr><td><span class="bold">끄기</span></td><td>성별 관계없이 완전 랜덤</td></tr>
+        <tr><td><span class="bold">지그재그</span></td><td>체크보드 패턴으로 남/여가 번갈아 앉도록 배치</td></tr>
+        <tr><td><span class="bold">짝꿍 남녀</span></td><td>짝(2석)마다 남학생 1명+여학생 1명. <span class="mono">⇄</span> 칩으로 "남학생 왼쪽/여학생 왼쪽" 반전 가능</td></tr>
+      </table>
+
+      <!-- 캡쳐 완료: class-08-성별규칙칩.png -->
+      <div class="img-ss"><img src="../images/guide/class-08-성별규칙칩.png" alt="성별규칙 칩" loading="lazy" decoding="async"></div>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 규칙을 끈 상태에서도 칩은 항상 보여요</div>
+        성별규칙이 "끄기"여도 화면에 칩이 흐린 스타일로 계속 표시됩니다. 다시 켜고 싶을 때 바로 클릭할 수 있게 하기 위함입니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch6">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch5" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>5장. 자리배치 기본 화면</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch7" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>7장. 정해진 자리</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH7 ═══════════ -->
+<div class="view" data-view="ch7">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header new">
+        <div class="chapter-num">7</div>
+        <div>
+          <div class="chapter-label">CHAPTER 7 · NEW</div>
+          <div class="chapter-title">🎯 정해진 자리</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>랜덤처럼 보이지만 <span class="accent">실제로는 항상 교사가 정한 배치</span>가 나오는 기능.</li>
+          <li>① 직접 자리 구성 → ② 설정에서 저장 → ③ 토글 ON, 3단계로 끝.</li>
+          <li>학생들 눈에는 평소 자리뽑기와 <span class="accent">똑같이</span> 보입니다.</li>
+        </ul>
+      </div>
+
+      <p>키가 너무 작거나 시력이 안 좋은 학생을 앞자리에, 친한 친구끼리는 떨어뜨리고 싶지만 "선생님이 일부러 갈라놨다"는 느낌은 주고 싶지 않을 때 쓰는 기능입니다. 화면에서는 평소처럼 슬롯머신 셔플과 카운트다운이 나오지만, 결과는 항상 미리 정해둔 배치로 고정됩니다.</p>
+
+      <div class="section-title">7-1. 설정 방법 (3단계)</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content"><span class="red">🔁 자리변경</span> 모드에서 원하는 자리 배치를 직접 만듭니다 (좌석 클릭-클릭으로 학생을 옮겨가며 구성).</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">설정 ⚙ → <span class="red">"🎯 자리지정"</span> 탭에서 <span class="red">"📌 지금 화면의 자리를 '정해진 자리'로 저장"</span>을 클릭합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">같은 탭의 <span class="red">"🎯 정해진 자리로 뽑기"</span> 토글을 켭니다.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-09-자리지정탭.png -->
+      <div class="img-ss"><img src="../images/guide/class-09-자리지정탭.png" alt="설정 자리지정 탭" loading="lazy" decoding="async"></div>
+
+      <p>이후 🎲 자리 뽑기 버튼을 누르면 연출(셔플·카운트다운)은 그대로 나오지만, 결과는 항상 2단계에서 저장한 배치로 나옵니다. 저장된 배치를 다시 보고 싶으면 자리지정 탭의 미니 그리드 미리보기를 확인하세요. 삭제하고 싶다면 <span class="red">"저장된 자리 삭제"</span> 버튼을 누르면 됩니다.</p>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 학생 화면에는 아무 표시도 없습니다</div>
+        성별규칙 칩처럼 화면에 흔적을 남기는 다른 기능과 달리, 정해진 자리 기능은 교사의 설정 화면에서만 상태를 확인할 수 있습니다. 학생들은 평소 자리뽑기와 구분할 수 없습니다.
+      </div>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 정해진 자리는 성별 규칙보다 우선합니다</div>
+        정해진 자리 토글이 켜져 있으면 6장의 성별규칙이나 8장의 떨어뜨리기 설정은 무시되고 저장된 배치가 그대로 적용됩니다. 저장된 배치에 없는 학생이나 좌석 범위 변화가 있으면 유효한 부분만 반영되고, 저장된 배치 자체가 없으면 토스트 안내 후 무작위로 대체됩니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch7">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch6" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>6장. 랜덤 자리뽑기 & 성별 규칙</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch8" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>8장. 떨어뜨리기</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH8 ═══════════ -->
+<div class="view" data-view="ch8">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">8</div>
+        <div>
+          <div class="chapter-label">CHAPTER 8</div>
+          <div class="chapter-title">떨어뜨리기</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>설정 ⚙ "🤫 추가" 탭에서 <span class="accent">학생 2명을 짝지어 등록</span>.</li>
+          <li>랜덤 자리뽑기 때 등록된 두 학생이 <span class="accent">짝·모둠·옆자리가 되지 않도록</span> 자동 회피.</li>
+          <li>화면에는 흔적이 남지 않는 <span class="accent">교사 전용</span> 설정.</li>
+        </ul>
+      </div>
+
+      <p>같이 앉으면 자주 다투거나 서로 장난이 심해지는 학생 쌍을 등록해두면, 6장의 랜덤 자리뽑기가 그 둘을 짝·모둠·옆자리로 묶지 않도록 자동으로 여러 번 재시도해서 배치합니다.</p>
+
+      <div class="section-title">설정 방법</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">설정 ⚙ → <span class="red">"🤫 추가"</span> 탭을 엽니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">학생 칩 그리드에서 <span class="red">떨어뜨리고 싶은 학생 2명</span>을 클릭해 선택합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content"><span class="red">"＋ 떨어뜨리기 추가"</span>를 누르면 목록에 등록됩니다. 목록은 8개씩 페이지로 넘겨볼 수 있어요(◀ n/total ▶).</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-10-떨어뜨리기.png -->
+      <div class="img-ss"><img src="../images/guide/class-10-떨어뜨리기.png" alt="떨어뜨리기 설정" loading="lazy" decoding="async"></div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 100% 보장은 아니에요</div>
+        랜덤 배치는 최대 수백 번까지 재시도해서 떨어뜨리기 조건을 최대한 만족시키지만, 좌석 수가 적거나 조건이 너무 많으면 일부 위반이 남을 수 있습니다. 그럴 땐 🔁 자리변경 모드에서 직접 살짝 조정하면 됩니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch8">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch7" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>7장. 정해진 자리</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch9" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>9장. 칭찬 포인트</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH9 ═══════════ -->
+<div class="view" data-view="ch9">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">9</div>
+        <div>
+          <div class="chapter-label">CHAPTER 9</div>
+          <div class="chapter-title">칭찬 포인트</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>하단 <span class="accent">⭐ 포인트</span> 탭에서 학생별 점수를 ±로 관리.</li>
+          <li><span class="accent">✓ 여러 명</span> 토글로 여러 학생에게 한 번에 같은 점수 부여 가능.</li>
+          <li><span class="accent">🏆 포인트순</span> 정렬로 랭킹(🥇🥈🥉) 확인.</li>
+        </ul>
+      </div>
+
+      <div class="section-title">9-1. 개별 포인트 부여</div>
+      <p>⭐ 포인트 탭의 기본 모드입니다. 학생 카드의 <span class="red">−</span> / <span class="red">＋</span> 버튼으로 1점씩 올리고 내립니다. 좌석 화면(🪑)에서도 자리변경 모드를 끈 상태로 좌석을 클릭하면 같은 학생 팝업에서 1~10 금액칩으로 점수를 줄 수 있습니다.</p>
+
+      <!-- 캡쳐 완료: class-11-포인트개별.png -->
+      <div class="img-ss"><img src="../images/guide/class-11-포인트개별.png" alt="포인트 개별 부여 화면" loading="lazy" decoding="async"></div>
+
+      <div class="section-title mt16">9-2. 여러 명 일괄 부여</div>
+      <p>상단의 <span class="red">✓ 여러 명</span> 토글을 켜면 카드 클릭이 선택(체크표시)으로 바뀝니다. 학생 여러 명을 선택한 뒤, 위에 나타나는 금액칩(1~10) 중 하나를 고르고 <span class="red">−차감</span> / <span class="red">＋추가</span>를 누르면 선택된 학생 전원에게 한 번에 적용됩니다.</p>
+
+      <!-- 캡쳐 완료: class-12-포인트다중선택.png -->
+      <div class="img-ss"><img src="../images/guide/class-12-포인트다중선택.png" alt="포인트 다중선택 모드" loading="lazy" decoding="async"></div>
+
+      <div class="section-title mt16">9-3. 총점 · 랭킹 · 초기화</div>
+      <table class="data-table mt8">
+        <tr><th>기능</th><th>설명</th></tr>
+        <tr><td>총점 표시</td><td>화면 상단에 "총점 N점 · M명" 표시. 다중선택 중이면 선택된 학생들의 합도 함께 표시</td></tr>
+        <tr><td>🏆 포인트순 정렬</td><td>번호순 ↔ 점수 높은 순 토글. 1~3위는 🥇🥈🥉으로 표시</td></tr>
+        <tr><td>전체 초기화</td><td>모든 학생의 포인트를 0으로 되돌림</td></tr>
+      </table>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 빠르게 두 번 누르면 한 번만 적용돼요</div>
+        같은 학생에게 같은 방향(＋ 또는 −)으로 0.3초 안에 다시 누르면 중복 적용되지 않도록 막아줍니다. 빠르게 여러 번 점수를 주고 싶다면 1~10 금액칩이나 다중선택을 활용하세요.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch9">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch8" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>8장. 떨어뜨리기</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch10" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>10장. 1인 1역할</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH10 ═══════════ -->
+<div class="view" data-view="ch10">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">10</div>
+        <div>
+          <div class="chapter-label">CHAPTER 10</div>
+          <div class="chapter-title">1인 1역할</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>역할 추가·이름수정·삭제는 설정 ⚙ <span class="accent">"🧹 역할"</span> 탭에서.</li>
+          <li>역할마다 <span class="accent">이모지를 30종 팔레트에서 직접 선택</span> 가능.</li>
+          <li>학생 배정은 좌석을 클릭해 연 <span class="accent">학생 팝업</span>에서 역할을 토글.</li>
+        </ul>
+      </div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 하단에 역할 전용 탭은 없어요</div>
+        1인 1역할은 별도 화면 탭이 아니라, 🪑 자리배치 화면의 <span class="red">🧹 역할</span> 표시 토글(좌석 카드에 역할 칩 표시)과 설정 ⚙ "🧹 역할" 탭을 통해 관리합니다.
+      </div>
+
+      <div class="section-title">10-1. 역할 만들기 (이모지 직접 선택)</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">설정 ⚙ → <span class="red">"🧹 역할"</span> 탭을 엽니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">역할 추가 행 앞의 <span class="red">이모지 버튼</span>을 눌러 30종 팔레트에서 원하는 아이콘을 고릅니다 (선택 안 하면 이름에서 자동으로 이모지가 추론됨).</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">역할 이름(예: "우유 당번")을 입력하고 추가합니다. 목록은 8개씩 페이지로 넘겨볼 수 있어요.</div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-13-역할탭.png -->
+      <div class="img-ss"><img src="../images/guide/class-13-역할탭.png" alt="설정 역할 탭" loading="lazy" decoding="async"></div>
+
+      <!-- 캡쳐 완료: class-14-이모지팔레트.png -->
+      <div class="img-ss"><img src="../images/guide/class-14-이모지팔레트.png" alt="이모지 팔레트" loading="lazy" decoding="async"></div>
+
+      <p>기존에 만들어둔 역할의 이모지를 바꾸고 싶다면, 그 역할 행의 이모지 버튼을 다시 누르면 됩니다. 이름은 입력칸을 고쳐서 바로 수정(rename)할 수 있고, 배정된 학생은 그대로 유지됩니다.</p>
+
+      <div class="section-title mt16">10-2. 학생에게 역할 배정하기</div>
+      <p>🪑 자리배치 화면에서 자리변경 모드를 끈 채로 좌석을 클릭하면 학생 팝업이 열립니다. 팝업 안의 역할 칩 중 하나를 클릭하면 그 학생에게 배정됩니다. <span class="red">한 역할은 한 학생만</span> 가질 수 있어서, 다른 학생에게 같은 역할을 배정하면 이전 학생에게서는 자동으로 해제됩니다.</p>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 좌석 카드에 역할 보이게 하기</div>
+        🪑 화면 상단의 <span class="red">🧹 역할</span> 표시 토글을 켜면 좌석 카드에 역할 이모지 칩이 함께 표시됩니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch10">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch9" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>9장. 칭찬 포인트</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch11" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>11장. 학생 뽑기</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH11 ═══════════ -->
+<div class="view" data-view="ch11">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">11</div>
+        <div>
+          <div class="chapter-label">CHAPTER 11</div>
+          <div class="chapter-title">학생 뽑기</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>하단 <span class="accent">🎲 뽑기</span> 탭. 연출은 <span class="accent">🎡돌림판 / 🃏카드 / 🎰슬롯</span> 3가지.</li>
+          <li><span class="accent">뽑힌 학생 제외</span>가 기본 ON — 중복 없이 한 명씩 뽑기 가능.</li>
+          <li><span class="accent">👥 대상 선택</span>으로 일부 학생만 뽑기 풀에 포함할 수 있음.</li>
+        </ul>
+      </div>
+
+      <p>발표자·당번·즉석 추첨이 필요할 때 쓰는 화면입니다. 발표·당번 배정처럼 즉흥적으로 쓰는 기능이라, 뽑힌 명단은 저장되지 않고 <span class="red">새로고침하면 초기화</span>됩니다.</p>
+
+      <div class="section-title">11-1. 연출 3종</div>
+      <table class="data-table mt8">
+        <tr><th>모드</th><th>설명</th></tr>
+        <tr><td><span class="bold">🎡 돌림판</span></td><td>학생 수만큼 파이 섹터로 나뉜 룰렛이 돌다가 포인터가 가리키는 학생이 당첨</td></tr>
+        <tr><td><span class="bold">🃏 카드</span></td><td>뒷면 카드들이 셔플되고, 아무 카드나 클릭하면 그 안에서 무작위 1명이 공개</td></tr>
+        <tr><td><span class="bold">🎰 슬롯</span></td><td>이름이 빠르게 바뀌다가 점점 느려지며 한 명에서 정지</td></tr>
+      </table>
+
+      <!-- 캡쳐 완료: class-15-뽑기돌림판.png -->
+      <div class="img-ss"><img src="../images/guide/class-15-뽑기돌림판.png" alt="돌림판 뽑기 연출" loading="lazy" decoding="async"></div>
+
+      <!-- 캡쳐 완료: class-16-뽑기카드.png -->
+      <div class="img-ss"><img src="../images/guide/class-16-뽑기카드.png" alt="카드 뽑기 연출" loading="lazy" decoding="async"></div>
+
+      <!-- 캡쳐 완료: class-17-뽑기슬롯.png -->
+      <div class="img-ss"><img src="../images/guide/class-17-뽑기슬롯.png" alt="슬롯 뽑기 연출" loading="lazy" decoding="async"></div>
+
+      <div class="section-title mt16">11-2. 뽑기 대상 좁히기</div>
+      <ul class="bullets">
+        <li><span class="bold red">뽑힌 학생 제외</span> 토글(기본 ON) — 한 번 뽑힌 학생은 다시 뽑히지 않습니다.</li>
+        <li><span class="bold red">👥 대상 선택</span> — 학생 칩 그리드에서 일부만 선택하면, 그 학생들만으로 뽑기 풀이 좁혀집니다 (예: 10명 중 발표 안 한 8명만).</li>
+        <li><span class="bold red">🔄 초기화</span> — 뽑힌 명단을 비우고 처음부터 다시 시작합니다.</li>
+      </ul>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 새로고침하면 뽑힌 명단이 사라져요</div>
+        뽑힌 학생 목록은 일시적으로만 저장되는 정보라, 화면을 새로고침하거나 Lively를 재시작하면 초기화됩니다. 의도된 동작입니다.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch11">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch10" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>10장. 1인 1역할</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch12" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>12장. 화면 꾸미기 & 설정 정리</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH12 ═══════════ -->
+<div class="view" data-view="ch12">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">12</div>
+        <div>
+          <div class="chapter-label">CHAPTER 12</div>
+          <div class="chapter-title">화면 꾸미기 & 설정 정리</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>하단 메뉴가 작업표시줄에 가려지면 <span class="accent">📐 하단 메뉴 여백</span>으로 조절.</li>
+          <li>설정 ⚙ 모달은 <span class="accent">기본 / 역할 / 자리지정 / 추가 / 백업</span> 5개 탭.</li>
+          <li>탭마다 어떤 기능이 있는지 한눈에 정리해서 보여드려요.</li>
+        </ul>
+      </div>
+
+      <div class="section-title">12-1. 하단 메뉴 여백 (Lively 전용)</div>
+      <p>Lively Wallpaper로 배경화면 실행 시, 화면 가장 아래 영역이 Windows 작업표시줄에 가려 하단 🪑⭐🎲 메뉴가 안 보일 수 있습니다. 이때 설정 ⚙ "🤫 추가" 탭 맨 위의 <span class="red">"📐 하단 메뉴 여백"</span> −/＋ 버튼으로 여백을 조절하세요 (기본 56px, 0~160px 범위, 즉시 반영).</p>
+
+      <!-- 캡쳐 완료: class-18-하단여백.png -->
+      <div class="img-ss"><img src="../images/guide/class-18-하단여백.png" alt="하단 메뉴 여백 조절" loading="lazy" decoding="async"></div>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 이 값은 모니터별로 따로 저장돼요</div>
+        작업표시줄 가려짐 정도는 화면마다 다를 수 있어서, 하단 여백 값은 동기화되는 데이터가 아니라 그 화면(기기)에만 로컬로 저장됩니다.
+      </div>
+
+      <div class="section-title mt16">12-2. 설정 ⚙ 5탭 한눈에 보기</div>
+      <table class="data-table mt8">
+        <tr><th>탭</th><th>내용</th></tr>
+        <tr><td><span class="bold">⚙ 기본</span></td><td>Apps Script URL / 학년·반 / 학생 직접 입력 / 좌석 열·행 수 / 자리·포인트·역할 초기화</td></tr>
+        <tr><td><span class="bold">🧹 역할</span></td><td>1인 1역할 추가·이름수정·이모지 선택·삭제 (10장)</td></tr>
+        <tr><td><span class="bold">🎯 자리지정</span></td><td>정해진 자리 저장·켜기/끄기·미리보기·삭제 (7장)</td></tr>
+        <tr><td><span class="bold">🤫 추가</span></td><td>하단 메뉴 여백 / 🚻 성별 자리 규칙 / 떨어뜨리기 (6·8장)</td></tr>
+        <tr><td><span class="bold">💾 백업</span></td><td>설정·자리·포인트·역할을 파일로 내보내기 / 가져오기 (13장)</td></tr>
+      </table>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch12">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch11" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>11장. 학생 뽑기</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch13" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>13장. 백업 & 복구</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH13 ═══════════ -->
+<div class="view" data-view="ch13">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">13</div>
+        <div>
+          <div class="chapter-label">CHAPTER 13</div>
+          <div class="chapter-title">백업 & 복구</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>쌤보드 클래스 데이터는 <span class="accent">이 PC에만 저장</span>돼요 (구글시트에 안 씀).</li>
+          <li>설정 ⚙ <span class="accent">💾 백업 탭</span>에서 <span class="accent">쌤보드클래스_설정.json</span> 파일로 내보내기.</li>
+          <li>그 파일을 HTML과 같은 폴더에 두면, 데이터가 비었을 때 <span class="accent">자동 복구</span>!</li>
+        </ul>
+      </div>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 왜 백업이 필요한가요?</div>
+        쌤보드 클래스는 자리배치·포인트·역할·명단을 <span class="red">이 컴퓨터에만 로컬로 저장</span>합니다 (구글시트는 명단을 <span class="bold">읽기만</span> 하고, 공유 설정 시트를 더럽히지 않으려고 자리·포인트는 쓰지 않아요). 그래서 PC를 초기화하거나 브라우저 캐시를 지우면 데이터가 사라질 수 있습니다. 3장의 <span class="red">디스크 캐시</span> + 이 장의 <span class="red">백업 파일</span>을 둘 다 해두면 안전합니다.
+      </div>
+
+      <div class="section-title mt16">13-1. 백업 파일 만들기 (내보내기)</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">설정 <span class="red">⚙</span> → <span class="red">💾 백업</span> 탭을 엽니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content"><span class="red">"💾 내보내기"</span> 버튼을 누르면 <span class="mono">쌤보드클래스_설정.json</span> 파일이 저장됩니다. (저장 위치를 물어보면 원하는 폴더 선택, 아니면 다운로드 폴더에 생성)</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">이 파일에는 <span class="bold">앱스스크립트 주소 · 학생 명단 · 자리배치도 · 1인 1역할 · 포인트 · 떨어뜨리기 · 정해진 자리</span>가 모두 담깁니다. <span class="gray">(하단 메뉴 여백·소리는 화면마다 달라서 제외)</span></div>
+        </li>
+      </ol>
+
+      <!-- 캡쳐 완료: class-19-백업탭.png -->
+      <div class="img-ss"><img src="../images/guide/class-19-백업탭.png" alt="설정 백업 탭" loading="lazy" decoding="async"></div>
+
+      <div class="section-title mt16">13-2. 자동 복구 — 같은 폴더에 두기 (강력 추천)</div>
+      <p>방금 만든 <span class="red">쌤보드클래스_설정.json</span> 파일을 <span class="red">쌤보드클래스_ver1.0.html과 같은 폴더</span>에 두세요. 그러면 PC 초기화·캐시 삭제 등으로 로컬 데이터가 <span class="bold">비어 있을 때</span>, 배경화면을 켜자마자 이 파일을 읽어 <span class="red">자동으로 복구</span>합니다.</p>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 최신본은 절대 안 덮어써요</div>
+        자동 복구는 <span class="bold">로컬에 데이터가 없을 때만</span> 작동합니다. 평소처럼 데이터가 있으면 백업 파일을 건드리지 않으니, 오래된 파일이 최신 자리배치를 덮어쓸 걱정은 없어요. 대신 큰 변경을 한 날에는 <span class="red">다시 내보내기</span>로 파일을 갱신해두면 가장 안전합니다.
+      </div>
+
+      <div class="section-title mt16">13-3. 다른 PC로 옮기거나 되돌리기 (가져오기)</div>
+      <p>설정 ⚙ → 💾 백업 탭 → <span class="red">"📂 가져오기"</span> 버튼 → 저장해 둔 <span class="mono">쌤보드클래스_설정.json</span> 파일을 선택하면 즉시 복원됩니다. 새 컴퓨터로 옮길 때나, 실수로 초기화했을 때 이렇게 되돌리세요.</p>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 구글시트로는 백업되지 않아요</div>
+        쌤보드 본체와 달리, 쌤보드 클래스는 자리·포인트 데이터를 구글시트에 저장하지 않습니다 (공유 설정 시트 오염 방지). 따라서 <span class="red">이 백업 파일이 유일한 백업 수단</span>입니다. 꼭 한 번 만들어 두세요.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch13">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch12" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>12장. 설정 정리</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch14" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>14장. FAQ</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH14 ═══════════ -->
+<div class="view" data-view="ch14">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header">
+        <div class="chapter-num">14</div>
+        <div>
+          <div class="chapter-label">CHAPTER 14</div>
+          <div class="chapter-title">자주 묻는 질문 (FAQ)</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">쌤보드 본체 없이 쌤보드 클래스만 단독으로 써도 되나요?</div>
+        <div class="faq-a">네, 가능합니다. <a href="#ch1" class="accent">1장 B 경로</a>처럼 쌤보드클래스_ver1.0.html 파일 하나만 Lively 배경으로 등록하면 자리배치·포인트·1인1역할·뽑기 기능을 전부 단독으로 쓸 수 있어요.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">듀얼모니터인데 양쪽 화면에 똑같은 게 떠요.</div>
+        <div class="faq-a">두 모니터에 <span class="red">서로 다른 파일</span>(쌤보드 본체 ≠ 쌤보드 클래스)을 등록해야 합니다. Lively는 같은 파일을 두 모니터에 등록하면 설정값(Customise 값)을 공유하기 때문에 화면별로 다르게 보이게 할 수 없어요. <a href="#ch3" class="accent">3장 #3-2</a>를 참고해 두 파일을 각각 등록하세요.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">다른 컴퓨터에서 열면 자리·포인트가 안 보여요 / 화면 간 동기화가 안 돼요.</div>
+        <div class="faq-a">의도된 동작입니다. 쌤보드 클래스는 자리·포인트·역할 데이터를 구글시트에 쓰지 않고 <span class="red">그 컴퓨터에 로컬로만</span> 저장합니다 (공유 설정 시트 오염 방지). 그래서 PC가 다르면 자동으로 공유되지 않아요. 다른 컴퓨터로 옮기려면 <a href="#ch13" class="accent">13장의 백업 파일(쌤보드클래스_설정.json)</a>을 내보내서 그쪽에서 가져오기 하면 됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">화면을 클릭해도 한 번에 안 눌리고 두 번 눌러야 동작해요.</div>
+        <div class="faq-a">Lively Wallpaper가 배경화면을 OS 바탕화면 레이어에 띄우는 특성상, 첫 클릭이 "창 활성화"로 소비되고 두 번째 클릭부터 실제로 전달되는 경우가 있습니다. Lively 환경의 알려진 특성이라 더블 클릭이 정상 동작이에요.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">하단 🪑⭐🎲 메뉴가 화면 아래로 잘려서 안 보여요.</div>
+        <div class="faq-a"><a href="#ch12" class="accent">12장 #12-1</a>의 "📐 하단 메뉴 여백" −/＋ 버튼으로 여백을 늘려보세요. Lively로 실행할 때 Windows 작업표시줄에 가려지는 경우 발생합니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">뽑힌 학생 명단이 새로고침하면 사라져요.</div>
+        <div class="faq-a">의도된 동작입니다. 학생 뽑기 명단은 그 순간의 즉석 추첨용이라 저장되지 않고, 새로고침이나 Lively 재시작 시 자동으로 초기화됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">정해진 자리를 켰는데도 뽑기 연출이 평소와 똑같이 나와요.</div>
+        <div class="faq-a">의도된 동작입니다. <a href="#ch7" class="accent">7장</a>의 정해진 자리 기능은 슬롯 셔플·카운트다운 연출은 그대로 보여주고 결과만 미리 저장해둔 배치로 고정하는 기능이라, 학생들 눈에는 평소 랜덤 뽑기와 구분되지 않습니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">구글시트 연동을 꼭 해야 하나요?</div>
+        <div class="faq-a">아니요. <a href="#ch4" class="accent">4장</a>의 직접입력 모드로 학생 이름만 입력해도 자리배치·포인트·역할·뽑기 전체 기능을 동일하게 사용할 수 있습니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">PC를 껐다 켜거나 캐시를 지웠더니 자리·포인트가 사라졌어요.</div>
+        <div class="faq-a">쌤보드 클래스는 데이터를 <span class="red">이 PC에만 로컬로</span> 저장하기 때문에, Lively의 <a href="#ch3" class="accent">디스크 캐시(3장 #3-4)</a>가 꺼져 있으면 재시작 시 날아갈 수 있어요. ① 디스크 캐시를 켜고, ② <a href="#ch13" class="accent">13장의 백업 파일(쌤보드클래스_설정.json)</a>을 만들어 HTML과 같은 폴더에 두면 자동 복구까지 됩니다. 둘 다 해두는 걸 권장해요.</div>
+      </div>
+
+      <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--line);text-align:center;color:var(--ink-mute);font-size:13px;">
+        팍쌤의 쌤보드 클래스 사용 가이드 &nbsp;·&nbsp; ver 1.0 &nbsp;·&nbsp; 2026.6<br>
+        문의 및 피드백은 <a href="https://joo.is/팍쌤바이브" style="color:var(--accent);" target="_blank" rel="noopener">joo.is/팍쌤바이브</a> 로 연락주세요.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch14">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch13" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>13장. 백업 & 복구</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <button class="chapter-nav-btn next disabled"><span class="nav-dir">다음 (끝)</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ LIGHTBOX ═══════════ -->
+<div class="lightbox" id="lightbox" hidden>
+  <img id="lightbox-img" alt="">
+  <div class="lightbox-cap" id="lightbox-cap"></div>
+  <button class="lightbox-close" id="lightbox-close" aria-label="닫기">✕</button>
+</div>
+
+<script>
+// ───── hash router ─────
+function render() {
+  const id = (location.hash || '#hub').slice(1);
+  const target = document.querySelector('[data-view="' + id + '"]') || document.querySelector('[data-view="hub"]');
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v === target));
+  window.scrollTo({top:0, behavior:'instant'});
+}
+window.addEventListener('hashchange', render);
+render();
+
+// ───── lightbox ─────
+(function(){
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const lbCap = document.getElementById('lightbox-cap');
+  function openLB(img){
+    lbImg.src = img.src;
+    lbCap.textContent = img.alt || '';
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB(){
+    lb.hidden = true;
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('click', e => {
+    const img = e.target.closest('.img-ss img');
+    if(img){ openLB(img); return; }
+    if(e.target.id === 'lightbox' || e.target.id === 'lightbox-close'){ closeLB(); }
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && !lb.hidden) closeLB();
+  });
+})();
+
+// ───── localStorage progress ─────
+(function(){
+  const STORAGE_KEY = 'class-guide-progress-v1';
+  function getProgress(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+    catch(e){ return {}; }
+  }
+  function setProgress(id, status){
+    const p = getProgress();
+    if(status) p[id] = status; else delete p[id];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+    renderHubProgress();
+  }
+  function renderHubProgress(){
+    const p = getProgress();
+    document.querySelectorAll('.hub-card[data-chapter]').forEach(card => {
+      const id = card.dataset.chapter;
+      card.classList.toggle('completed', p[id] === 'done');
+    });
+  }
+  function renderBtnState(btn){
+    const id = btn.dataset.chapter;
+    const done = getProgress()[id] === 'done';
+    btn.textContent = done ? '✓ 완료로 표시됨 (취소)' : '○ 완료로 표시';
+    btn.classList.toggle('done', done);
+  }
+  document.querySelectorAll('.complete-btn[data-chapter]').forEach(btn => {
+    renderBtnState(btn);
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.chapter;
+      const cur = getProgress()[id];
+      setProgress(id, cur === 'done' ? null : 'done');
+      renderBtnState(btn);
+    });
+  });
+  renderHubProgress();
+})();
+</script>
+
+</body>
+</html>
