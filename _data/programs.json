@@ -101,8 +101,8 @@
           ]
         }
       ],
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
     },
     {
       "id": "teacher-class",
@@ -132,8 +132,8 @@
           ]
         }
       ],
-      "demo_url": "/demo/class.html",
-      "guide_url": "/guide/class.html"
+      "guide_url": "/guide/class.html",
+      "demo_url": "/demo/class.html"
     },
     {
       "id": "plan-generator",
@@ -206,8 +206,8 @@
           ]
         }
       ],
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
@@ -306,6 +306,33 @@
       ]
     },
     {
+      "id": "Gamification 1",
+      "title": "수학 보스 레이드 - 길이와 시간(3학년)",
+      "description": "영웅이 되어 길이와 시간 문제를 내는 보스를 잡아봅시다!",
+      "status": "completed",
+      "tags": [
+        "게이미피케이션",
+        "수학",
+        "문제풀이"
+      ],
+      "google_form_url": "",
+      "site_url": "https://classic-lotus-746.higgsfield.gg/",
+      "download_url": "",
+      "thumbnail": "/images/pasted-image-1782305865317.png",
+      "version": "1.0",
+      "release_date": "2026-06-24",
+      "order": 9,
+      "changelog": [
+        {
+          "version": "1.0",
+          "date": "2026-06-24",
+          "changes": [
+            "초기 배포"
+          ]
+        }
+      ]
+    },
+    {
       "id": "Hangul-Survival",
       "title": "한글 서바이벌",
       "description": "국어 공부를 게임으로 쉽고 재미있게!",
@@ -321,33 +348,6 @@
       "release_date": "",
       "order": 7,
       "changelog": []
-    },
-    {
-      "id": "Gamification 1",
-      "title": "수학 보스 레이드 - 길이와 시간(3학년)",
-      "description": "영웅이 되어 길이와 시간 문제를 내는 보스를 잡아봅시다!",
-      "status": "completed",
-      "tags": [
-        "게이미피케이션",
-        "수학",
-        "문제풀이"
-      ],
-      "google_form_url": "",
-      "site_url": "https://shady-patch-587.higgsfield.gg/",
-      "download_url": "",
-      "thumbnail": "/images/pasted-image-1782305865317.png",
-      "version": "1.0",
-      "release_date": "2026-06-24",
-      "order": 9,
-      "changelog": [
-        {
-          "version": "1.0",
-          "date": "2026-06-24",
-          "changes": [
-            "초기 배포"
-          ]
-        }
-      ]
     }
   ]
 }
