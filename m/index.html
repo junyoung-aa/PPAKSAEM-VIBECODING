@@ -283,7 +283,8 @@ function apiGet(action, params){
   const sep = API_URL.includes('?') ? '&' : '?';
   let u = API_URL + sep + 'action=' + encodeURIComponent(action);
   if(params) for(const k in params){ if(params[k]!==undefined && params[k]!=='') u += '&' + k + '=' + encodeURIComponent(params[k]); }
-  return fetch(u, {cache:'no-store'}).then(r=>r.text()).then(t=>{ try{return JSON.parse(t);}catch(e){return {};} });
+  // 파싱 실패(네트워크 끊김·Apps Script 에러HTML·할당량 등)는 null로 — 빈{}로 두면 호출부가 '정상 빈 응답'으로 오해해 학년/명렬표/메모를 지워버림.
+  return fetch(u, {cache:'no-store'}).then(r=>r.text()).then(t=>{ try{return JSON.parse(t);}catch(e){return null;} });
 }
 function apiPost(body){
   return fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(body) })
@@ -417,7 +418,10 @@ async function saveBlob(){
   state.saving=true; setStatus('저장 중...','saving');
   try{
     let blob = await apiGet('loadSettings');
-    if(!blob || typeof blob!=='object' || Array.isArray(blob)) blob={};
+    if(!blob || typeof blob!=='object' || Array.isArray(blob) || !('myGrade' in blob)){
+      // 현재 시트 설정을 못 읽은 채 저장하면 saveSettings가 전체 재작성하며 schoolName·myGrade·시간표·liteData 등이 통째 삭제됨. → 보류 후 재시도.
+      setStatus('저장 지연 — 잠시 후 자동 재시도','saving'); scheduleSave(); return;
+    }
     if(state.dirtyTodos){ blob.todos=state.todos; blob.todosUpdatedAt=state.todosTs; }
     else { if(Array.isArray(blob.todos)){ state.todos=blob.todos; } state.todosTs=Number(blob.todosUpdatedAt||state.todosTs||0); }
     if(state.dirtyDdays){ blob.ddays=state.ddays; blob.ddaysUpdatedAt=state.ddaysTs; }
@@ -488,7 +492,8 @@ async function loadAll(){
 }
 
 function applySettings(s){
-  if(!s || typeof s!=='object' || Array.isArray(s)) s={};
+  // 정상 설정 응답이 아니면(null·빈{}·{error}) 기존 상태 보존 — 학년/투두 날림 방지. ('myGrade'는 PC가 항상 기록하는 키)
+  if(!s || typeof s!=='object' || Array.isArray(s) || !('myGrade' in s)) return;
   state.settings=s;
   if(Array.isArray(s.todos)) state.todos=s.todos;
   if(Array.isArray(s.ddays)) state.ddays=s.ddays;
@@ -502,6 +507,7 @@ async function loadMemos(){
   const gk=gradeKey(); if(!gk) return;
   try{
     const data = await apiGet('read', {grade:gk, cls: state.myClass||''});
+    if(data==null) return;                 // 읽기 실패 → 기존 메모 유지(빈 화면으로 덮어쓰지 않음)
     state.memoSheet = pickGradeObj(data, gk);
     renderMemos();
   }catch(e){}
@@ -528,8 +534,11 @@ async function poll(){
         if(sDday>state.ddaysTs && Array.isArray(s.ddays)){ state.ddays=s.ddays; state.ddaysTs=sDday; renderDdays(); }
         // 시간표/학교명 등도 가볍게 갱신
         if(s.schoolName){ state.schoolName=String(s.schoolName); }
-        const ng=(s.myGrade!=null?String(s.myGrade):'').trim(), nc=(s.myClass!=null?String(s.myClass):'').trim();
-        if(ng!==state.myGrade || nc!==state.myClass){ state.myGrade=ng; state.myClass=nc; renderMemos(); loadMemos(); }
+        // 학년/반은 'myGrade' 키가 실제 담긴 정상 설정일 때만 반영 — 빈{}·{error}로 ''를 덮어쓰면 "내 학년 지정"으로 튐(입력칸도 날아감).
+        if('myGrade' in s){
+          const ng=(s.myGrade!=null?String(s.myGrade):'').trim(), nc=(s.myClass!=null?String(s.myClass):'').trim();
+          if(ng!==state.myGrade || nc!==state.myClass){ state.myGrade=ng; state.myClass=nc; renderMemos(); loadMemos(); }
+        }
       }
     }
     // (나) 메모 흡수 (입력 중 인풋만 보존)
@@ -540,8 +549,10 @@ async function pollMemos(){
   const gk=gradeKey(); if(!gk) return;
   const active=document.activeElement;
   const activeNo = (active && active.dataset && active.dataset.no) ? String(active.dataset.no) : null;
+  if(activeNo!=null) return;     // 메모 입력 중이면 흡수 보류 — 재렌더로 한글 조합·커서 끊기지 않게(블러 후 다음 폴링에서 반영)
   try{
     const data = await apiGet('read', {grade:gk, cls: state.myClass||''});
+    if(data==null) return;       // 읽기 실패 → 표시 중인 메모 유지
     const sheet = pickGradeObj(data, gk);
     if(JSON.stringify(sheet)!==JSON.stringify(state.memoSheet)){
       state.memoSheet=sheet;
