@@ -13,12 +13,19 @@
       ],
       "google_form_url": "",
       "site_url": "",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v2.1_AutoLecture/Auto-Lecture_ver2.1.zip",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v2.2_AutoLecture/Auto-Lecture_ver2.2.zip",
       "thumbnail": "/images/스크린샷 2026-05-11 231428.png",
-      "version": "2.1",
-      "release_date": "2026-06-22",
+      "version": "2.2",
+      "release_date": "2026-07-02",
       "order": 1,
       "changelog": [
+        {
+          "version": "2.2",
+          "date": "2026-07-02",
+          "changes": [
+            "안정성 및 호환성 개선"
+          ]
+        },
         {
           "version": "2.1",
           "date": "2026-06-22",
