@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>쌤보드 ver2.4 설정 가이드</title>
-<meta name="description" content="쌤보드 v2.4 설치·설정 가이드 — 14챕터 허브형. 핸드폰 연동·시간표 페이지·디자인 패널·AI 기능·캘린더 양방향 편집 포함.">
+<title>쌤보드 ver2.6 설정 가이드</title>
+<meta name="description" content="쌤보드 v2.6 설치·설정 가이드 — 허브형. 핸드폰 연동·시간표 페이지·디자인 패널·AI 기능·캘린더 양방향 편집에 더해 생일·알레르기 관리와 할 일 개선까지 포함.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -364,7 +364,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
   <a class="topbar-back" href="../index.html">← 메인으로</a>
   <span class="topbar-sep">/</span>
   <span class="topbar-title">쌤보드 설정 가이드</span>
-  <span class="topbar-badge">ver 2.4</span>
+  <span class="topbar-badge">ver 2.6</span>
 </div>
 
 <!-- ═══════════ HUB VIEW ═══════════ -->
@@ -372,14 +372,14 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
   <div class="container">
     <div class="hub-cover">
       <div class="hub-cover-icon">🖥️</div>
-      <div class="hub-cover-badge">SSAMBOARD · v2.4</div>
+      <div class="hub-cover-badge">SSAMBOARD · v2.6</div>
       <div class="hub-cover-title">쌤보드 설정 가이드</div>
       <div class="hub-cover-sub">팍쌤의 바이브코딩 저장소</div>
       <div class="hub-cover-tags">
         <span class="hub-cover-tag">📱 핸드폰 연동</span>
-        <span class="hub-cover-tag">🗓 시간표 페이지</span>
+        <span class="hub-cover-tag">🎂 생일·알레르기</span>
         <span class="hub-cover-tag">🪄 AI 시간표 추출</span>
-        <span class="hub-cover-tag">📅 캘린더 양방향</span>
+        <span class="hub-cover-tag">🌤 날씨·급식</span>
       </div>
     </div>
 
@@ -550,6 +550,18 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
             <span class="hub-card-chip">QR 스캔</span>
           </div>
         </a>
+        <a href="#ch-student" class="hub-card" data-chapter="ch-student">
+          <div class="new-dot"></div>
+          <div class="progress-indicator">✓</div>
+          <div class="hub-card-num">🎂</div>
+          <div class="hub-card-icon">⚠️</div>
+          <div class="hub-card-title">생일 · 알레르기 관리</div>
+          <div class="hub-card-sub">생일 배지 + 급식 알레르기 경고</div>
+          <div class="hub-card-meta">
+            <span class="hub-card-chip time">~4분</span>
+            <span class="hub-card-chip star">NEW v2.6</span>
+          </div>
+        </a>
       </div>
     </div>
 
@@ -575,7 +587,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
           <div class="hub-card-sub">기본 설정 · v2 신규 기능</div>
           <div class="hub-card-meta">
             <span class="hub-card-chip time">참고</span>
-            <span class="hub-card-chip">17문답</span>
+            <span class="hub-card-chip">19문답</span>
           </div>
         </a>
       </div>
@@ -611,7 +623,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
 
       <div class="section-title">제공되는 파일</div>
       <ul class="bullets">
-        <li><span class="mono red">쌤보드_ver2.4.html</span> — 메인 대시보드 파일</li>
+        <li><span class="mono red">쌤보드_ver2.6.html</span> — 메인 대시보드 파일</li>
         <li><span class="mono">LWP_Setup.exe</span> — Lively Wallpaper 설치 파일</li>
         <li>구글 시트 사본 링크 — 명렬표 · 내선번호 · 누가기록 데이터 저장소</li>
         <li>Apps Script 코드 — 시트·캘린더 연동용</li>
@@ -735,7 +747,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
         </li>
         <li>
           <div class="step-num">4</div>
-          <div class="step-content">파일 탐색기에서 <span class="mono red">쌤보드_ver2.4.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
+          <div class="step-content">파일 탐색기에서 <span class="mono red">쌤보드_ver2.6.html</span> 파일을 선택하고 <span class="red">"열기"</span>를 클릭합니다.</div>
         </li>
         <li>
           <div class="step-num">5</div>
@@ -1567,22 +1579,23 @@ function sheetToCsv(sh, rowsOverride){
         <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
           <li>위젯바 <span class="accent">⚙ 설정 버튼</span>에서 학교·시트·캘린더·AI를 한 번에 입력.</li>
           <li>학교 정보는 <span class="accent">NEIS 학교 검색</span>으로 자동 입력.</li>
-          <li>v2 설정 모달은 <span class="accent">6개 탭</span>으로 재구성 (디자인은 7장 디자인 패널로 이관).</li>
+          <li>v2 설정 모달은 <span class="accent">7개 탭</span>으로 재구성 (디자인은 7장 디자인 패널로 이관).</li>
         </ul>
       </div>
 
-      <p>대시보드 우측 상단 위젯바의 <span class="red">⚙ 설정 버튼</span>을 클릭하면 설정 창이 열립니다. v2 설정 모달은 6개 탭으로 구성됐어요.</p>
+      <p>대시보드 우측 상단 위젯바의 <span class="red">⚙ 설정 버튼</span>을 클릭하면 설정 창이 열립니다. v2 설정 모달은 7개 탭으로 구성됐어요.</p>
 
       <div class="img-ss"><img src="../images/guide/v2-09-대시보드기본설정.png" alt="대시보드 기본 설정 — 우상단 ⚙ 설정 버튼" loading="lazy" decoding="async"></div>
 
       <div class="box box-new mt8">
-        <div class="box-title"><span class="badge-v2">v2</span> 설정 모달 6개 탭</div>
+        <div class="box-title"><span class="badge-v2">v2</span> 설정 모달 7개 탭</div>
         <ul class="bullets">
-          <li><span class="mono">✅ 할 일 & D-Day</span> — 투두 추가·순서·태그·삭제 + D-Day 추가·삭제</li>
+          <li><span class="mono">✅ 할 일 & D-Day</span> — 투두 추가·순서·태그·수정·삭제 + D-Day 추가·삭제</li>
           <li><span class="mono">📅 캘린더</span> — 구글 캘린더 iCal URL 연동, 색상·필터 설정</li>
           <li><span class="mono">🏫 학교 정보</span> — 학교명/날씨/내 학년 (NEIS 학교 검색)</li>
           <li><span class="mono">🤖 AI</span> — AI 키 상태 확인 (키 이미 박혀있어 별도 설정 불필요)</li>
           <li><span class="mono">📊 구글시트 연동</span> — Apps Script URL 입력, 연동 진단</li>
+          <li><span class="mono">📱 모바일</span> <span class="badge-new">v2.4</span> — 핸드폰 연동 QR 코드 (<a href="#ch-mobile" class="accent">핸드폰 연동 챕터</a>)</li>
           <li><span class="mono">💾 백업</span> — 설정파일 내보내기/가져오기, 클라우드 백업</li>
         </ul>
         <p class="mt8">참고: 기존 버전의 <span class="mono">🎨 디자인</span> 탭은 우상단 🎨 디자인 패널로 이관됐습니다 (<a href="#ch7" class="accent">7장</a>).</p>
@@ -2194,17 +2207,23 @@ function sheetToCsv(sh, rowsOverride){
 
       <div class="img-ss"><img src="가이드북%20사진/v2.3-할일%26디데이.png" alt="할 일 & D-Day 화면" loading="lazy" decoding="async"></div>
 
-      <div class="section-title">10-1. 할 일 (To-Do)</div>
+      <div class="section-title">11-1. 할 일 (To-Do)</div>
 
       <ul class="bullets">
-        <li><span class="bold">빠른 추가</span> — 메인 패널 입력칸 또는 설정 탭에서 텍스트 입력 후 Enter</li>
+        <li><span class="bold">빠른 추가</span> — 메인 패널 입력칸 또는 설정 탭에서 텍스트 입력 후 Enter. <span class="badge-new">v2.6</span> 새 할 일은 <span class="accent">목록 맨 위</span>에 추가돼 아래로 파묻히지 않아요.</li>
         <li><span class="bold">태그</span> — 입력 전 태그 선택 (긴급/학급/업무/개인) 또는 항목별 +태그 배지 클릭 → 태그 순환</li>
         <li><span class="bold">완료 체크</span> — 항목 좌측 체크박스 클릭</li>
         <li><span class="bold">순서 변경</span> — 설정 탭에서 ▲▼ 버튼</li>
+        <li><span class="bold">내용 수정</span> <span class="badge-new">v2.6</span> — 설정 탭에서 <span class="accent">할 일 텍스트를 클릭</span>하면 바로 고쳐 쓸 수 있어요 (인라인 편집, ESC로 취소).</li>
         <li><span class="bold">삭제</span> — 항목 우측 ✕ 버튼</li>
       </ul>
 
-      <div class="section-title mt16">10-2. D-Day</div>
+      <div class="box box-new mt8">
+        <div class="box-title"><span class="badge-v2">v2.6</span> 메인 '오늘 할 일' 카드에서 ▲▼로 넘겨 보기</div>
+        할 일이 많아 카드 한 화면에 다 안 들어가면, 카드 우측의 <span class="accent">▲ / ▼ 버튼</span>으로 <span class="bold">페이지 단위로 넘겨</span> 볼 수 있어요. (설정 탭의 ▲▼는 <span class="bold">항목 순서 이동</span>, 메인 카드의 ▲▼는 <span class="bold">보이는 목록 넘김</span>으로 서로 역할이 달라요.)
+      </div>
+
+      <div class="section-title mt16">11-2. D-Day</div>
 
       <ol class="steps">
         <li>
@@ -2300,6 +2319,75 @@ function sheetToCsv(sh, rowsOverride){
       <div class="chapter-nav">
         <a href="#ch11" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>11장. ✅ 할 일 & D-Day</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
+        <a href="#ch-student" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>🎂 생일 · 알레르기 관리</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CH-STUDENT (NEW v2.6) ═══════════ -->
+<div class="view" data-view="ch-student">
+  <div class="container">
+    <div class="chapter-page">
+      <div class="chapter-header new">
+        <div class="chapter-num">🎂</div>
+        <div>
+          <div class="chapter-label">NEW · v2.6</div>
+          <div class="chapter-title">생일 · 알레르기 관리</div>
+        </div>
+      </div>
+
+      <div class="box box-new mt8">
+        <div class="box-title">🚀 3줄 요약</div>
+        <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
+          <li>학생별 <span class="accent">생일·알레르기</span>를 명렬표에서 한 번 입력해 두면.</li>
+          <li>생일 당일·직전이면 시계 카드에 <span class="accent">🎂 생일 배지</span>가 뜨고,</li>
+          <li>급식에 그 학생의 알레르기 식품이 나오면 급식 카드에 <span class="accent">⚠️ 경고</span>가 표시돼요.</li>
+        </ul>
+      </div>
+
+      <p>v2.6에서 학생 개인 정보를 챙겨주는 기능이 추가됐습니다. 챙기기 쉬운 <span class="red">생일</span>과, 놓치면 안 되는 <span class="red">알레르기</span>를 한곳에서 관리해요.</p>
+
+      <div class="section-title">1. 생일·알레르기 입력하기</div>
+      <ol class="steps">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">위젯바의 <span class="red">🧑‍🎓 명렬표</span> 버튼을 눌러 명렬표 창을 엽니다.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">창 상단의 <span class="red">🎂 생일·알레르기</span> 뷰 버튼을 클릭합니다.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content"><span class="bold">🎂 생일</span> 칸에 <span class="mono">월-일</span> 형식으로 입력합니다 (예: 3월 15일 → <span class="mono">03-15</span>). 연도는 필요 없어요.</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content"><span class="bold">⚠️ 알레르기</span>는 학생 이름 옆 버튼을 눌러 <span class="red">알레르기 번호</span>를 선택합니다 (NEIS 급식 표기와 동일한 표준 번호 — 예: 5.땅콩, 6.대두, 1.난류).</div>
+        </li>
+      </ol>
+
+      <div class="box box-tip mt8">
+        <div class="box-title">💡 입력한 정보는 설정과 함께 저장돼요</div>
+        생일·알레르기는 학생 명단(학년-반-번호)에 연결되어 <span class="bold">설정과 함께 저장·백업</span>됩니다. 명렬표를 구글시트로 연동해 쓰는 경우에도, 이 정보는 시트 명단을 덮어쓰지 않고 대시보드 설정 쪽에 안전하게 보관돼요.
+      </div>
+
+      <div class="section-title mt16">2. 🎂 생일 배지</div>
+      <p>학생 생일이 <span class="red">오늘이거나 7일 이내</span>로 다가오면, 시계 카드의 인사말 아래에 <span class="bold">🎂 생일 배지</span>가 자동으로 나타납니다. 아침에 대시보드를 켜자마자 "오늘 누구 생일이지?"를 자연스럽게 챙길 수 있어요.</p>
+
+      <div class="section-title mt16">3. ⚠️ 급식 알레르기 경고</div>
+      <p>오늘 급식 메뉴에 표기된 <span class="red">알레르기 번호</span>와 우리 반 학생들의 알레르기가 겹치면, <span class="bold">급식 카드에 ⚠️ 경고 문구</span>가 함께 표시됩니다. 어떤 학생이 어떤 메뉴에 주의해야 하는지 미리 알 수 있어요.</p>
+
+      <div class="box box-warn mt8">
+        <div class="box-title">⚠️ 급식 알레르기 표기가 있는 학교에서만 동작해요</div>
+        경고는 NEIS 급식 데이터의 <span class="bold">메뉴 옆 알레르기 번호</span>를 기준으로 계산합니다. 급식이 정상적으로 표시(<a href="#ch6" class="accent">6-1 학교 정보</a> 설정)되고 메뉴에 알레르기 번호가 붙어 있어야 학생별 경고가 뜹니다. 어디까지나 보조 알림이니, 최종 확인은 꼭 담임이 직접 해 주세요.
+      </div>
+
+      <div class="progress-row"><button class="complete-btn" data-chapter="ch-student">○ 완료로 표시</button></div>
+      <div class="chapter-nav">
+        <a href="#ch-mobile" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>📱 핸드폰 연동</span></a>
+        <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
         <a href="#ch12" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>12장. 💾 설정 백업</span></a>
       </div>
     </div>
@@ -2346,7 +2434,7 @@ function sheetToCsv(sh, rowsOverride){
       <ol class="steps" start="3">
         <li>
           <div class="step-num">3</div>
-          <div class="step-content">다운로드된 파일을 <span class="mono red">쌤보드_ver2.4.html</span> 파일과 <span class="red">같은 폴더</span>에 저장합니다.</div>
+          <div class="step-content">다운로드된 파일을 <span class="mono red">쌤보드_ver2.6.html</span> 파일과 <span class="red">같은 폴더</span>에 저장합니다.</div>
         </li>
       </ol>
 
@@ -2381,7 +2469,7 @@ function sheetToCsv(sh, rowsOverride){
 
       <div class="progress-row"><button class="complete-btn" data-chapter="ch12">○ 완료로 표시</button></div>
       <div class="chapter-nav">
-        <a href="#ch-mobile" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>📱 핸드폰 연동</span></a>
+        <a href="#ch-student" class="chapter-nav-btn"><span class="nav-dir">← 이전</span><span>🎂 생일 · 알레르기 관리</span></a>
         <a href="#hub" class="chapter-nav-hub">🏠 허브로</a>
         <a href="#ch13" class="chapter-nav-btn next"><span class="nav-dir">다음 →</span><span>13장. FAQ</span></a>
       </div>
@@ -2505,9 +2593,17 @@ function sheetToCsv(sh, rowsOverride){
         <div class="faq-q">AI 시간표 추출에서 없는 교시(예: 6교시)가 채워져요. <span class="badge-v2">v2.3</span></div>
         <div class="faq-a">Gemini Vision의 시각 인식 한계로 가끔 발생하는 알려진 이슈입니다. 다른 요일이 6교시까지 있으면 5교시까지인 요일도 자동으로 6교시를 만들어내는 경향이 있어요. 해결: 적용 후 시간표 패널 헤더 우측의 <span class="red">✏️ 수동 편집</span> 버튼으로 잘못 채워진 셀을 직접 비우세요. (자세한 시간표 사용법은 <a href="#ch10" class="accent">10장</a> 참고)</div>
       </div>
+      <div class="faq-item">
+        <div class="faq-q">생일 배지나 급식 알레르기 경고가 안 떠요. <span class="badge-new">v2.6</span></div>
+        <div class="faq-a">먼저 <a href="#ch-student" class="accent">명렬표 🎂 생일·알레르기 뷰</a>에서 값을 입력·저장했는지 확인하세요. <span class="bold">생일 배지</span>는 오늘 또는 7일 이내 생일일 때만 시계 카드에 뜹니다. <span class="bold">급식 경고</span>는 급식이 정상 표시(<a href="#ch6" class="accent">6-1 학교 정보</a>)되고 메뉴에 알레르기 번호가 붙어 있어야, 그 번호와 학생 알레르기가 겹칠 때 나타납니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">할 일이 많은데 '오늘 할 일' 카드에 몇 개만 보여요. <span class="badge-new">v2.6</span></div>
+        <div class="faq-a">카드 우측의 <span class="red">▲ / ▼ 버튼</span>으로 페이지를 넘겨 나머지 항목을 볼 수 있어요. 카드 크기에 맞춰 자동으로 페이지가 나뉩니다. (전체 목록·순서 변경은 설정 → ✅ 할 일 & D-Day 탭에서. <a href="#ch11" class="accent">11장</a> 참고)</div>
+      </div>
 
       <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--line);text-align:center;color:var(--ink-mute);font-size:13px;">
-        팍쌤의 쌤보드 설정 가이드 &nbsp;·&nbsp; ver 2.4 &nbsp;·&nbsp; 2026.5<br>
+        팍쌤의 쌤보드 설정 가이드 &nbsp;·&nbsp; ver 2.6 &nbsp;·&nbsp; 2026.7<br>
         문의 및 피드백은 <a href="https://joo.is/팍쌤바이브" style="color:var(--accent);" target="_blank" rel="noopener">joo.is/팍쌤바이브</a> 로 연락주세요.
       </div>
 
@@ -2536,7 +2632,7 @@ function sheetToCsv(sh, rowsOverride){
       <div class="box box-new mt8">
         <div class="box-title">🚀 3줄 요약</div>
         <ol class="bullets" style="padding-left:18px;">
-          <li>기존 <span class="mono">쌤보드_ver2.3.html</span>을 새 <span class="mono red">쌤보드_ver2.4.html</span>로 교체합니다.</li>
+          <li>기존 대시보드 HTML을 새 <span class="mono red">쌤보드_ver2.6.html</span>로 교체합니다.</li>
           <li>Lively Wallpaper에서 배경화면을 <span class="accent">새 HTML 파일로 다시 등록</span>합니다.</li>
           <li><span class="mono">대시보드_설정.json</span> 파일이 같은 폴더에 있다면, <span class="accent">기존 설정이 모두 자동 복원</span>됩니다.</li>
         </ol>
@@ -2545,16 +2641,17 @@ function sheetToCsv(sh, rowsOverride){
       <p>이미 기존 버전을 잘 쓰고 있었다면 1장부터 다시 할 필요 없어요. <span class="accent">HTML 파일 하나만 교체하면 끝</span>이고, 기존 설정은 모두 자동으로 복원됩니다.</p>
 
       <div class="box box-new mt8">
-        <div class="box-title">🆕 v2.4에서 달라진 점 핵심 요약</div>
+        <div class="box-title">🆕 v2.5 · v2.6에서 새로 생긴 것</div>
         <ul class="bullets">
-          <li><span class="bold">📱 핸드폰 연동 신설 ★</span> — 설정에서 QR 코드 스캔 1번으로 폰에서 투두·D-Day·학생 메모를 양방향 편집. 홈 화면에 추가하면 앱처럼 사용. 사용법은 <a href="#ch-mobile" class="accent">핸드폰 연동 챕터</a> 참고.</li>
-          <li><span class="bold">📊 구글시트 연동 탭 개편</span> — 설정 모달에 '📱 모바일' 탭이 신설돼 QR이 여기에 표시됨. 기존 구글시트 연동 설정은 그대로.</li>
-          <li><span class="bold">📐 설정 탭 UI 정리</span> — 탭 이름이 단축돼 한 줄에 표시됨. 기능은 동일.</li>
+          <li><span class="bold">🎂 생일 · 알레르기 관리 ★</span> <span class="badge-new">v2.6</span> — 명렬표에서 학생별 생일·알레르기를 입력하면, 생일 배지와 급식 알레르기 경고가 자동으로 떠요. 사용법은 <a href="#ch-student" class="accent">생일·알레르기 챕터</a> 참고.</li>
+          <li><span class="bold">✅ 할 일 사용성 개선</span> <span class="badge-new">v2.6</span> — 새 할 일이 목록 맨 위에 추가되고, 설정 탭에서 텍스트를 클릭해 바로 수정, 메인 카드는 ▲▼로 페이지를 넘겨 봅니다. (<a href="#ch11" class="accent">11장</a>)</li>
+          <li><span class="bold">🪑 자리배치(쌤보드 클래스) 내장</span> <span class="badge-v2">v2.5</span> — 위젯바 🪑 버튼으로 자리배치·칭찬포인트·1인1역할·학생뽑기를 바로 실행. 듀얼모니터 2번째 화면으로도 쓸 수 있어요. (자세한 건 <a href="class.html" class="accent">쌤보드 클래스 가이드</a>)</li>
+          <li><span class="bold">📱 핸드폰 연동</span> <span class="badge-v2">v2.4</span> — QR 스캔 1번으로 폰에서 투두·D-Day·학생 메모를 양방향 편집. (<a href="#ch-mobile" class="accent">핸드폰 연동 챕터</a>)</li>
         </ul>
       </div>
 
       <div class="box box-tip mt8">
-        <div class="box-title">✅ v2.4는 Apps Script 재배포가 필요 없어요!</div>
+        <div class="box-title">✅ Apps Script 재배포가 필요 없어요!</div>
         <p>이번 업데이트는 <span class="accent">기존 Apps Script 코드를 그대로 사용</span>합니다. 재배포하지 않아도 모든 기능이 정상 동작하고, 기존 URL도 변경 없이 유지됩니다.</p>
       </div>
 
