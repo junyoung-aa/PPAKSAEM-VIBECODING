@@ -67,59 +67,22 @@
       "site_url": "",
       "download_url": "",
       "thumbnail": "/images/스크린샷 2026-05-17 235152.png",
-      "version": "2.6",
-      "release_date": "2026-07-09",
+      "version": "2.7",
+      "release_date": "2026-07-10",
       "order": 2,
       "changelog": [
         {
-          "version": "2.6",
-          "date": "2026-07-09",
+          "version": "2.7",
+          "date": "2026-07-10",
           "changes": [
             "[학생] 생일·알레르기 관리 추가 — 생일이 다가오면 시계 카드에 🎂 배지, 급식에 알레르기 메뉴가 나오면 ⚠️ 경고",
             "[할 일] 새 항목이 목록 맨 위에 추가 · 설정에서 텍스트 클릭해 바로 수정 · '오늘 할 일' 카드 ▲▼로 페이지 넘겨보기",
-            "[자리배치] 쌤보드 클래스(자리배치·포인트·1인1역·학생뽑기)를 🪑 버튼으로 본체에서 바로 실행",
-            "안정성 개선"
-          ]
-        },
-        {
-          "version": "2.4",
-          "date": "2026-05-31",
-          "changes": [
-            "[모바일] QR코드 인식 시 모바일 페이지 연결",
-            "[모바일] 핸드폰에서 투두, 디데이, 누가기록 수정 가능"
-          ]
-        },
-        {
-          "version": "2.3",
-          "date": "2026-05-26",
-          "changes": [
-            "[시간표] 기능 추가",
-            "[시간표] 주간학습안내 이미지 AI 분석 기능 탑재",
-            "[캘린더][D-Day] 순서 조정 기능 추가"
-          ]
-        },
-        {
-          "version": "2.1",
-          "date": "2026-05-18",
-          "changes": [
-            "Todo 링크 삽입 기능",
-            "캘린더 일정 클릭 불가 버그 수정",
-            "디데이/캘린더 순서 변경 기능"
-          ]
-        },
-        {
-          "version": "2.0",
-          "date": "2026-05-18",
-          "changes": [
-            "공문/메신저 캡쳐 or 복붙 - AI가 할 일 자동 추출",
-            "학부모에게 보낼 메시지 AI가 자동으로 다듬기",
-            "구글캘린더 일정 추가/삭제/수정 기능 추가",
-            "디자인 변화"
+            "[업데이트 알림] 쌤보드 업데이트 발생 시 자동 알림"
           ]
         }
       ],
-      "guide_url": "/guide/dashboard.html",
-      "demo_url": "/demo/dashboard.html"
+      "demo_url": "/demo/dashboard.html",
+      "guide_url": "/guide/dashboard.html"
     },
     {
       "id": "teacher-class",
@@ -127,40 +90,30 @@
       "description": "학생 자리배치도, 포인트, 1인 1역, 학생 뽑기까지 한 화면에! 쌤보드와 함께 듀얼모니터 2번 화면에 띄우거나 단독으로도 쓸 수 있어요.",
       "status": "completed",
       "tags": [
-        "자리배치",
         "학급운영",
+        "자리배치",
         "배경화면"
       ],
       "google_form_url": "https://forms.gle/omGGf5G74JH1w3iG8",
       "site_url": "",
       "download_url": "",
       "thumbnail": "/images/pasted-image-1782042698521.png",
-      "version": "1.1",
-      "release_date": "2026-07-09",
+      "version": "1.2",
+      "release_date": "2026-07-10",
       "order": 3,
       "changelog": [
         {
-          "version": "1.1",
-          "date": "2026-07-09",
+          "version": "1.2",
+          "date": "2026-07-10",
           "changes": [
-            "[수업 도구] ⏱️ 수업 타이머(전체화면·프리셋·직접입력) 추가",
-            "[수업 도구] 📋 알림장 칠판 모드 추가 — 오늘의 숙제·준비물을 크게 표시",
+            "[수업 도구] ⏱️ 수업 타이머, 📋 알림장 추가",
             "[학급운영] 🌡️ 학급 목표 온도계 추가 — 포인트 총점으로 단계별 목표 달성",
-            "[자리배치] 📷 자리표를 이미지로 저장(보결·게시용)"
-          ]
-        },
-        {
-          "version": "1.0",
-          "date": "2026-06-21",
-          "changes": [
-            "최초 배포 — 학생 자리배치(랜덤·짝꿍·모둠)",
-            "칭찬 포인트 / 1인 1역할 / 학생 뽑기(돌림판·카드·슬롯)",
-            "정해진 자리(랜덤처럼 보이는 지정 배치) · 역할 이모지 직접 선택 · 뽑기 대상 선택"
+            "[업데이트 알림] 쌤보드클래스 업데이트 발생시 자동 알림"
           ]
         }
       ],
-      "demo_url": "/demo/class.html",
-      "guide_url": "/guide/class.html"
+      "guide_url": "/guide/class.html",
+      "demo_url": "/demo/class.html"
     },
     {
       "id": "plan-generator",
@@ -233,8 +186,8 @@
           ]
         }
       ],
-      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다.",
-      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다."
+      "download_url_note": "내 PC에서 직접 실행하는 방식으로,\n대용량 PDF 처리에 적합합니다.",
+      "site_url_note": "웹에서 바로 사용할 수 있어 편리합니다.\n단, 용량이 큰 PDF는 처리 속도가 느릴 수 있습니다."
     },
     {
       "id": "ai-pdf-splitter-chrome extension",
