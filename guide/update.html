@@ -134,19 +134,19 @@ a { color:inherit; text-decoration:none; }
     <div class="cover-icon">🖥️</div>
     <div class="cover-title">쌤보드 업데이트 안내</div>
     <div class="cover-sub">새 버전 소식과 업데이트 방법</div>
-    <div class="cover-ver" id="latestVer">최신 버전 v2.7</div>
+    <div class="cover-ver" id="latestVer">쌤보드 v2.7 · 쌤보드클래스 v1.2</div>
   </div>
 
   <div class="card">
     <h2>🔄 업데이트 방법 (3단계, 5분이면 끝)</h2>
     <ol class="steps">
       <li><strong>새 버전 파일 받기</strong> — 아래 버튼으로 업데이트 신청 메일을 보내주시면 최신 파일 다운로드 링크를 보내드려요.</li>
-      <li><strong>기존 HTML 파일 덮어쓰기</strong> — 받은 파일을 지금 쓰시는 쌤보드 HTML이 있는 <strong>같은 폴더</strong>에 넣으세요. 폴더에 있는 <code>대시보드_설정.json</code> 파일은 그대로 두시면 됩니다.</li>
+      <li><strong>기존 HTML 파일 덮어쓰기</strong> — 받은 파일(쌤보드·쌤보드클래스 각각)을 지금 쓰시는 HTML이 있는 <strong>같은 폴더</strong>에 넣으세요. 폴더에 있는 <code>대시보드_설정.json</code>·<code>쌤보드클래스_설정.json</code> 파일은 그대로 두시면 됩니다.</li>
       <li><strong>Lively Wallpaper에서 새 파일 등록</strong> — Lively에서 새 HTML을 배경화면으로 지정하면 완료! (파일명이 같으면 벽지 새로고침만 해도 돼요)</li>
     </ol>
     <div class="notice">
-      ✅ <strong>데이터는 안 날아가요.</strong> 설정·할 일·자리배치는 같은 폴더의 <code>대시보드_설정.json</code>과 구글시트 백업에서 <strong>자동 복구</strong>됩니다.
-      혹시 모르니 업데이트 전에 설정 → 백업 탭에서 <strong>💾 설정파일 내보내기</strong> 한 번 눌러두시면 완벽!
+      ✅ <strong>데이터는 안 날아가요.</strong> 쌤보드 설정·할 일은 <code>대시보드_설정.json</code>과 구글시트 백업에서, 쌤보드클래스의 자리배치·포인트는 <code>쌤보드클래스_설정.json</code>에서 <strong>자동 복구</strong>됩니다.
+      혹시 모르니 업데이트 전에 각 프로그램의 백업 탭에서 <strong>💾 내보내기</strong> 한 번씩 눌러두시면 완벽!
     </div>
     <div class="notice-info">
       💡 처음 설치하시거나 자세한 설정법이 궁금하시면 <a class="guide-link" href="/guide/dashboard">쌤보드 설정 가이드</a>를 참고하세요.
@@ -164,9 +164,10 @@ a { color:inherit; text-decoration:none; }
     <h2>📝 무엇이 달라졌나요?</h2>
     <ul class="changelog">
       <li>
-        <span class="ver">v2.7</span><span class="date">2026. 7.</span><span class="tag-new">NEW</span>
+        <span class="ver">v2.7 + 클래스 v1.2</span><span class="date">2026. 7.</span><span class="tag-new">NEW</span>
         <ul>
-          <li>🔔 <strong>업데이트 알림</strong> — 새 버전이 나오면 바탕화면 우측 하단에서 알려드려요 (설정 → 백업 탭에서 수동 확인도 가능)</li>
+          <li>🔔 <strong>업데이트 알림</strong> — 새 버전이 나오면 바탕화면 우측 하단에서 알려드려요. 쌤보드·쌤보드클래스 각각 독립적으로 알림 (백업 탭에서 수동 확인도 가능)</li>
+          <li>🪑 <strong>자리배치 분리</strong> — 쌤보드 안에 내장돼 있던 자리배치(🪑 버튼)는 제거하고, 자리배치·포인트·1인1역은 <strong>쌤보드클래스</strong>(별도 파일)로 일원화. 쌤보드가 훨씬 가벼워졌어요</li>
         </ul>
       </li>
       <li>
@@ -199,7 +200,10 @@ a { color:inherit; text-decoration:none; }
 <script>
 // 최신 버전 표기는 version.json과 동기화 (실패 시 정적 텍스트 유지)
 fetch('/version.json',{cache:'no-store'}).then(r=>r.json()).then(v=>{
-  if(v && v.latest) document.getElementById('latestVer').textContent = '최신 버전 v' + v.latest;
+  const parts=[];
+  if(v && v.latest) parts.push('쌤보드 v'+v.latest);
+  if(v && v.classLatest) parts.push('쌤보드클래스 v'+v.classLatest);
+  if(parts.length) document.getElementById('latestVer').textContent = parts.join(' · ');
 }).catch(()=>{});
 </script>
 </body>

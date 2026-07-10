@@ -1,5 +1,8 @@
 {
   "latest": "2.7",
-  "note": "업데이트 알림 기능 추가 · AI 키 보안 강화(프록시 전환)",
-  "url": "https://ppaksaem-vibecoding.pages.dev/guide/update.html"
+  "note": "업데이트 알림 추가 · 자리배치는 쌤보드클래스로 분리",
+  "url": "https://ppaksaem-vibecoding.pages.dev/guide/update.html",
+  "classLatest": "1.2",
+  "classNote": "업데이트 알림 기능 추가",
+  "classUrl": "https://ppaksaem-vibecoding.pages.dev/guide/update.html"
 }
