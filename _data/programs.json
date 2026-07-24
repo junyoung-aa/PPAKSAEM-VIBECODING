@@ -13,12 +13,19 @@
       ],
       "google_form_url": "",
       "site_url": "",
-      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v2.2_AutoLecture/Auto-Lecture_ver2.2.zip",
+      "download_url": "https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v2.3_AutoLecture/Auto-Lecture_ver2.3.zip",
       "thumbnail": "/images/스크린샷 2026-05-11 231428.png",
-      "version": "2.2",
-      "release_date": "2026-07-02",
+      "version": "2.3",
+      "release_date": "2026-07-24",
       "order": 1,
       "changelog": [
+        {
+          "version": "2.3",
+          "date": "2026-07-24",
+          "changes": [
+            "경기남부 외 배움누리터 공동활용기관(전북 등) 전체 지원"
+          ]
+        },
         {
           "version": "2.2",
           "date": "2026-07-02",
