@@ -1,3 +1,8 @@
 /version.json
   Access-Control-Allow-Origin: *
   Cache-Control: no-store
+
+# 앱의 [보드 다운로드 및 교체]가 받아가는 보드 HTML — 캐시가 걸리면 새 버전을 올려도
+# 옛 파일이 내려갈 수 있어 no-store로 둔다. (앱은 C# HttpClient라 CORS는 불필요)
+/boards/*
+  Cache-Control: no-store

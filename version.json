@@ -1,8 +1,10 @@
 {
-  "latest": "2.7",
-  "note": "업데이트 알림 추가 · 자리배치는 쌤보드클래스로 분리",
+  "latest": "2.27",
+  "note": "나이스 시간표 연동 · 바로가기 · 학사일정 — 그리고 설치형 프로그램으로 새로 나왔어요",
   "url": "https://ppaksaem-vibecoding.pages.dev/guide/update.html",
-  "classLatest": "1.2",
-  "classNote": "업데이트 알림 기능 추가",
-  "classUrl": "https://ppaksaem-vibecoding.pages.dev/guide/update.html"
+  "mainHtmlUrl": "https://ppaksaem-vibecoding.pages.dev/boards/%EC%8C%A4%EB%B3%B4%EB%93%9C.html",
+  "classLatest": "1.9",
+  "classNote": "1인1역 여러 명 배정 · 역할 랜덤 배정 · 어제로 되돌리기",
+  "classUrl": "https://ppaksaem-vibecoding.pages.dev/guide/update.html",
+  "classHtmlUrl": "https://ppaksaem-vibecoding.pages.dev/boards/%EC%8C%A4%EB%B3%B4%EB%93%9C%ED%81%B4%EB%9E%98%EC%8A%A4.html"
 }
