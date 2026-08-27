@@ -132,6 +132,57 @@ function openChangelogPopup(program) {
   overlay.querySelector('.changelog-popup-close').focus();
 }
 
+// ── Card pieces ────────────────────────────────────────────────
+function getGuides(p) {
+  if (Array.isArray(p.guides) && p.guides.length) return p.guides;
+  if (p.guide_url) return [{ label: '가이드', url: p.guide_url, track: 'guide' }];
+  return [];
+}
+
+function guideBtn(p, g) {
+  return `<a class="btn-guide" href="${g.url}" target="_blank" rel="noopener"
+    onclick="trackClick('${p.id}','${g.track || 'guide'}')">📖 ${g.label}</a>`;
+}
+
+function renderThumbnail(p) {
+  const imgs = (Array.isArray(p.thumbnails) && p.thumbnails.length)
+    ? p.thumbnails
+    : (p.thumbnail ? [p.thumbnail] : []);
+  const cls = imgs.length === 0 ? ' card-thumbnail--placeholder'
+            : imgs.length > 1  ? ' card-thumbnail--split'
+            : '';
+  const inner = imgs.length
+    ? imgs.map(src => `<img src="${src}" alt="${p.title} 썸네일" loading="lazy" />`).join('')
+    : `<span class="placeholder-icon">${getIcon(p.tags)}</span>`;
+
+  return `<div class="card-thumbnail${cls}">
+        ${inner}
+        ${isRecentlyUpdated(p) ? `<span class="update-badge" data-program-id="${p.id}">✨ 업데이트</span>` : ''}
+      </div>`;
+}
+
+function renderCardActions(p) {
+  const guides = getGuides(p);
+  // 가이드가 둘 이상이면(쌤보드 & 쌤보드 클래스) 이름이 잘리지 않게 한 줄씩 따로 배치
+  const stacked = guides.length > 1 ? guides.map(g => guideBtn(p, g)).join('') : '';
+
+  const rowBtns = [
+    guides.length === 1 ? guideBtn(p, guides[0]) : '',
+    p.site_url ? `<a class="btn-site${p.site_url_note ? ' has-note' : ''}" href="${p.site_url}" target="_blank" rel="noopener"
+                   data-note="${p.site_url_note || ''}" data-track-id="${p.id}" data-track-type="site">🔗 바로가기</a>` : '',
+    p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
+                   data-note="${p.download_url_note || ''}" data-track-id="${p.id}" data-track-type="download">⬇ 다운로드</a>` : ''
+  ].filter(Boolean).join('');
+
+  return `<div class="card-actions">
+               ${stacked}
+               ${rowBtns ? `<div class="btn-row">${rowBtns}</div>` : ''}
+               ${(!p.download_url && !p.site_url)
+                 ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
+                 : ''}
+             </div>`;
+}
+
 function renderCards(programs, container, type) {
   if (!container) return;
   if (programs.length === 0) {
@@ -141,13 +192,7 @@ function renderCards(programs, container, type) {
 
   container.innerHTML = programs.map(p => `
     <article class="program-card">
-      <div class="card-thumbnail ${p.thumbnail ? '' : 'card-thumbnail--placeholder'}">
-        ${p.thumbnail
-          ? `<img src="${p.thumbnail}" alt="${p.title} 썸네일" loading="lazy" />`
-          : `<span class="placeholder-icon">${getIcon(p.tags)}</span>`
-        }
-        ${isRecentlyUpdated(p) ? `<span class="update-badge" data-program-id="${p.id}">✨ 업데이트</span>` : ''}
-      </div>
+      ${renderThumbnail(p)}
       <div class="card-body">
         <div class="card-header">
           <h3 class="card-title">${p.title}</h3>
@@ -156,29 +201,16 @@ function renderCards(programs, container, type) {
           </span>
         </div>
         <p class="card-description">${p.description}</p>
-        ${(p.version || p.release_date) ? `
+        ${(p.version_label || p.version || p.release_date) ? `
         <div class="card-meta">
-          ${p.version      ? `<span class="card-meta-version">v${p.version}</span>` : ''}
+          ${(p.version_label || p.version) ? `<span class="card-meta-version">${p.version_label || 'v' + p.version}</span>` : ''}
           ${p.release_date ? `<span class="card-meta-date">${p.release_date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1년 $2월 $3일')} 배포</span>` : ''}
         </div>` : ''}
         <div class="card-tags">
           ${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}
         </div>
         ${type === 'completed'
-          ? `<div class="card-actions">
-               ${(p.demo_url || p.guide_url || p.download_url || p.site_url) ? `
-               <div class="btn-row">
-                 ${p.demo_url     ? `<a class="btn-demo"     href="${p.demo_url}"     target="_blank" rel="noopener" onclick="trackClick('${p.id}','demo')">▶ 체험해보기</a>` : ''}
-                 ${p.guide_url    ? `<a class="btn-guide"    href="${p.guide_url}"    target="_blank" rel="noopener" onclick="trackClick('${p.id}','guide')">📖 가이드</a>` : ''}
-                 ${p.site_url     ? `<a class="btn-site${p.site_url_note ? ' has-note' : ''}" href="${p.site_url}" target="_blank" rel="noopener"
-                   data-note="${p.site_url_note || ''}" data-track-id="${p.id}" data-track-type="site">🔗 바로가기</a>` : ''}
-                 ${p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
-                   data-note="${p.download_url_note || ''}" data-track-id="${p.id}" data-track-type="download">⬇ 다운로드</a>` : ''}
-               </div>` : ''}
-               ${(!p.download_url && !p.site_url)
-                 ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
-                 : ''}
-             </div>`
+          ? renderCardActions(p)
           : `<div class="coming-soon-bar">
                <span class="coming-soon-dot"></span>
                개발 중 · 완성 시 안내드립니다

@@ -62,14 +62,49 @@ collections:
                 widget: "string"
                 required: false
                 hint: "GitHub Releases 다운로드 링크"
+              - name: "guide_url"
+                label: "가이드 URL (가이드가 하나일 때)"
+                widget: "string"
+                required: false
+                hint: "입력 시 카드에 '📖 가이드' 버튼이 생깁니다"
+              - name: "guides"
+                label: "가이드 버튼 여러 개 (한 카드에 프로그램이 둘일 때)"
+                widget: "list"
+                required: false
+                hint: "쌤보드 & 쌤보드 클래스처럼 가이드를 나눠서 보여줄 때 사용합니다. 여기에 값이 있으면 위 '가이드 URL'은 무시됩니다."
+                fields:
+                  - name: "label"
+                    label: "버튼 이름 (예: 쌤보드 가이드)"
+                    widget: "string"
+                  - name: "url"
+                    label: "가이드 주소 (예: /guide/dashboard.html)"
+                    widget: "string"
+                  - name: "track"
+                    label: "클릭 통계 키 (영문, 예: guide-dashboard)"
+                    widget: "string"
+                    required: false
               - name: "thumbnail"
                 label: "썸네일 이미지"
                 widget: "image"
                 required: false
+              - name: "thumbnails"
+                label: "썸네일 여러 장 (한 카드에 프로그램이 둘일 때)"
+                widget: "list"
+                required: false
+                hint: "2장을 넣으면 카드 썸네일이 좌우로 나뉘어 보입니다. 비워두면 위 '썸네일 이미지'만 사용합니다."
+                field:
+                  name: "image"
+                  label: "이미지"
+                  widget: "image"
               - name: "version"
                 label: "버전 (예: 1.0.0)"
                 widget: "string"
                 required: false
+              - name: "version_label"
+                label: "버전 표기 직접 입력 (예: 쌤보드 v2.29 · 클래스 v1.9)"
+                widget: "string"
+                required: false
+                hint: "비워두면 위 '버전'이 v1.0 형태로 표시됩니다"
               - name: "release_date"
                 label: "최종 배포일 (예: 2026-04-22)"
                 widget: "datetime"

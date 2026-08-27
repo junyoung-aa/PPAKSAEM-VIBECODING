@@ -61,66 +61,71 @@
       "guide_url": "/guide/lecture-free.html"
     },
     {
-      "id": "teacher-wallpaper",
-      "title": "쌤보드",
-      "description": "날씨, 급식, 구글 캘린더, 투두리스트, 학생 누가기록, 시간표 등 교사에게 필요한 기능이 한 화면에!",
+      "id": "teacher-board",
+      "title": "쌤보드 & 쌤보드 클래스",
+      "description": "날씨·급식·구글 캘린더·나이스 시간표·할 일을 한 화면에 모은 '쌤보드'와, 자리배치·포인트·1인 1역·학생 뽑기를 담은 '쌤보드 클래스'. 이제 설치 프로그램 하나로 함께 쓸 수 있어요.",
       "status": "completed",
       "tags": [
         "대시보드",
-        "생산성",
-        "초기세팅 난이도 높음"
+        "학급운영",
+        "설치 프로그램"
       ],
       "google_form_url": "https://forms.gle/omGGf5G74JH1w3iG8",
       "site_url": "",
       "download_url": "",
       "thumbnail": "/images/스크린샷 2026-05-17 235152.png",
-      "version": "2.7",
-      "release_date": "2026-07-10",
+      "thumbnails": [
+        "/images/스크린샷 2026-05-17 235152.png",
+        "/images/pasted-image-1782042698521.png"
+      ],
+      "version": "2.29",
+      "version_label": "쌤보드 v2.29 · 클래스 v1.9",
+      "release_date": "2026-08-27",
       "order": 2,
       "changelog": [
         {
-          "version": "2.7",
-          "date": "2026-07-10",
+          "version": "2.29 · 클래스 1.9",
+          "date": "2026-08-27",
           "changes": [
-            "[학생] 생일·알레르기 관리 추가 — 생일이 다가오면 시계 카드에 🎂 배지, 급식에 알레르기 메뉴가 나오면 ⚠️ 경고",
-            "[할 일] 새 항목이 목록 맨 위에 추가 · 설정에서 텍스트 클릭해 바로 수정 · '오늘 할 일' 카드 ▲▼로 페이지 넘겨보기",
-            "[업데이트 알림] 쌤보드 업데이트 발생 시 자동 알림"
+            "🖥️ [쌤보드] 설치 프로그램으로 새로 나왔어요 — Lively Wallpaper 없이 설치 한 번이면 끝",
+            "🗓 [쌤보드] 나이스 시간표 자동 연동 — ◀ ▶로 다음 주까지 미리보기",
+            "🏫 [쌤보드] 학사일정·휴업일 표시, 🔗 바로가기(퀵링크) 패널 추가",
+            "🍽️ [쌤보드] 급식 학교 따로 지정, 💾 내용이 바뀔 때마다 자동 백업",
+            "🧹 [클래스] 1인 1역 여러 명 배정 · 🎲 역할 랜덤 배정",
+            "⏪ [클래스] 어제로 되돌리기 — 자리를 잘못 뽑았을 때 복구"
           ]
-        }
-      ],
-      "demo_url": "/demo/dashboard.html",
-      "guide_url": "/guide/dashboard.html"
-    },
-    {
-      "id": "teacher-class",
-      "title": "쌤보드 클래스",
-      "description": "학생 자리배치도, 포인트, 1인 1역, 학생 뽑기까지 한 화면에! 쌤보드와 함께 듀얼모니터 2번 화면에 띄우거나 단독으로도 쓸 수 있어요.",
-      "status": "completed",
-      "tags": [
-        "학급운영",
-        "자리배치",
-        "배경화면"
-      ],
-      "google_form_url": "https://forms.gle/omGGf5G74JH1w3iG8",
-      "site_url": "",
-      "download_url": "",
-      "thumbnail": "/images/pasted-image-1782042698521.png",
-      "version": "1.2",
-      "release_date": "2026-07-10",
-      "order": 3,
-      "changelog": [
+        },
         {
-          "version": "1.2",
+          "version": "2.7 · 클래스 1.2",
           "date": "2026-07-10",
           "changes": [
-            "[수업 도구] ⏱️ 수업 타이머, 📋 알림장 추가",
-            "[학급운영] 🌡️ 학급 목표 온도계 추가 — 포인트 총점으로 단계별 목표 달성",
-            "[업데이트 알림] 쌤보드클래스 업데이트 발생시 자동 알림"
+            "🔔 [공통] 새 버전이 나오면 바탕화면에서 업데이트 알림",
+            "🪑 [쌤보드] 내장 자리배치 제거 — 자리배치·포인트·1인 1역은 쌤보드 클래스로 일원화",
+            "⏱️ [클래스] 수업 타이머 · 📋 알림장 · 🌡️ 학급 목표 온도계 추가"
+          ]
+        },
+        {
+          "version": "2.6 · 클래스 1.1",
+          "date": "2026-07-02",
+          "changes": [
+            "🎂 [쌤보드] 생일·알레르기 관리 — 생일 배지, 급식 알레르기 경고",
+            "✅ [쌤보드] 할 일 개선 — 맨 위 등록, 목록 페이지 넘김, 인라인 수정",
+            "📷 [클래스] 자리표 PNG 저장"
           ]
         }
       ],
-      "guide_url": "/guide/class.html",
-      "demo_url": "/demo/class.html"
+      "guides": [
+        {
+          "label": "쌤보드 가이드",
+          "url": "/guide/dashboard.html",
+          "track": "guide-dashboard"
+        },
+        {
+          "label": "쌤보드 클래스 가이드",
+          "url": "/guide/class.html",
+          "track": "guide-class"
+        }
+      ]
     },
     {
       "id": "plan-generator",
