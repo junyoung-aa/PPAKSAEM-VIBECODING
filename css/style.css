@@ -451,6 +451,17 @@ body {
   box-shadow: none;
 }
 
+/* 가이드가 둘일 때(쌤보드 & 쌤보드 클래스) — 좌우로 나란히 놓으려고 글씨·여백을 줄인다.
+   카드가 가장 좁아지는 300px에서도 '쌤보드 클래스 가이드'가 한 줄에 들어간다.
+   더 좁아지면 어절 단위로 줄바꿈(keep-all). */
+.btn-guide--compact {
+  padding: 0.6rem 0.2rem;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+  word-break: keep-all;
+}
+
 /* ── Request Button ── */
 .btn-request {
   display: block;

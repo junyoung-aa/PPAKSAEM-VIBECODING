@@ -139,8 +139,8 @@ function getGuides(p) {
   return [];
 }
 
-function guideBtn(p, g) {
-  return `<a class="btn-guide" href="${g.url}" target="_blank" rel="noopener"
+function guideBtn(p, g, compact) {
+  return `<a class="btn-guide${compact ? ' btn-guide--compact' : ''}" href="${g.url}" target="_blank" rel="noopener"
     onclick="trackClick('${p.id}','${g.track || 'guide'}')">📖 ${g.label}</a>`;
 }
 
@@ -163,11 +163,12 @@ function renderThumbnail(p) {
 
 function renderCardActions(p) {
   const guides = getGuides(p);
-  // 가이드가 둘 이상이면(쌤보드 & 쌤보드 클래스) 이름이 잘리지 않게 한 줄씩 따로 배치
-  const stacked = guides.length > 1 ? guides.map(g => guideBtn(p, g)).join('') : '';
+  // 가이드가 둘 이상이면(쌤보드 & 쌤보드 클래스) 세로로 길어지지 않게
+  // 글씨를 줄여 좌우로 나란히 놓는다
+  const compact = guides.length > 1;
 
   const rowBtns = [
-    guides.length === 1 ? guideBtn(p, guides[0]) : '',
+    ...guides.map(g => guideBtn(p, g, compact)),
     p.site_url ? `<a class="btn-site${p.site_url_note ? ' has-note' : ''}" href="${p.site_url}" target="_blank" rel="noopener"
                    data-note="${p.site_url_note || ''}" data-track-id="${p.id}" data-track-type="site">🔗 바로가기</a>` : '',
     p.download_url ? `<a class="btn-download${p.download_url_note ? ' has-note' : ''}" href="${p.download_url}" download target="_blank" rel="noopener"
@@ -175,7 +176,6 @@ function renderCardActions(p) {
   ].filter(Boolean).join('');
 
   return `<div class="card-actions">
-               ${stacked}
                ${rowBtns ? `<div class="btn-row">${rowBtns}</div>` : ''}
                ${(!p.download_url && !p.site_url)
                  ? `<button class="btn-request" data-form-url="${p.google_form_url}" data-title="${p.title}">신청하기</button>`
