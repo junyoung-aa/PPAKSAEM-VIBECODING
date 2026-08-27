@@ -2244,7 +2244,7 @@ function geminiAvailable(){ return !!((CFG.geminiApiKey||'').trim() || (GEMINI_P
 //     (GitHub 웹 편집 → Pages 자동 배포. latest는 "2.8"처럼 숫자만)
 //   · 오프라인/학교망 차단 시 조용히 무시 — 다른 기능에 영향 없음
 // ============================================================
-const APP_VERSION = '2.28';
+const APP_VERSION = '2.29';
 
 // ============================================================
 //   🔴 픽스57: 시트 통삭제 사고 방지 (2026-08-23 실제 사고 후 추가)
@@ -9475,8 +9475,17 @@ async function checkForUpdateManual(){ // 백업 탭 🔄 버튼 — 닫았던 �
   }catch(e){ if(st) st.textContent='⚠️ 확인 실패 — 인터넷 연결을 확인해 주세요'; }
 }
 (function(){ const el=document.getElementById('appVersionLabel'); if(el) el.textContent='v'+APP_VERSION; })();
-setTimeout(checkForUpdate, 20000);            // 시작 20초 후 (초기 로딩·복원과 경쟁 방지)
-setInterval(checkForUpdate, 6*60*60*1000);    // 이후 6시간마다 (벽지는 하루종일 켜져 있음)
+// 🔴 픽스66: 쌤보드 앱 안에서는 **보드 자체 알림을 띄우지 않는다.**
+//   앱은 이미 ① 트레이 풍선(Program.cs, 시작 30초 후) ② 설정 → ⬆️ 업데이트 탭의
+//   [⬇️ 보드 다운로드 및 교체](원클릭·재시작 불필요)를 갖고 있어 배지가 중복이고,
+//   무엇보다 이 배지를 누르면 update.html(= **설치 프로그램 안내** 페이지)로 가서
+//   "이미 설치했는데 왜 또 받으라 하지?" 하고 혼동한다(2026-08-27 사용자 지적).
+//   Lively·브라우저 단독 사용자에게는 이 배지가 **유일한 통지 경로**이므로 그대로 둔다.
+//   ⚠️ 백업 탭의 🔄 수동 확인(checkForUpdateManual)은 사용자가 직접 누르는 것이라 그대로 살려둔다.
+if(!IS_APP_ENV){
+  setTimeout(checkForUpdate, 20000);            // 시작 20초 후 (초기 로딩·복원과 경쟁 방지)
+  setInterval(checkForUpdate, 6*60*60*1000);    // 이후 6시간마다 (벽지는 하루종일 켜져 있음)
+}
 
 </script>
 <div style="position:fixed;right:10px;bottom:64px;font-size:11px;color:var(--text-mute,#999);opacity:.6;pointer-events:none;user-select:none;z-index:150;font-family:inherit">© 팍쌤</div>
