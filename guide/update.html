@@ -104,6 +104,34 @@ a { color:inherit; text-decoration:none; }
 }
 .btn-mail:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(168,90,30,0.3); }
 
+/* 첫 화면 갈림길 — 왼쪽=이미 쓰는 분(앱에서 업데이트) / 오른쪽=처음 오신 분(설치 프로그램) */
+.fork { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+.fork-col {
+  border:2px solid var(--line); border-radius:14px; padding:24px 22px;
+  text-align:center; display:flex; flex-direction:column;
+}
+.fork-have { border-color:var(--success); background:var(--success-bg); }
+.fork-new  { border-color:var(--accent);  background:var(--accent-bg); }
+.fork-badge {
+  align-self:center; font-size:12px; font-weight:800; color:#fff;
+  padding:4px 13px; border-radius:99px; margin-bottom:13px; letter-spacing:-0.3px;
+}
+.fork-have .fork-badge { background:var(--success); }
+.fork-new  .fork-badge { background:var(--accent); }
+.fork-col h2 { font-size:19px; font-weight:800; letter-spacing:-0.6px; margin-bottom:10px; }
+.fork-have h2 { color:#1f5c46; }
+.fork-new  h2 { color:var(--accent); }
+.fork-col p { font-size:14px; color:var(--ink-soft); margin-bottom:18px; flex:1; }
+.fork-btn {
+  display:block; color:#fff; border-radius:11px; padding:13px 16px;
+  font-size:15px; font-weight:800; transition:transform .15s, box-shadow .15s;
+}
+.fork-btn:hover { transform:translateY(-2px); }
+.fork-have .fork-btn { background:var(--success); box-shadow:0 4px 14px rgba(47,142,110,0.28); }
+.fork-new  .fork-btn { background:var(--accent);  box-shadow:0 4px 14px rgba(168,90,30,0.25); }
+.fork-note { font-size:12px; color:var(--ink-mute); margin-top:11px; line-height:1.6; }
+@media (max-width:640px){ .fork { grid-template-columns:1fr; } }
+
 .changelog { list-style:none; margin-top:6px; }
 .changelog > li { padding:14px 0; border-bottom:1px dashed var(--line-soft); }
 .changelog > li:last-child { border-bottom:none; }
@@ -137,17 +165,23 @@ a { color:inherit; text-decoration:none; }
     <div class="cover-ver" id="latestVer">쌤보드 v2.7 · 쌤보드클래스 v1.2</div>
   </div>
 
-  <div class="card" style="text-align:center;">
-    <h2>📥 설치 프로그램 받기</h2>
-    <p style="margin-bottom:16px;">
-      <strong>Lively Wallpaper 없이 쓰는 전용 프로그램</strong>이 나왔습니다.<br>
-      아래 버튼으로 신청하시면 <strong>설치 파일</strong>을 메일로 보내드려요.
-    </p>
-    <a class="btn-mail" href="https://forms.gle/en3K54X9HXTncAQN8" target="_blank" rel="noopener">📥 설치 프로그램 신청하기</a>
-    <p style="margin-top:14px;font-size:12.5px;color:var(--ink-mute);">
-      이미 설치해서 쓰고 계신 분은 신청하실 필요 없어요 — 아래 <strong>[프로그램 안에서 업데이트]</strong>를 보세요.<br>
-      문의: jykwak1213@gmail.com
-    </p>
+  <div class="fork">
+    <div class="fork-col fork-have">
+      <span class="fork-badge">이미 쓰고 계신가요?</span>
+      <h2>🔄 앱에서 업데이트하세요</h2>
+      <p><strong>설치 파일을 다시 받지 않으셔도 됩니다.</strong><br>
+      쌤보드 프로그램 안에서 버튼 두 번이면 최신으로 바뀌어요.</p>
+      <a class="fork-btn" href="#in-app">업데이트하는 방법 보기</a>
+      <div class="fork-note">재설치·재시작 필요 없음 · 데이터 그대로</div>
+    </div>
+    <div class="fork-col fork-new">
+      <span class="fork-badge">처음이신가요?</span>
+      <h2>📥 설치 프로그램 받기</h2>
+      <p><strong>Lively Wallpaper 없이 쓰는 전용 프로그램</strong>입니다.<br>
+      신청하시면 <strong>설치 파일</strong>을 메일로 보내드려요.</p>
+      <a class="fork-btn" href="https://forms.gle/en3K54X9HXTncAQN8" target="_blank" rel="noopener">설치 프로그램 신청하기</a>
+      <div class="fork-note">문의: jykwak1213@gmail.com</div>
+    </div>
   </div>
 
   <div class="card">
@@ -183,7 +217,7 @@ a { color:inherit; text-decoration:none; }
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="in-app" style="scroll-margin-top:70px;">
     <h2>🔄 프로그램 안에서 업데이트</h2>
     <p>이미 설치해서 쓰고 계신다면 <strong>파일을 새로 받으실 필요가 없습니다.</strong></p>
     <ol class="steps">
