@@ -132,19 +132,6 @@ a { color:inherit; text-decoration:none; }
 .fork-note { font-size:12px; color:var(--ink-mute); margin-top:11px; line-height:1.6; }
 @media (max-width:640px){ .fork { grid-template-columns:1fr; } }
 
-.changelog { list-style:none; margin-top:6px; }
-.changelog > li { padding:14px 0; border-bottom:1px dashed var(--line-soft); }
-.changelog > li:last-child { border-bottom:none; }
-.changelog .ver { font-weight:800; font-size:15px; }
-.changelog .date { font-size:12px; color:var(--ink-mute); margin-left:8px; }
-.changelog .tag-new {
-  display:inline-block; background:var(--accent-soft); color:#fff; border-radius:4px;
-  padding:1px 7px; font-size:10.5px; font-weight:700; letter-spacing:0.5px; margin-left:8px; vertical-align:2px;
-}
-.changelog ul { margin:8px 0 0 4px; list-style:none; }
-.changelog ul li { font-size:13.5px; color:var(--ink-soft); padding:2px 0 2px 18px; position:relative; }
-.changelog ul li::before { content:'·'; position:absolute; left:6px; color:var(--accent); font-weight:800; }
-
 .guide-link { color:var(--accent); font-weight:600; border-bottom:1px solid var(--accent); }
 </style>
 </head>
@@ -228,50 +215,6 @@ a { color:inherit; text-decoration:none; }
     <div class="notice">
       ✅ <strong>재시작할 필요 없고, 데이터도 그대로입니다.</strong>
     </div>
-  </div>
-
-  <div class="card">
-    <h2>📝 무엇이 달라졌나요?</h2>
-    <ul class="changelog">
-      <li>
-        <span class="ver">설치형 프로그램 + v2.27 / 클래스 v1.9</span><span class="date">2026. 8.</span><span class="tag-new">NEW</span>
-        <ul>
-          <li>🖥️ <strong>쌤보드 전용 프로그램</strong> — Lively Wallpaper 없이 설치 한 번으로 끝. 첫 클릭 씹힘 · 설정 초기화 · 팝업 안 눌림 문제 해결</li>
-          <li>🗓 <strong>나이스 시간표 자동 연동</strong> — 매주 입력하지 않아도 나이스에서 가져옵니다. <strong>◀ ▶로 다음 주</strong>도 미리 볼 수 있어요</li>
-          <li>🏫 <strong>학사일정 · 휴업일 표시</strong> — 요일 옆에 학교 행사가 붙고, 방학·공휴일은 회색으로</li>
-          <li>🔗 <strong>바로가기(퀵링크)</strong> — 왼쪽 빈 패널이 자주 쓰는 사이트 모음으로. 업무포털 · 학교 홈페이지는 기본 제공</li>
-          <li>🍽️ <strong>급식 학교 분리</strong> — 비조리교도 급식은 조리교, 시간표는 내 학교로 각각 지정</li>
-          <li>💾 <strong>자동 백업</strong> — 내용이 바뀔 때마다 알아서 저장. 따로 내보내기 하지 않아도 됩니다</li>
-          <li>🧹 <strong>(클래스) 1인1역 여러 명 배정</strong> — 한 역할에 여러 학생을 함께. <strong>🎲 랜덤 배정</strong>으로 한 번에 뽑기도 가능</li>
-          <li>⏪ <strong>(클래스) 어제로 되돌리기</strong> — 자리를 잘못 뽑았을 때 어제 상태로 복구</li>
-        </ul>
-      </li>
-      <li>
-        <span class="ver">v2.7 + 클래스 v1.2</span><span class="date">2026. 7.</span>
-        <ul>
-          <li>🔔 <strong>업데이트 알림</strong> — 새 버전이 나오면 바탕화면 우측 하단에서 알려드려요. 쌤보드·쌤보드클래스 각각 독립적으로 알림 (백업 탭에서 수동 확인도 가능)</li>
-          <li>🪑 <strong>자리배치 분리</strong> — 쌤보드 안에 내장돼 있던 자리배치(🪑 버튼)는 제거하고, 자리배치·포인트·1인1역은 <strong>쌤보드클래스</strong>(별도 파일)로 일원화. 쌤보드가 훨씬 가벼워졌어요</li>
-        </ul>
-      </li>
-      <li>
-        <span class="ver">v2.6 + 클래스 v1.1</span><span class="date">2026. 7.</span>
-        <ul>
-          <li>🔐 AI 키 보안 강화 — 공유 AI 키를 서버(프록시)로 이전, 별도 설정 없이 AI 기능 그대로 사용</li>
-          <li>🎂 생일·알레르기 관리 — 명렬표에 생일 배지, 급식 카드에 알레르기 경고</li>
-          <li>✅ 할 일 개선 — 새 할 일 맨 위 등록, 목록 페이지 넘김(▲▼), 설정에서 인라인 수정</li>
-          <li>⏱️ (클래스) 수업 타이머 — 분·초 직접 입력, 풀스크린 표시</li>
-          <li>🌡️ (클래스) 학급 목표 온도계 — 다중 목표, 달성 축하 효과</li>
-          <li>📷 (클래스) 자리표 PNG 저장 · 📋 알림장 칠판모드</li>
-        </ul>
-      </li>
-      <li>
-        <span class="ver">v2.5 + 클래스 v1.0</span><span class="date">2026. 5.</span>
-        <ul>
-          <li>🪑 자리배치·포인트·1인1역 — 듀얼모니터 지원(쌤보드클래스), 본체에도 내장</li>
-          <li>🎲 랜덤 뽑기 — 돌림판 / 카드 / 슬롯머신</li>
-        </ul>
-      </li>
-    </ul>
   </div>
 
   <footer style="text-align:center;padding:12px 16px;margin-top:24px;font-size:12px;opacity:.55;color:#4a4036;">
