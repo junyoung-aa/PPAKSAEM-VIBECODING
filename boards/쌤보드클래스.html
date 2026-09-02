@@ -527,15 +527,11 @@ input,textarea{user-select:text;}
 #settingsModal .avoid-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:6px;align-content:start;}
 #settingsModal .avoid-item{padding:6px 8px 6px 11px;}
 #settingsModal .emoji-palette{margin-bottom:9px;padding:8px;}
-/* 학생 직접 입력: 고정 높이 + 옆 ▲▼ 버튼으로 이동(Lively 휠 불가 → 클릭 스크롤) */
-#settingsModal .fg textarea{height:184px;min-height:0;line-height:1.55;resize:none;overflow:hidden;}
-/* v1.4: 쌤보드 앱 안에서만 진짜 스크롤 — ▲▼ 버튼은 updateTaScroll이 숨김 */
-html.in-app #settingsModal .fg textarea{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+/* 픽스68: 학생 직접 입력 — 옆 ▲▼ 클릭 이동을 없애고 그냥 스크롤.
+   앱 전용(html.in-app) 게이트를 떼어 Lively/브라우저에서도 동일하게 굴린다(사용자 결정 — Lively 폴백 폐기). */
+#settingsModal .fg textarea{height:184px;min-height:0;line-height:1.55;resize:none;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
 .ta-wrap{display:flex;gap:6px;align-items:stretch;}
 .ta-wrap textarea{flex:1;}
-.ta-scroll{display:flex;flex-direction:column;gap:6px;flex:0 0 auto;width:30px;}
-.ta-scroll button{flex:1;border:1px solid var(--border);background:var(--card-soft);border-radius:9px;font-size:11px;font-weight:800;color:var(--text);cursor:pointer;transition:all .12s;}
-.ta-scroll button:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);}
 /* 페이지 넘김 버튼 (역할 · 떨어뜨리기) */
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:9px;}
 .pg-btn{width:36px;height:30px;border:1px solid var(--border);background:var(--card-soft);border-radius:9px;font-size:13px;font-weight:800;color:var(--text);cursor:pointer;transition:all .12s;}
@@ -602,7 +598,7 @@ html.in-app #settingsModal .fg textarea{overflow-y:auto;scrollbar-width:thin;scr
       <div class="gsize" id="gsizeCtrl">
         <span class="gsize-label">모둠</span>
         <button class="gsize-btn" onmousedown="bumpGroupSize(-1)">−</button>
-        <span class="gsize-val" id="gsizeVal">6</span>
+        <span class="gsize-val" id="gsizeVal">4</span>
         <button class="gsize-btn" onmousedown="bumpGroupSize(1)">＋</button>
         <span class="gsize-unit">명씩</span>
       </div>
@@ -722,11 +718,7 @@ html.in-app #settingsModal .fg textarea{overflow-y:auto;scrollbar-width:thin;scr
         <div class="fg">
           <label>학생 직접 입력 <span style="color:var(--text-mute);font-weight:400;">(시트 미사용 시)</span></label>
           <div class="ta-wrap">
-            <textarea id="cfgManual" oninput="updateTaScroll()" placeholder="한 줄에 한 명씩&#10;홍길동&#10;김영희,여&#10;이철수,남"></textarea>
-            <div class="ta-scroll" id="cfgManualScroll" style="display:none;">
-              <button type="button" title="위로" onmousedown="taScroll('cfgManual',-1)">▲</button>
-              <button type="button" title="아래로" onmousedown="taScroll('cfgManual',1)">▼</button>
-            </div>
+            <textarea id="cfgManual" placeholder="한 줄에 한 명씩&#10;홍길동&#10;김영희,여&#10;이철수,남"></textarea>
           </div>
           <div class="hint">형식: <code>이름</code> 또는 <code>이름,성별</code> · 번호는 입력 순서</div>
         </div>
@@ -1067,14 +1059,14 @@ const S={
    상태
    ========================================================================= */
 const CFG={url:S.get('lite_url',''),grade:S.get('lite_grade',''),cls:S.get('lite_cls','')};
-function blankLite(){return{seats:{cols:0,rows:0,assign:{},pins:{}},points:{},jobs:[],manual:[],layout:'grid',groupSize:6,avoid:[],genderRule:'none',genderFlip:false,rigged:false,riggedAssign:{},showPts:true,showRole:true,updatedAt:0};}
+function blankLite(){return{seats:{cols:0,rows:0,assign:{},pins:{}},points:{},jobs:[],manual:[],layout:'grid',groupSize:4,avoid:[],genderRule:'none',genderFlip:false,rigged:false,riggedAssign:{},showPts:true,showRole:true,updatedAt:0};}
 function _normLite(d){d=d||{};d.seats=d.seats||{cols:0,rows:0,assign:{},pins:{}};d.seats.assign=d.seats.assign||{};d.seats.pins=d.seats.pins||{};
   d.points=d.points||{};d.manual=d.manual||[];d.layout=d.layout||'grid';
   // 픽스47(v1.6): 역할 담당 단일(studentKey)→다중(studentKeys[]) 마이그레이션 — 구 백업/구버전 데이터 호환
   d.jobs=(Array.isArray(d.jobs)?d.jobs:[]).map(j=>{j=j||{};
     if(!Array.isArray(j.studentKeys))j.studentKeys=(j.studentKey!=null&&j.studentKey!=='')?[j.studentKey]:[];
     delete j.studentKey;return j;});
-  d.groupSize=d.groupSize||6;d.avoid=Array.isArray(d.avoid)?d.avoid:[];
+  d.groupSize=d.groupSize||4;d.avoid=Array.isArray(d.avoid)?d.avoid:[];
   d.genderRule=['none','zigzag','pairMF'].includes(d.genderRule)?d.genderRule:'none';if(d.genderFlip===undefined)d.genderFlip=false;
   if(d.rigged===undefined)d.rigged=false;d.riggedAssign=(d.riggedAssign&&typeof d.riggedAssign==='object')?d.riggedAssign:{};
   if(d.showPts===undefined)d.showPts=true;if(d.showRole===undefined)d.showRole=true;d.updatedAt=d.updatedAt||0;
@@ -1199,6 +1191,37 @@ function ensureSeatDims(){
     liteData.seats.cols=cols;liteData.seats.rows=rows;}
 }
 function jobOf(key){const j=liteData.jobs.find(j=>j.studentKeys.includes(key));return j?j.name:'';}   // 픽스47: 다중 배정 — 자리 배지는 첫 역할만
+/* 픽스67: 모둠 = 교실 격자를 덩어리로 묶은 것.
+   좌석 번호를 G개씩 순서대로 자르면(옛 방식) 6열 교실의 4명 모둠이 "첫 줄 끝 2명 + 둘째 줄 앞 2명"처럼
+   교실 반대편끼리 묶여, 낱개에서 잡은 자리가 통째로 흐트러져 보였다.
+   → 격자를 gc(가로)×gr(세로) 블록으로 타일링해 낱개에서의 행·열을 그대로 유지한다. */
+function _groupDims(G){ // 모둠 인원 → 블록 모양. 4→2×2, 6→3×2, 8→4×2, 소수는 1줄(5→5×1)
+  G=Math.max(2,Math.min(8,parseInt(G,10)||4));
+  let gr=1;
+  for(let r=Math.floor(Math.sqrt(G));r>=1;r--){ if(G%r===0){ gr=r; break; } }
+  return {gc:G/gr,gr};
+}
+let _gbKey='',_gbVal=null;
+function _groupLayout(){ // 격자를 블록으로 타일링 → {blocks:[{idx:[좌석번호...],w}], cols:블록열수, owner:{좌석:블록}}
+  const{cols,rows}=liteData.seats,key=cols+'/'+rows+'/'+liteData.groupSize;
+  if(_gbKey===key&&_gbVal) return _gbVal;
+  const{gc,gr}=_groupDims(liteData.groupSize),blocks=[],owner={},cuts=[];
+  for(let c0=0;c0<cols;c0+=gc)cuts.push(c0);
+  // 가로 자투리가 한 칸이거나 블록 폭의 절반도 안 되면 앞 블록에 붙인다 — 1~2명짜리 외톨이 모둠 방지
+  // (예: 6열에 5명 모둠 → 5+1이 아니라 6 / 5열에 2명 모둠 → 2+2+1이 아니라 2+3)
+  if(cuts.length>1){const lastW=cols-cuts[cuts.length-1];if(lastW===1||lastW*2<gc)cuts.pop();}
+  for(let r0=0;r0<rows;r0+=gr)cuts.forEach((c0,ci)=>{
+    const w=(ci===cuts.length-1?cols:cuts[ci+1])-c0,idx=[];
+    for(let r=r0;r<Math.min(r0+gr,rows);r++)for(let c=c0;c<c0+w;c++)idx.push(r*cols+c);
+    idx.forEach(i=>owner[i]=blocks.length);
+    blocks.push({idx,w});
+  });
+  _gbKey=key;_gbVal={blocks,cols:Math.max(1,cuts.length),owner};
+  return _gbVal;
+}
+function _groupBlocks(){ return _groupLayout().blocks.slice(); } // 호출부가 pop 하므로 사본
+function _groupBlockCols(){ return _groupLayout().cols; }
+function _blockIndexOf(i){ const o=_groupLayout().owner; return (i in o)?o[i]:-1; }
 // Lively 무스크롤: 좌석을 한 화면(W×H)에 전부 넣는 최대 크기를 레이아웃별로 산출.
 // seat 폭을 큰 값→작은 값으로 줄여가며, 현재 배열(낱개/짝꿍/모둠)에서 전부 들어오는 첫 크기 선택.
 function computeSeatSize(){
@@ -1225,12 +1248,13 @@ function computeSeatSize(){
       const ch=r*(h+16);
       return (ch<=H)?{h,ch}:null;
     }
-    // groups
-    const G=liteData.groupSize||6, gc=Math.min(4,Math.max(2,Math.ceil(Math.sqrt(G))));
-    const grpW=gc*w+(gc-1)*7+24, per=Math.max(1,Math.floor((W+22)/(grpW+22)));
-    const rowsG=Math.ceil(Math.ceil(total/G)/per);
-    const inRows=Math.ceil(G/gc), grpH=inRows*h+(inRows-1)*7+38; // 38 = group padding(26 top + 12 bottom)
-    const ch=rowsG*(grpH+22); // group-tag가 박스 안으로 들어가 돌출 보정 불필요
+    // groups (픽스67) — 블록이 격자를 그대로 재현하도록 "블록열 전부가 한 화면 폭"에 들어와야 통과
+    const{gc,gr}=_groupDims(liteData.groupSize);
+    const bCols=_groupBlockCols(), bRows=Math.max(1,Math.ceil(rows/gr));
+    const grpW=gc*w+(gc-1)*7+24;
+    if(bCols*grpW+(bCols-1)*22>W) return null;
+    const grpH=gr*h+(gr-1)*7+38; // 38 = group padding(26 top + 12 bottom)
+    const ch=bRows*(grpH+22); // group-tag가 박스 안으로 들어가 돌출 보정 불필요
     return (ch<=H)?{h,ch}:null;
   }
   let w=MINW, h=Math.max(MINH,Math.min(MAXH,Math.round(MINW*ASPECT))), ch=H;
@@ -1297,11 +1321,16 @@ function renderSeats(){
   }else if(mode==='pairs'){
     html='<div class="pairs-wrap">';for(let i=0;i<total;i+=2){html+='<div class="pair">';
       html+=seatInnerHTML(i,byIdx(i));if(i+1<total)html+=seatInnerHTML(i+1,byIdx(i+1));html+='</div>';}html+='</div>';
-  }else{ // groups: 6명씩
-    const G=liteData.groupSize||6;html='<div class="groups-wrap">';let gi=0;
-    for(let s=0;s<total;s+=G){const c=GROUP_COLORS[gi%GROUP_COLORS.length];const gc=Math.min(4,Math.max(2,Math.ceil(Math.sqrt(Math.min(G,total-s)))));
-      html+=`<div class="group" style="--g-soft:${c.soft};--g-bd:${c.bd};grid-template-columns:repeat(${gc},var(--seat-w));"><span class="group-tag" style="background:${c.bd};">${gi+1}모둠</span>`;
-      for(let i=s;i<Math.min(s+G,total);i++)html+=seatInnerHTML(i,byIdx(i));html+='</div>';gi++;}html+='</div>';
+  }else{ // groups (픽스67): 격자를 덩어리로 묶어 표시 — 낱개에서 잡은 자리가 그대로 유지된다
+    const blocks=_groupBlocks(),bCols=_groupBlockCols();
+    // 뒤쪽의 통째로 빈 모둠은 숨김(칸 수가 인원보다 많을 때). 자리변경 중엔 배치할 수 있게 남긴다.
+    if(!liteData._swap){while(blocks.length&&!blocks[blocks.length-1].idx.some(i=>assign[i]))blocks.pop();}
+    // 블록 배열을 격자와 같은 열 수로 고정 — flex 줄바꿈에 맡기면 칸 수에 따라 배열이 흐트러진다
+    html=`<div class="groups-wrap" style="display:grid;grid-template-columns:repeat(${bCols},max-content);justify-content:center;">`;
+    blocks.forEach((b,gi)=>{const c=GROUP_COLORS[gi%GROUP_COLORS.length];
+      html+=`<div class="group" style="--g-soft:${c.soft};--g-bd:${c.bd};grid-template-columns:repeat(${b.w},var(--seat-w));"><span class="group-tag" style="background:${c.bd};">${gi+1}모둠</span>`;
+      for(const i of b.idx)html+=seatInnerHTML(i,byIdx(i));html+='</div>';});
+    html+='</div>';
   }
   host.innerHTML=html;
   bindSeatClicks();
@@ -1353,7 +1382,7 @@ function togglePin(i,e){if(e){e.stopPropagation();e.preventDefault();}liteData.s
 function seatsAdjacent(i,j){
   const{cols}=liteData.seats;const mode=liteData.layout;
   if(mode==='pairs')return Math.floor(i/2)===Math.floor(j/2);
-  if(mode==='groups'){const G=liteData.groupSize||6;return Math.floor(i/G)===Math.floor(j/G);}
+  if(mode==='groups'){const b=_blockIndexOf(i);return b>=0&&b===_blockIndexOf(j);} // 픽스67: 같은 덩어리 안이면 붙어있는 것
   // 낱개: 상하좌우 4방향 이웃
   const ri=Math.floor(i/cols),ci=i%cols,rj=Math.floor(j/cols),cj=j%cols;
   return(ri===rj&&Math.abs(ci-cj)===1)||(ci===cj&&Math.abs(ri-rj)===1);
@@ -1791,7 +1820,7 @@ function renderAll(){if(currentView==='seat')renderSeats();renderPoints();if(cur
 function setLayout(m){liteData.layout=m;document.querySelectorAll('#layoutSeg .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.layout===m));
   document.getElementById('gsizeCtrl').classList.toggle('show',m==='groups');
   _selSeat=null;_selPool=null;saveLite();renderSeats();}
-function bumpGroupSize(d){let g=(liteData.groupSize||6)+d;g=Math.max(2,Math.min(8,g));liteData.groupSize=g;
+function bumpGroupSize(d){let g=(liteData.groupSize||4)+d;g=Math.max(2,Math.min(8,g));liteData.groupSize=g;
   document.getElementById('gsizeVal').textContent=g;saveLite();renderSeats();}
 function toggleOpt(which){
   if(which==='pts'){liteData.showPts=!liteData.showPts;document.getElementById('tgPts').classList.toggle('on',liteData.showPts);}
@@ -1815,7 +1844,7 @@ function syncTogglesUI(){
   document.getElementById('tgRole').classList.toggle('on',liteData.showRole);
   document.querySelectorAll('#layoutSeg .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.layout===liteData.layout));
   document.getElementById('gsizeCtrl').classList.toggle('show',liteData.layout==='groups');
-  document.getElementById('gsizeVal').textContent=liteData.groupSize||6;
+  document.getElementById('gsizeVal').textContent=liteData.groupSize||4;
   updateGenderChip();
 }
 /* ----- 성별 자리 규칙 UI ----- */
@@ -2014,11 +2043,7 @@ function flipCard(i){
   },250);
 }
 
-/* 학생 직접 입력칸: Lively 휠 불가 → ▲▼ 클릭으로 스크롤. 넘칠 때만 버튼 표시 */
-function taScroll(id,dir){const ta=document.getElementById(id);if(!ta)return;ta.scrollTop+=dir*Math.round(ta.clientHeight*0.8);}
-function updateTaScroll(){const ta=document.getElementById('cfgManual'),sc=document.getElementById('cfgManualScroll');if(!ta||!sc)return;
-  if(IS_APP_ENV){sc.style.display='none';return;}  // v1.4: 앱 안에서는 진짜 스크롤 — ▲▼ 불필요
-  sc.style.display=(ta.scrollHeight>ta.clientHeight+2)?'flex':'none';}
+/* 픽스68: 학생 직접 입력칸의 ▲▼ 클릭 스크롤(taScroll/updateTaScroll) 제거 — 그냥 스크롤한다(CSS) */
 /* 페이지 넘김 버튼 HTML (역할 · 떨어뜨리기) */
 function pagerHTML(page,totalPages,fnName){
   if(totalPages<=1)return'';
@@ -2026,7 +2051,7 @@ function pagerHTML(page,totalPages,fnName){
     +`<span class="pg-info">${page+1} / ${totalPages}</span>`
     +`<button class="pg-btn" ${page>=totalPages-1?'disabled':''} onmousedown="${fnName}(${page+1})">▶</button>`;
 }
-function openModal(id){if(id==='settingsModal')populateSettings();document.getElementById(id).classList.add('open');if(id==='settingsModal')updateTaScroll();document.addEventListener('keydown',escClose);}
+function openModal(id){if(id==='settingsModal')populateSettings();document.getElementById(id).classList.add('open');document.addEventListener('keydown',escClose);}
 function closeModal(id){document.getElementById(id).classList.remove('open');document.removeEventListener('keydown',escClose);}
 function escClose(e){if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));}
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('mousedown',e=>{if(e.target===o)closeModal(o.id);}));
@@ -2599,18 +2624,15 @@ function _drawSeatCanvas(){
       }
       H=rows*SH+(rows-1)*GAP;
     }else{
-      const G=liteData.groupSize||6,nG=Math.ceil(total/G);
-      const gc=Math.min(4,Math.max(2,Math.ceil(Math.sqrt(G)))),gr=Math.ceil(G/gc);
+      // 픽스67: 화면과 같은 블록 타일링 — 자리표 PNG도 낱개에서의 자리를 그대로 유지
+      const{gc,gr}=_groupDims(liteData.groupSize),blocks=_groupBlocks(),bCols=_groupBlockCols();
+      while(blocks.length&&!blocks[blocks.length-1].idx.some(i=>assign[i]))blocks.pop();
       const IN=8,GW=gc*SW+(gc-1)*IN,GH=gr*SH+(gr-1)*IN,GGAP=30;
-      const perRow=Math.max(1,Math.min(nG,Math.floor(1400/(GW+GGAP))));
-      for(let g=0;g<nG;g++){
-        const gx=(g%perRow)*(GW+GGAP),gy=Math.floor(g/perRow)*(GH+GGAP+18)+18; // +18: 모둠 라벨 공간
-        for(let k=0;k<G;k++){
-          const i=g*G+k;if(i>=total)break;
-          pos.push({i,x:gx+(k%gc)*(SW+IN),y:gy+Math.floor(k/gc)*(SH+IN),g});
-        }
+      blocks.forEach((b,g)=>{
+        const gx=(g%bCols)*(GW+GGAP),gy=Math.floor(g/bCols)*(GH+GGAP+18)+18; // +18: 모둠 라벨 공간
+        b.idx.forEach((i,k)=>pos.push({i,x:gx+(k%b.w)*(SW+IN),y:gy+Math.floor(k/b.w)*(SH+IN),g,first:k===0}));
         W=Math.max(W,gx+GW);H=Math.max(H,gy+GH);
-      }
+      });
     }
     const cw=W+PAD*2,ch=H+HEAD+PAD+FOOT;
     const canvas=document.createElement('canvas');
@@ -2631,9 +2653,8 @@ function _drawSeatCanvas(){
     // 좌석
     pos.forEach(p=>{
       const st=byIdx(p.i),x=PAD+p.x,y=HEAD+p.y;
-      if(p.g!==undefined){ // 모둠 배경 라벨 (그룹 첫 좌석에서 1회)
-        const G=liteData.groupSize||6;
-        if(p.i%G===0){
+      if(p.g!==undefined){ // 모둠 배경 라벨 (블록 첫 좌석에서 1회)
+        if(p.first){
           const c=GC[p.g%GC.length];
           x2.fillStyle=c[1];x2.font='700 12px Pretendard, sans-serif';x2.textAlign='left';x2.textBaseline='alphabetic';
           x2.fillText(`${p.g+1}모둠`,x+2,y-6);
@@ -2693,7 +2714,7 @@ init();
    · 닫은 버전 기억 = S 독립 키 'updateDismissedVerClass' (로컬 전용)
    · 임베드(iframe) 실행 시 자동 알림 끔 — 구버전 본체 내장 실행과의 중복 방지
    ========================================================================= */
-const CLASS_APP_VERSION='1.9';
+const CLASS_APP_VERSION='1.10';
 const VERSION_CHECK_URL='https://ppaksaem-vibecoding.pages.dev/version.json'; // 비우면 체크 비활성
 function _isEmbedded(){try{return window.parent!==window;}catch(e){return true;}}
 function _verNewer(a,b){ // a가 b보다 최신인가 — "1.10" > "1.9" 되도록 숫자 비교 (앞의 v는 무시)
