@@ -750,6 +750,13 @@
   .todo-s-tag.accent{background:#FCE8C0;color:#7A4E08;}
   .todo-s-tag.none{background:transparent;color:var(--text-mute);border:1px dashed var(--border);font-weight:500;}
   .todo-s-tag.none:hover{border-color:var(--accent);color:var(--accent);}
+  /* 픽스69: 항목 내용 복사 버튼 — 보드는 텍스트 드래그 선택이 막혀 있어(user-select:none) 이 버튼이 유일한 복사 경로 */
+  .todo-s-copy{flex-shrink:0;font-size:11px;line-height:1;cursor:pointer;padding:3px 5px;border-radius:5px;color:var(--text-mute);opacity:.55;transition:opacity .12s,color .12s,background .12s;}
+  .todo-s-copy:hover{opacity:1;color:var(--accent);background:var(--bg-panel);}
+  .todo-s-copy.ok{opacity:1;color:var(--sage-ink);background:var(--sage-soft);}
+  /* 픽스69b: 항목 자체를 하나 더 만드는 복제 버튼 (클립보드 복사와 다른 기능이라 글자로 구분) */
+  .todo-s-dup{flex-shrink:0;font-size:10px;font-weight:600;line-height:1;cursor:pointer;padding:3px 6px;border-radius:5px;color:var(--text-mute);border:1px solid var(--border);background:var(--bg-panel);transition:color .12s,border-color .12s,background .12s;}
+  .todo-s-dup:hover{color:var(--accent);border-color:var(--accent);}
 
   /* 아이콘 영역 슬라이더 */
   .icon-ctrl{display:flex;align-items:center;gap:10px;}
@@ -1985,7 +1992,7 @@
           </div>
         </div>
         <div class="divider"></div>
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">▲▼ 순서 변경 · 태그 배지 클릭 → 태그 변경 · ✕ 삭제</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">▲▼ 순서 변경 · 글자 클릭 → 수정 · 📋 내용 복사 · 복제 → 같은 할 일 하나 더 · 태그 클릭 → 태그 변경 · ✕ 삭제</div>
         <div id="todoSettingList"></div>
 
         <div class="divider" style="margin:14px 0 10px;"></div>
@@ -2244,7 +2251,7 @@ function geminiAvailable(){ return !!((CFG.geminiApiKey||'').trim() || (GEMINI_P
 //     (GitHub 웹 편집 → Pages 자동 배포. latest는 "2.8"처럼 숫자만)
 //   · 오프라인/학교망 차단 시 조용히 무시 — 다른 기능에 영향 없음
 // ============================================================
-const APP_VERSION = '2.29';
+const APP_VERSION = '2.30';
 
 // ============================================================
 //   🔴 픽스57: 시트 통삭제 사고 방지 (2026-08-23 실제 사고 후 추가)
@@ -4394,6 +4401,8 @@ function renderTodoSettings(){
       <button class="todo-order-btn" ${i===0?'disabled':''} onmousedown="moveTodo(${i},-1)" title="위로">▲</button>
       <button class="todo-order-btn" ${i===total-1?'disabled':''} onmousedown="moveTodo(${i},1)" title="아래로">▼</button>
       <span class="todo-s-text" onmousedown="editTodoText(event,${i})" title="클릭해서 내용 수정" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:text;">${escHtml(t.text)} <span style="font-size:9px;opacity:.45;">✎</span></span>
+      <span class="todo-s-copy" onmousedown="copyTodoText(event,${i})" title="내용을 클립보드에 복사">📋</span>
+      <span class="todo-s-dup" onmousedown="dupTodo(event,${i})" title="이 할 일을 그대로 하나 더 만들기">복제</span>
       ${linkBadge}
       ${tagBadge}
       ${t.done?'<span style="font-size:9px;color:var(--accent);margin-right:2px;">완료</span>':''}
@@ -4445,6 +4454,71 @@ function editTodoText(ev,i){
     }
     commit();
   });
+}
+
+// 픽스69(v2.30): 등록된 할 일 내용 복사 — 설정 → ✅ 할일 탭 각 줄의 📋 (클립보드로 글자만)
+//   왜 필요한가: 보드는 클릭 오작동을 막으려고 화면 전체에 user-select:none이 걸려 있어
+//   할 일 글자를 마우스로 긁어 복사할 방법이 아예 없다(사용자 피드백 2026-09-03).
+//   ⚠️ 앱(월페이퍼)은 클릭 200ms 뒤에야 창 포커스를 잡으므로(픽스65) 그 전에 부른
+//      navigator.clipboard.writeText가 "Document is not focused"로 거절된다. 그래서 4단 폴백:
+//      ① clipboard API → ② 300ms 뒤 재시도(앱의 포커스 확보를 기다리는 것 — 이게 앱의 정상 경로다)
+//      → ③ 숨은 textarea + execCommand → ④ 내용을 띄워 직접 Ctrl+C
+//         (_uiPrompt는 열자마자 입력값을 전체 선택하므로 바로 Ctrl+C가 먹는다)
+async function copyTodoText(ev, i){
+  if(ev && ev.preventDefault) ev.preventDefault();   // mousedown 기본 포커스 이동 차단 — 옆 줄 인라인 수정이 열려 있어도 닫히지 않게
+  const t = DATA.todos[i]; if(!t) return;
+  const txt = (t.text || '').trim(); if(!txt) return;
+  const list = document.getElementById('todoSettingList');
+  const row  = (list && list.children[i]) ? list.children[i] : null;
+  const btn  = row ? row.querySelector('.todo-s-copy') : null;
+  const flash = ()=>{
+    if(!btn) return;
+    btn.textContent = '✅'; btn.classList.add('ok');
+    setTimeout(()=>{ btn.textContent = '📋'; btn.classList.remove('ok'); }, 1400);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    for(const wait of [0, 300]){   // 0ms = 브라우저/Lively(이미 포커스 있음), 300ms = 앱(포커스 확보 대기)
+      if(wait) await new Promise(r=>setTimeout(r, wait));
+      try{
+        await navigator.clipboard.writeText(txt);
+        flash(); return;
+      }catch(e){ if(wait) console.warn('[복사] clipboard API 실패 — execCommand로 재시도', e); }
+    }
+  }
+  if(_copyPlainText(txt)){ flash(); return; }
+  await _uiPrompt('복사가 막힌 환경이에요 — 아래 내용을 Ctrl+C로 복사하세요.', {value: txt, title: '📋 할 일 복사'});
+}
+function _copyPlainText(txt){
+  let ta = null;
+  try{
+    ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    return document.execCommand('copy');
+  }catch(e){ console.warn('[복사] execCommand 실패', e); return false; }
+  finally{ if(ta && ta.parentNode) ta.parentNode.removeChild(ta); }
+}
+
+// 픽스69b(v2.30): 할 일 **항목 자체를 하나 더 만들기** — 설정 → ✅ 할일 탭 각 줄의 [복제]
+//   위 📋(글자만 클립보드로)와는 **다른 기능**이라 아이콘/글자로 구분한다.
+//   매주 되풀이되는 업무처럼 같은 항목을 또 만들고 싶을 때 쓴다
+//   (제보 메일의 "복사"는 이쪽 뜻이었고, 📋은 두 해석을 다 살리려고 함께 둔다).
+//   · 태그·링크·마감일까지 그대로 물려받되 **완료 표시는 물려받지 않는다** — 복제는 "또 해야 할 일"이므로.
+//   · 신규 추가는 맨 위(픽스47)지만 복제는 **원본 바로 아래**에 넣는다. 누른 자리에서 생겨야
+//     무엇이 복제됐는지 눈으로 확인되고, 목록이 길 때 화면이 튀지 않는다.
+function dupTodo(ev, i){
+  if(ev && ev.preventDefault) ev.preventDefault();   // mousedown 기본 포커스 이동 차단(다른 줄 인라인 수정 보호)
+  const t = DATA.todos[i]; if(!t) return;
+  const copy = Object.assign({}, t, {done:false});
+  DATA.todos.splice(i+1, 0, copy);
+  S.set('todos', DATA.todos);
+  _markTodosEdited();
+  scheduleSettingsSave();
+  renderTodo();
+  renderTodoSettings();
 }
 
 function moveTodo(i, dir){

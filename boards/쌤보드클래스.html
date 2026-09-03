@@ -562,14 +562,20 @@ input,textarea{user-select:text;}
 .nt-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
 .nt-title{font-size:30px;font-weight:800;}
 .nt-date{font-size:17px;color:var(--text-mute);font-weight:700;}
-.nt-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;overflow:hidden;justify-content:center;} /* Lively 무스크롤 — 넘치면 JS가 폰트 축소 */
-.nt-item{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-1);}
-.nt-item .n{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;}
-.nt-item .t{flex:1;font-weight:700;color:var(--text);line-height:1.35;word-break:break-all;user-select:none;}
-.nt-item .del{flex:0 0 auto;border:1px solid var(--border);background:var(--card-soft);border-radius:10px;padding:6px 12px;cursor:pointer;color:var(--text-mute);font-size:14px;}
-.nt-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-mute);font-size:20px;text-align:center;line-height:1.6;}
-.nt-edit{display:flex;gap:8px;margin-top:14px;}
-.nt-edit input{flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:12px;font-size:16px;background:var(--card);color:var(--text);}
+/* 픽스70(v1.11): 한 줄씩 추가하던 번호 카드 목록 → 메모장처럼 통째로 쓰는 판(사용자 요청 2026-09-03) */
+.nt-ta{flex:1;min-height:0;width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);
+  border-radius:18px;box-shadow:var(--shadow-1);padding:22px 26px;color:var(--text);font-family:inherit;font-weight:700;
+  line-height:1.5;resize:none;outline:none;overflow:hidden;} /* Lively 무스크롤 원칙 — 앱에서만 스크롤 허용(아래) */
+html.in-app .nt-ta{overflow-y:auto;}
+.nt-ta:focus{border-color:var(--accent);}
+.nt-ta::placeholder{color:var(--text-mute);font-weight:500;}
+.nt-size{display:inline-flex;align-items:center;gap:4px;}
+.nt-size .nt-sz-btn{border:1px solid var(--border);background:var(--card);border-radius:10px;width:34px;height:34px;
+  cursor:pointer;color:var(--text-soft);font-size:15px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center;}
+.nt-size .nt-sz-btn:hover{border-color:var(--border-strong);background:var(--card-soft);}
+.nt-size .nt-sz-btn:disabled{opacity:.3;cursor:default;}
+.nt-size .nt-sz-val{min-width:52px;text-align:center;font-size:13px;font-weight:700;color:var(--text-mute);}
+.nt-foot{margin-top:10px;font-size:12.5px;color:var(--text-mute);text-align:right;height:16px;}
 .goal-fab{position:fixed;left:12px;bottom:calc(var(--bottom-pad,56px) + 10px);z-index:140;min-width:170px;max-width:340px;height:30px;border-radius:999px;border:1px solid var(--border-strong);background:var(--card);overflow:hidden;cursor:pointer;box-shadow:var(--shadow-2);}
 .goal-fab .gf-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--honey),var(--accent));transition:width .5s ease;}
 .goal-fab .gf-label{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;padding:0 14px;font-size:12.5px;font-weight:800;color:var(--text);text-shadow:0 1px 0 rgba(255,255,255,.55);white-space:nowrap;}
@@ -951,14 +957,17 @@ input,textarea{user-select:text;}
     <span class="nt-title">📋 알림장</span>
     <span class="nt-date" id="ntDate"></span>
     <span style="flex:1;"></span>
+    <span class="nt-size">
+      <button class="nt-sz-btn" id="ntSzDown" onmousedown="ntFont(event,-1)" title="글씨 작게">A－</button>
+      <span class="nt-sz-val" id="ntSzVal">32px</span>
+      <button class="nt-sz-btn" id="ntSzUp" onmousedown="ntFont(event,1)" title="글씨 크게">A＋</button>
+    </span>
     <button class="tool-btn" onmousedown="ntClearAll()">전체 지우기</button>
     <button class="tt-close static" onmousedown="closeNoticeOv()">✕ 닫기</button>
   </div>
-  <div class="nt-list" id="ntList"></div>
-  <div class="nt-edit">
-    <input type="text" id="ntInput" placeholder="오늘의 숙제·준비물을 입력하세요 (Enter로 추가)" onkeydown="if(event.key==='Enter')ntAdd()"/>
-    <button class="tool-btn" onmousedown="ntAdd()">＋ 추가</button>
-  </div>
+  <textarea class="nt-ta" id="ntText" spellcheck="false" oninput="ntOnInput()"
+    placeholder="오늘의 숙제·준비물을 자유롭게 적어보세요.&#10;&#10;예)&#10;1. 수학 익힘책 24~25쪽&#10;2. 내일 준비물 — 리코더, 사인펜"></textarea>
+  <div class="nt-foot" id="ntStat"></div>
 </div>
 
 <!-- 🌡️ 학급 목표 모달 (픽스38) -->
@@ -2479,42 +2488,89 @@ function _ttDone(){
 function _ttBtn(){const b=document.getElementById('ttStartBtn');if(!b)return;b.textContent=_ttRunning?'⏸ 일시정지':'▶ 시작';b.classList.toggle('pause',_ttRunning);}
 function _ttRender(){const e=document.getElementById('ttTime');if(!e)return;const m=Math.floor(_ttLeft/60),s=_ttLeft%60;e.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
 
-/* ----- 📋 알림장 칠판 모드 (클래스 전용 — 사용자 피드백으로 본체 연동 제거) -----
-   저장: localStorage 'lt2_notice' 로컬 전용(시트에 쓰지 않음 원칙).
-   15초 폴링은 같은 PC에서 임베드 🪑/단독본이 같은 localStorage를 공유할 때의 상호 반영용. */
-let _ntData=null,_ntPollT=null;
-function _ntRead(){const v=_lsGet('notice');return(v&&Array.isArray(v.items))?v:{items:[],date:'',updatedAt:0};}
-function _ntWrite(nb){nb.updatedAt=Date.now();nb.date=_todayYMD();_lsSet('notice',nb);_ntData=nb;renderNoticeOv();}
+/* ----- 📋 알림장 (클래스 전용 — 본체 연동은 픽스39에서 제거) -----
+   픽스70(v1.11): 한 줄씩 Enter로 추가하던 **번호 카드 목록** → **메모장처럼 통째로 쓰는 판**으로 교체
+   (사용자 요청 2026-09-03 — 아이스크림 툴킷 칠판처럼 한 번에 입력 + 글씨 크기 직접 조절).
+   · 저장: localStorage 'lt2_notice' 로컬 전용(시트에 쓰지 않음 원칙) — `{text, fs, date, updatedAt}`.
+     구형 `{items:[...]}`은 읽을 때 줄바꿈으로 이어 붙여 자동 이전한다(번호는 이제 사용자가 직접 적는다).
+   · 타자가 0.7초 멈추면 자동 저장. 🔴 **저장은 화면을 다시 그리지 않는다** —
+     다시 그리면 textarea 값이 통째로 갈아끼워져 커서가 맨 끝으로 튄다.
+   · 🔴 옛 15초 폴링은 **제거**했다. 목적이 "임베드 🪑와 단독본이 같은 localStorage를 나눠 쓸 때의 상호 반영"이었는데
+     임베드는 픽스43에서 폐지됐고, 남겨두면 폴링이 **타자 중인 판을 덮어써** 쓰던 글이 날아간다. */
+const NT_SIZES=[16,20,24,28,32,38,44,52,60,72];
+const NT_FS_DEFAULT=32;
+let _ntData=null,_ntSaveT=null,_ntStatT=null;
+function _ntRead(){
+  const v=_lsGet('notice');
+  if(!v||typeof v!=='object')return{text:'',fs:NT_FS_DEFAULT,date:'',updatedAt:0};
+  const text=(typeof v.text==='string')?v.text:(Array.isArray(v.items)?v.items.join('\n'):'');   // 구형 목록 → 메모장 텍스트
+  const fs=NT_SIZES.includes(v.fs)?v.fs:NT_FS_DEFAULT;
+  return{text,fs,date:v.date||'',updatedAt:v.updatedAt||0};
+}
+function _ntSaveNow(){
+  if(_ntSaveT){clearTimeout(_ntSaveT);_ntSaveT=null;}
+  const ov=document.getElementById('noticeOv');
+  const ta=document.getElementById('ntText');
+  if(!ta||!ov||!ov.classList.contains('open'))return;   // 열려 있을 때만 — 빈 판이 저장분을 덮어쓰지 않게
+  const nb=_ntData||_ntRead();
+  nb.text=ta.value;nb.updatedAt=Date.now();nb.date=_todayYMD();
+  _lsSet('notice',nb);_ntData=nb;
+  _ntStat('저장됨');
+}
+function _ntStat(msg){
+  const el=document.getElementById('ntStat');if(!el)return;
+  if(_ntStatT){clearTimeout(_ntStatT);_ntStatT=null;}
+  if(!msg){el.textContent='자동으로 저장돼요';return;}
+  el.textContent='✅ '+msg;
+  _ntStatT=setTimeout(()=>{const e2=document.getElementById('ntStat');if(e2)e2.textContent='자동으로 저장돼요';},1800);
+}
+function ntOnInput(){if(_ntSaveT)clearTimeout(_ntSaveT);_ntSaveT=setTimeout(_ntSaveNow,700);}
 function openNoticeOv(){
   _ntData=_ntRead();
   document.getElementById('noticeOv').classList.add('open');
   renderNoticeOv();
-  _ntStopPolling();
-  _ntPollT=setInterval(()=>{const v=_ntRead();if(v.updatedAt!==((_ntData&&_ntData.updatedAt)||0)){_ntData=v;renderNoticeOv();}},15000);
+  const ta=document.getElementById('ntText');
+  if(ta)setTimeout(()=>{try{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}catch(_){}},30);
 }
-function closeNoticeOv(){document.getElementById('noticeOv').classList.remove('open');_ntStopPolling();}
-function _ntStopPolling(){if(_ntPollT){clearInterval(_ntPollT);_ntPollT=null;}}
-async function ntClearAll(){const nb=_ntData||_ntRead();if(!nb.items.length)return;if(!await _uiConfirm('알림장을 전부 지울까요?',{title:'🗑 알림장 비우기',danger:true,okText:'전부 지우기'}))return;nb.items=[];_ntWrite(nb);}
-function renderNoticeOv(){
-  const list=document.getElementById('ntList');if(!list)return;
+function closeNoticeOv(){
+  _ntSaveNow();   // 디바운스 대기 중인 미저장분을 닫기 전에 확정
+  document.getElementById('noticeOv').classList.remove('open');
+}
+async function ntClearAll(){
+  const ta=document.getElementById('ntText');
+  if(!ta||!ta.value.trim())return;
+  if(!await _uiConfirm('알림장을 전부 지울까요?',{title:'🗑 알림장 비우기',danger:true,okText:'전부 지우기'}))return;
+  ta.value='';_ntSaveNow();
+  try{ta.focus();}catch(_){}
+}
+function renderNoticeOv(){   // 값·글씨 크기·날짜 반영 — 열 때만 부른다(저장 때는 부르지 않는다, 위 주석)
+  const ta=document.getElementById('ntText');if(!ta)return;
   const nb=_ntData||_ntRead();
   const dEl=document.getElementById('ntDate');
   if(dEl){const now=new Date();const DAY=['일','월','화','수','목','금','토'];dEl.textContent=`${now.getMonth()+1}월 ${now.getDate()}일 (${DAY[now.getDay()]})`;}
-  if(!nb.items.length){
-    list.innerHTML='<div class="nt-empty"><span style="font-size:46px;">📋</span>아직 알림장 내용이 없어요.<br>아래 입력란에 오늘의 숙제·준비물을 적어보세요.</div>';
-    return;
-  }
-  // Lively 무스크롤 원칙: 항목 수에 따라 글자 크기 자동 축소 (스크롤 없이 한 화면)
-  const n=nb.items.length;
-  const fs=n<=4?32:n<=6?25:n<=9?19:15;
-  const pad=n<=6?'14px 22px':'8px 16px';
-  list.innerHTML=nb.items.map((t,i)=>`<div class="nt-item" style="padding:${pad};"><span class="n">${i+1}</span><span class="t" style="font-size:${fs}px;">${esc(t)}</span><button class="del" onmousedown="ntDel(${i})">✕</button></div>`).join('');
+  if(ta.value!==nb.text)ta.value=nb.text;   // 같으면 손대지 않는다(커서 튐 방지)
+  _ntApplyFont();
+  _ntStat('');
 }
-function ntAdd(){
-  const inp=document.getElementById('ntInput');const v=(inp.value||'').trim();if(!v)return;
-  const nb=_ntData||_ntRead();nb.items.push(v);inp.value='';_ntWrite(nb);
+function _ntApplyFont(){
+  const nb=_ntData||_ntRead();
+  const ta=document.getElementById('ntText');if(ta)ta.style.fontSize=nb.fs+'px';
+  const v=document.getElementById('ntSzVal');if(v)v.textContent=nb.fs+'px';
+  const i=NT_SIZES.indexOf(nb.fs);
+  const dn=document.getElementById('ntSzDown'),up=document.getElementById('ntSzUp');
+  if(dn)dn.disabled=(i<=0);
+  if(up)up.disabled=(i>=NT_SIZES.length-1);
 }
-function ntDel(i){const nb=_ntData||_ntRead();nb.items.splice(i,1);_ntWrite(nb);}
+function ntFont(ev,dir){
+  if(ev&&ev.preventDefault)ev.preventDefault();   // 버튼을 눌러도 쓰던 자리(커서)를 잃지 않게
+  const nb=_ntData||_ntRead();
+  let i=NT_SIZES.indexOf(nb.fs);if(i<0)i=NT_SIZES.indexOf(NT_FS_DEFAULT);
+  const ni=Math.max(0,Math.min(NT_SIZES.length-1,i+dir));
+  if(ni===i)return;
+  nb.fs=NT_SIZES[ni];nb.updatedAt=Date.now();nb.date=_todayYMD();
+  _lsSet('notice',nb);_ntData=nb;
+  _ntApplyFont();
+}
 
 /* ----- 🌡️ 학급 목표 온도계 (픽스39: 다중 목표 liteData.pointsGoals — 로컬+JSON 백업, 시트 X)
    고정 칩(#goalFab)이 모든 화면에 상시 표시 — 다음 미달성 목표 기준 달성률만 간단히.
@@ -2714,7 +2770,7 @@ init();
    · 닫은 버전 기억 = S 독립 키 'updateDismissedVerClass' (로컬 전용)
    · 임베드(iframe) 실행 시 자동 알림 끔 — 구버전 본체 내장 실행과의 중복 방지
    ========================================================================= */
-const CLASS_APP_VERSION='1.10';
+const CLASS_APP_VERSION='1.11';
 const VERSION_CHECK_URL='https://ppaksaem-vibecoding.pages.dev/version.json'; // 비우면 체크 비활성
 function _isEmbedded(){try{return window.parent!==window;}catch(e){return true;}}
 function _verNewer(a,b){ // a가 b보다 최신인가 — "1.10" > "1.9" 되도록 숫자 비교 (앞의 v는 무시)
