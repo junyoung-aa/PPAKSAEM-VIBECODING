@@ -158,6 +158,12 @@
     right: 0;
     display: grid;
     grid-template-columns: 290px 1fr 320px;  /* v2 spec */
+    /* 🔴 픽스81: 행을 컨테이너 높이로 **고정**한다(암묵 행은 `auto`라 내용만큼 커진다).
+       고정 전에는 한 컬럼에 패널이 몰리면 그 칼럼이 통째로 늘어나 아래 패널이 화면 밖으로
+       밀려났다(실측: 6개를 왼쪽에 몰자 D-Day·날씨·할 일이 뷰포트 밖). §2에 적힌 바로 그
+       그리드 함정이고, 픽스73·79가 `position:absolute`로 우회하던 것의 구조적 해법이다.
+       minmax(0,1fr) 이라야 자식이 줄어들 수 있다(1fr 단독은 min-content가 바닥이라 안 준다). */
+    grid-template-rows: minmax(0, 1fr);
     gap: 16px;
     padding: 16px;
   }
@@ -181,9 +187,44 @@
   .left-col{display:flex;flex-direction:column;gap:14px;animation:fadeInUp 0.5s 0.05s ease both;min-height:0;}
   .left-col .dday-panel{flex:0 0 auto;}
 
+  /* ===== 픽스79: 📷 메인화면 액자 (바로가기 ↔ 급식 사이) =====
+     사용자 피드백: "사진 페이지를 따로 두기보다 그냥 메인화면에서 보이면 좋겠다."
+     4페이지의 🖼 액자에 걸어둔 그 사진(`photoMeta.frameId`)을 여기에도 띄운다 — 같은 값을 보므로
+     어느 쪽에서 바꾸든 함께 움직인다. 사진 본체는 여전히 IndexedDB에만 있다(§2).
+     🔴 이미지는 **absolute**로 흐름에서 뺀다 — `.left-col`도 그리드 아이템이라, 큰 이미지가 흐름에 있으면
+        칼럼이 통째로 늘어나 급식·D-Day가 화면 밖으로 밀린다(픽스73에서 사진 격자로 한 번 밟은 함정). */
+  /* 🔴 픽스86: 액자도 **자기 몫을 요구하는 보통 패널**이다.
+     v2.43까지 여기만 `flex:1 1 0`(기준 높이 **0**)이라 "남는 자리가 있어야만 존재"했고,
+     그래서 맨 위에 두든 맨 아래에 두든 **언제나 액자가 먼저 사라졌다**(실측: 1·2·5번째 전부 h:0).
+     min-height로 최소 몫을 요구하게 바꾸면 다른 패널과 같은 규칙을 받는다 —
+     자리가 정말 모자랄 때 누가 빠질지는 **순서**가 정한다(`_fitPanelColumns`).
+     `flex-grow:1`은 남긴다: 자리가 넉넉하면 액자가 그 여백을 받아 커지는 건 그대로. */
+  .photo-mini-panel{flex:1 1 0;min-height:150px;display:flex;flex-direction:column;overflow:hidden;}
+  .photo-mini-body{flex:1;min-height:0;padding:0 14px 14px;}
+  .pm-frame{position:relative;width:100%;height:100%;border-radius:var(--radius-sm);overflow:hidden;
+    background:var(--card-soft);border:1px solid var(--border);}
+  .pm-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;}
+  .pm-cap{position:absolute;left:0;right:0;bottom:0;padding:16px 9px 6px;
+    font-size:10.5px;color:#fff;line-height:1.3;
+    background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,0));
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;}
+  .pm-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    width:100%;height:100%;border-radius:var(--radius-sm);
+    border:1.5px dashed var(--border-strong);color:var(--text-mute);
+    font-size:11.5px;text-align:center;line-height:1.6;padding:8px;}
+  .pm-nav{margin-left:auto;display:flex;gap:3px;}
+  .pm-nav button{font-family:inherit;font-size:10px;line-height:1;cursor:pointer;
+    background:var(--card-soft);color:var(--text-mute);border:1px solid var(--border);
+    border-radius:6px;padding:3px 6px;}
+  .pm-nav button:hover{color:var(--text-primary);}
+
   /* ===== 바로가기(퀵링크) 보드 — 픽스51 (구 파일 보관함 자리) ===== */
-  .quicklinks-panel{flex:1 1 0;display:flex;flex-direction:column;min-height:90px;overflow:hidden;}
-  .quicklinks-body{padding:8px 14px 15px;flex:1;overflow:hidden;}
+  /* 🔴 픽스79는 여기에 **6개(2열×3줄) 높이 캡**을 걸었었다. 픽스82에서 사용자 결정으로 **해제** —
+     "빈 공간에 맞춰서 자동으로 늘려라". 이제 등록한 개수만큼의 자연 높이를 갖고(자라지도 않음),
+     자리가 모자랄 때만 줄어들어(shrink 1) 스크롤한다. 남는 자리는 여전히 📷 액자(`flex:1 1 0`)가 받는다.
+     🔴 `flex:0 1 auto`는 유지할 것 — `1 1 0`으로 되돌리면 픽스79 이전처럼 세로를 전부 먹는다. */
+  .quicklinks-panel{flex:0 1 auto;display:flex;flex-direction:column;min-height:90px;overflow:hidden;}
+  .quicklinks-body{padding:8px 14px 15px;flex:1;min-height:0;overflow:hidden;}
   /* 픽스45 예외 규칙: 쌤보드 앱 안에서만 진짜 스크롤 허용 */
   html.in-app .quicklinks-body{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
   .ql-empty{font-size:11.5px;color:var(--text-mute);text-align:center;padding:14px 8px 16px;line-height:1.6;}
@@ -207,7 +248,7 @@
   .ql-btn-save:hover{opacity:.88;}
 
   /* ===== 중앙 컬럼 ===== */
-  .center-col{display:flex;flex-direction:column;gap:9px;animation:fadeInUp 0.5s 0.1s ease both;}
+  .center-col{display:flex;flex-direction:column;gap:9px;animation:fadeInUp 0.5s 0.1s ease both;min-height:0;}
 
   /* 시계 카드 (v2 좌/우 분할: 시계 | 인사말) */
   .clock-card{padding:14px 22px;display:grid;grid-template-columns:1.05fr 1px 1fr 1px 1.05fr;align-items:center;gap:18px;flex-shrink:0;container-type:inline-size;}
@@ -349,14 +390,19 @@
   .meal-kcal b{font-family:var(--font-num);font-weight:700;color:var(--text);}
 
   /* ===== To-Do (v2) ===== */
-  .todo-panel{flex:1;min-height:0;display:flex;flex-direction:column;}
-  .todo-body{padding:4px 16px 14px;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    /* 🔴 픽스83: 예전엔 `flex:1`이라 칼럼의 남는 세로를 전부 먹어, 할 일이 적으면 리스트와
+     입력줄 사이가 **흰 여백**으로 벌어졌다(사용자 지적). 이제 내용만큼만 차지하고 남는 자리는
+     칼럼에 그대로 둔다(바로가기·급식과 같은 느낌). 자리가 모자라면 줄어들어(shrink 1) 스크롤. */
+  /* min-height: 한 칼럼에 패널을 몰아넣으면 여기까지 눌려 **2px짜리 조각**만 남는다(실측).
+     바로가기(min-height:90px)와 같은 취지의 바닥값 — 최소한 헤더·진행바·입력줄(32+34+43+여백18=127)은 보이게 한다. */
+  .todo-panel{flex:0 1 auto;min-height:132px;display:flex;flex-direction:column;}
+  .todo-body{padding:4px 16px 14px;flex:1 1 auto;display:flex;flex-direction:column;overflow:hidden;}
   .todo-prog{display:flex;flex-direction:column;gap:6px;margin:0 0 10px;flex-shrink:0;}
   .todo-prog-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);}
   .todo-prog-meta b{font-family:var(--font-num);color:var(--text);font-weight:700;}
   .todo-bar{height:6px;background:var(--card-soft);border:1px solid var(--border);border-radius:99px;overflow:hidden;}
   .todo-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--sage));border-radius:99px;transition:width .25s;}
-  .todo-list{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0;overflow:hidden;}
+  .todo-list{display:flex;flex-direction:column;gap:2px;flex:0 1 auto;min-height:0;overflow:hidden;}
   /* 픽스45: 쌤보드 앱 안에서만 진짜 스크롤(▲▼ 페이저 대체) — Lively/브라우저는 overflow:hidden 유지 */
   html.in-app .todo-list{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;padding-right:2px;}
   .todo-item{display:flex;align-items:flex-start;gap:10px;padding:7px 8px;border-radius:8px;transition:background 0.1s;user-select:none;border:none;color:var(--text);font-size:inherit;}
@@ -391,13 +437,16 @@
   .todo-link-toggle:hover{color:var(--accent);}
   .todo-link-toggle.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);}
   .todo-more{font-size:10.5px;color:var(--text-mute);text-align:center;padding:4px 0;}
-  .todo-add-row{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);flex-shrink:0;flex-wrap:wrap;}
-  .todo-add-row input{flex:1;min-width:120px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-soft);padding:0 12px;font-size:12px;outline:none;color:var(--text);font-family:var(--font);}
+    /* 🔴 픽스82: `flex-wrap:wrap` + 입력칸 min-width:120px 조합 때문에 좁은 칼럼(290px)에서
+     ＋ 버튼이 **다음 줄로 내려갔다**(왼쪽으로 옮기면 재현). 입력칸이 얼마든지 줄어들 수 있게
+     하고(min-width:0) 간격을 조여 한 줄에 담는다 — wrap은 최후 안전망으로만 남긴다. */
+  .todo-add-row{display:flex;align-items:center;gap:5px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);flex-shrink:0;flex-wrap:wrap;}
+  .todo-add-row input{flex:1 1 0;min-width:0;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-soft);padding:0 12px;font-size:12px;outline:none;color:var(--text);font-family:var(--font);}
   .todo-add-row input:focus{border-color:var(--accent);background:var(--card);}
   .todo-add-row .add{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--accent);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;border:none;cursor:pointer;transition:transform .1s,filter .12s;flex-shrink:0;}
   .todo-add-row .add:hover{filter:brightness(1.08);transform:translateY(-1px);}
   /* 태그 4색 점 선택기 */
-  .todo-tag-picker{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+  .todo-tag-picker{display:flex;align-items:center;gap:3px;flex-shrink:0;}
   .ttp-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);cursor:pointer;padding:0;transition:transform .1s,border-color .12s,box-shadow .12s;position:relative;}
   .ttp-dot:hover{transform:scale(1.15);}
   .ttp-dot.on{border-color:var(--text);box-shadow:0 0 0 2px color-mix(in srgb,var(--text) 18%,transparent);}
@@ -453,7 +502,7 @@
     border:1px solid var(--border);
     border-radius:var(--radius);
     box-shadow:var(--shadow-pop);
-    width:300px;
+    width:384px;
     overflow:hidden;
   }
   .tweaks-head{
@@ -467,9 +516,13 @@
     color:var(--text);letter-spacing:0.04em;text-transform:uppercase;
   }
   .tweaks-body{
-    padding:14px;display:flex;flex-direction:column;gap:14px;
-    max-height:calc(100vh - 160px);
+    padding:14px;display:flex;flex-direction:column;gap:8px;
+    /* 🔴 패널 top:54 + 헤더 ~45 + 아래 여백 17 = 116. 옛 값 160은 44px을 괜히 깎고 있었다. */
+    max-height:calc(100vh - 112px);
   }
+  /* 🔴 넘칠 때 스크롤 — 옛날엔 overflow 규칙이 아예 없어 .tweaks-panel의 overflow:hidden에
+     **조용히 잘렸다**(1092×614에서 「시작 화면」이 3px 잘린 것을 실측). §2 규칙대로 앱 한정. */
+  html.in-app .tweaks-body{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
   .tw-group{display:flex;flex-direction:column;gap:7px;}
   .tw-label{font-size:10.5px;font-weight:600;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.06em;}
   .tw-swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
@@ -527,7 +580,6 @@
   /* Tweaks 내부 슬라이더 (바탕화면 여백 세밀 조절) */
   .tw-slider-row{
     display:flex;align-items:center;gap:8px;
-    padding:2px 0;
   }
   .tw-slider-row .tw-slider-label{
     font-size:10.5px;color:var(--text-soft);min-width:70px;flex-shrink:0;
@@ -537,6 +589,89 @@
   }
   .tw-slider-row .tw-slider-val{
     font-size:10.5px;color:var(--accent);font-weight:700;min-width:38px;text-align:right;
+  }
+
+  /* ===== 픽스81: 🧩 화면 배치 (좌/우 패널 선택·순서) =====
+     사용자 피드백: "사람마다 필요한 기능이 다르니 원하는 것만 원하는 자리에 두고 싶다."
+     🔴 드래그는 §4-13에서 금지(앱에서 보드 위 드래그 = 바탕화면 러버밴드가 겹쳐 그려짐).
+        그래서 **화면 모양 그대로의 2열 지도 + 버튼**으로 만든다 — 설정의 할일/D-Day ▲▼와 같은 방식. */
+  .pl-map{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .pl-col{
+    display:flex;flex-direction:column;gap:3px;
+    padding:6px;border-radius:10px;
+    background:var(--card-soft);border:1px solid var(--border);
+    min-height:48px;
+  }
+  .pl-col-ttl{
+    font-size:9.5px;font-weight:700;color:var(--text-mute);
+    text-transform:uppercase;letter-spacing:0.06em;text-align:center;padding-bottom:1px;
+  }
+  .pl-empty{font-size:10px;color:var(--text-mute);text-align:center;padding:6px 0;line-height:1.4;}
+  .pl-item{
+    display:flex;align-items:center;gap:1px;
+    padding:1px 2px 1px 6px;border-radius:7px;
+    background:var(--card);border:1px solid var(--border);
+    font-size:10.5px;color:var(--text);
+  }
+  .pl-item .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;}
+  /* 🔴 픽스84: 칼럼에 넣어 뒀지만 세로 자리가 없어 **화면에 안 나오는** 패널 표시.
+     지도는 "왼쪽 4개"라는데 화면엔 3개만 보이던 불일치가 혼란의 원인이었다(사용자 지적). */
+  .pl-item.pl-cramped{border-style:dashed;border-color:var(--rose);}
+  .pl-item.pl-cramped .nm{color:var(--text-mute);}
+  .pl-warn{flex-shrink:0;font-size:9.5px;line-height:1;color:var(--rose);margin-right:2px;}
+  .pl-hint.pl-hint-warn{color:var(--rose);}
+  .pl-item button{
+    width:16px;height:18px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    border:none;background:transparent;border-radius:4px;cursor:pointer;
+    color:var(--text-mute);font-size:9.5px;line-height:1;padding:0;
+    transition:background .12s,color .12s;
+  }
+  .pl-item button:hover:not(:disabled){background:var(--accent-soft);color:var(--accent);}
+  .pl-item button:disabled{opacity:.22;cursor:default;}
+  .pl-item button.pl-off-btn:hover{background:color-mix(in srgb,var(--rose) 20%, transparent);color:var(--rose);}
+  /* 숨긴 패널 보관함 — 비어 있으면 통째로 안 보인다(평소 세로 차지 0) */
+  .pl-tray{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:2px;}
+  .pl-tray .pl-tray-ttl{font-size:9.5px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.06em;}
+  .pl-chip{
+    display:flex;align-items:center;gap:4px;
+    padding:3px 7px;border-radius:99px;
+    background:var(--card-soft);border:1px dashed var(--border-strong);
+    font-size:10.5px;color:var(--text-mute);cursor:pointer;
+  }
+  .pl-chip:hover{border-style:solid;border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  /* 픽스88: 「기본값으로」가 밑줄 없는 링크(.card-link)라 **누르는 것인 줄 모른다**는 사용자 지적.
+     → 테두리 있는 알약 버튼으로. 보관함 칩(.pl-chip)과 같은 어휘를 쓰되 테두리를 실선으로 둬
+     "지금 눌 수 있는 조작"으로 읽히게 했다(칩은 점선 = 꺼져 있는 것). */
+  .pl-reset{
+    margin-left:auto;flex-shrink:0;
+    display:flex;align-items:center;gap:3px;
+    padding:2px 8px;border-radius:99px;
+    background:var(--card);border:1px solid var(--border-strong);
+    font-family:inherit;font-size:10px;line-height:1.5;color:var(--text-mute);
+    cursor:pointer;transition:border-color .12s,color .12s,background .12s;
+  }
+  .pl-reset:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  .pl-hint{font-size:9.5px;color:var(--text-mute);line-height:1.35;margin-top:-2px;}
+  .pl-hint b{color:var(--text-soft);font-weight:600;}
+  /* 숨김 처리된 패널 */
+  .panel.pl-hidden{display:none !important;}
+  /* 픽스86: 자리가 모자라 접힌 패널(사용자가 끈 것이 아니라 화면이 짧아서) */
+  .panel.pl-nofit{display:none !important;}
+  /* 한쪽 패널을 전부 숨기면 그 칼럼(290/320px)이 빈 띠로 남는다 → 폭을 접어 가운데에 넘긴다.
+     🔴 각 칼럼의 트랙을 **명시적으로** 못 박아야 한다 — 안 그러면 `display:none`으로 빠진
+        자리를 그리드가 자동 배치로 메워 **가운데가 0px 트랙으로 밀려난다**(실측: 중앙폭 0). */
+  .left-col{grid-column:1;} .center-col{grid-column:2;} .right-col{grid-column:3;}
+  .dashboard-wrapper.pl-no-left  .left-col,
+  .dashboard-wrapper.pl-no-right .right-col{display:none;}
+  .dashboard-wrapper.pl-no-left {grid-template-columns:0 1fr 320px;}
+  .dashboard-wrapper.pl-no-right{grid-template-columns:290px 1fr 0;}
+  .dashboard-wrapper.pl-no-left.pl-no-right{grid-template-columns:0 1fr 0;}
+  /* 🔴 한 컬럼에 flex-shrink:0 패널(급식·날씨·D-Day)이 몰리면 세로가 넘칠 수 있다.
+     실측 최악값(6개 전부 한쪽) ≈ 763px > 1366×768의 가용 668px. §2 예외 규칙대로 앱 한정 스크롤. */
+  html.in-app .left-col, html.in-app .right-col{
+    overflow-y:auto;overflow-x:hidden;
+    scrollbar-width:thin;scrollbar-color:var(--border) transparent;
   }
 
   /* ===== 모달 (v2 톤업) ===== */
@@ -906,8 +1041,13 @@
   .memo-list-meta{
     grid-column:1 / -1;
     font-size:10px;color:var(--text-mute);
-    padding:0 2px 2px;text-align:right;letter-spacing:0.02em;
+    padding:0 2px 2px;letter-spacing:0.02em;
+    /* 🔴 픽스75: 예전엔 text-align:right만 걸린 인라인 흐름이라 좌우 두 span이 **딱 붙어서**
+       "… 조퇴 1" + "0 / 7명 작성" 이 화면에 "조퇴 10 / 7명 작성"으로 읽혔다(사용자 신고).
+       flex로 갈라놔야 숫자가 섞이지 않는다. */
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
   }
+  .memo-list-meta > span:last-child{margin-left:auto;}
   .memo-empty{
     grid-column:1 / -1;
     font-size:11.5px;color:var(--text-mute);
@@ -973,6 +1113,87 @@
     box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
   }
   .memo-input::placeholder{color:var(--text-mute);opacity:0.55;font-weight:400;}
+  /* 픽스72: 출결 칩 — 학생 메모 각 줄 왼쪽. 출석(기록 없음)은 흐린 점 하나로 조용히 둔다. */
+  .attn-chip{
+    font-family:inherit;font-size:9.5px;font-weight:800;line-height:1;
+    width:24px;height:20px;flex-shrink:0;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--card);color:var(--text-mute);
+    border:1px solid var(--border);border-radius:5px;
+    transition:background 0.12s,color 0.12s,border-color 0.12s;
+  }
+  .attn-chip:hover{border-color:var(--border-strong);color:var(--text-primary);}
+  .attn-chip[data-t="결석"]{background:var(--rose-soft);color:var(--rose-ink);border-color:transparent;}
+  .attn-chip[data-t="지각"]{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent;}
+  .attn-chip[data-t="조퇴"]{background:var(--lilac-soft);color:var(--lilac-ink);border-color:transparent;}
+  .attn-chip[data-t="결과"]{background:var(--sky-soft);color:var(--sky-ink);border-color:transparent;}
+  .memo-item.has-attn{border-color:color-mix(in srgb, var(--rose) 30%, var(--border));}
+  .attn-summary{color:var(--rose-ink);font-weight:700;}
+  /* 출결 입력 모달 */
+  /* 🔴 픽스76: `#attnModal`이 `#attnStatsModal`보다 **DOM에서 앞**이라, z-index가 같으면(둘 다 500)
+     나중 것이 위에 그려진다 → 현황에서 항목을 눌러 연 수정 창이 **현황 뒤에 깔렸다**(사용자 신고).
+     수정 창은 현황 위에 겹쳐 뜨는 게 맞으므로 한 단 올린다(_uiConfirm의 900보다는 낮게). */
+  #attnModal{z-index:520;}
+  .attn-types{display:flex;flex-wrap:wrap;gap:6px;}
+  .attn-type-btn{
+    font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;
+    padding:7px 13px;border-radius:8px;
+    background:var(--card-soft);color:var(--text-muted);
+    border:1px solid var(--border);
+  }
+  .attn-type-btn:hover{color:var(--text-primary);border-color:var(--border-strong);}
+  .attn-type-btn.on{background:var(--accent);color:#fff;border-color:transparent;}
+  .attn-reason-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+  .attn-reason-chips button{
+    font-family:inherit;font-size:10.5px;cursor:pointer;
+    padding:3px 9px;border-radius:6px;
+    background:var(--card-soft);color:var(--text-mute);
+    border:1px solid var(--border);
+  }
+  .attn-reason-chips button:hover{color:var(--text-primary);}
+  /* 출결 현황(집계) */
+  .attn-stats-nav{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:9px;}
+  .attn-stats-nav button{
+    font-family:inherit;font-size:11px;cursor:pointer;padding:4px 9px;border-radius:7px;
+    background:var(--card-soft);color:var(--text-mute);border:1px solid var(--border);
+  }
+  .attn-stats-nav button:hover{color:var(--text-primary);}
+  .attn-stats-nav .m{font-size:13px;font-weight:800;color:var(--text-primary);min-width:96px;text-align:center;}
+  .attn-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  .attn-table th,.attn-table td{padding:5px 6px;border-bottom:1px solid var(--border);text-align:center;}
+  .attn-table th{font-size:10.5px;color:var(--text-mute);font-weight:700;}
+  .attn-table td.nm{text-align:left;font-weight:700;}
+  .attn-table td.z{color:var(--text-mute);opacity:0.4;}
+  .attn-table tr.sum td{font-weight:800;border-top:2px solid var(--border);border-bottom:none;}
+  .attn-log{margin-top:10px;font-size:11px;line-height:1.75;color:var(--text-muted);}
+  .attn-log .d{font-weight:700;color:var(--text-primary);}
+  .attn-log-item{
+    font-family:inherit;font-size:11px;cursor:pointer;
+    padding:2px 7px;margin:1px 2px 1px 0;border-radius:6px;
+    background:var(--card-soft);color:var(--text-muted);border:1px solid var(--border);
+  }
+  .attn-log-item:hover{color:var(--text-primary);border-color:var(--border-strong);}
+  /* 라이트박스 — .modal-overlay를 그대로 써서 ESC·배경클릭 닫기를 공짜로 얻는다 */
+  #photoViewModal .modal{
+    width:auto;max-width:min(88vw,1100px);background:transparent;
+    border:none;box-shadow:none;padding:0;
+  }
+  .pv-wrap{display:flex;flex-direction:column;align-items:center;gap:9px;}
+  .pv-img{
+    max-width:min(86vw,1080px);max-height:74vh;border-radius:12px;
+    box-shadow:0 12px 40px rgba(0,0,0,.45);background:#000;display:block;
+  }
+  .pv-bar{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .pv-bar button{
+    font-family:inherit;font-size:12px;cursor:pointer;padding:6px 13px;border-radius:8px;
+    background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25);
+  }
+  .pv-bar button:hover{background:rgba(255,255,255,.24);}
+  .pv-bar .idx{font-size:11.5px;color:rgba(255,255,255,.8);min-width:56px;text-align:center;}
+  .pv-cap{
+    font-size:12.5px;color:#fff;text-align:center;max-width:82vw;line-height:1.5;
+    text-shadow:0 1px 3px rgba(0,0,0,.6);min-height:18px;
+  }
   .memo-sync-bar{display:flex;align-items:center;gap:6px;padding:5px 10px;flex-shrink:0;border-top:1px solid var(--border);}
   .memo-sync-status{font-size:10px;color:var(--text-muted);flex:1;}
 
@@ -1041,6 +1262,16 @@
   }
   /* 픽스55: 현재 교시 진행바(.now-strip) 제거 — 사용자 결정.
      "지금 몇 교시·무슨 과목"은 아래 .current 강조가 이미 말해주므로 중복이었다. */
+  /* 픽스71: ⏰ 학교 일과 시간 모달 */
+  /* 픽스76: flex 줄 나눔이면 줄마다 칸 수가 달라 폭이 어긋난다 → 3열 그리드로 고정 */
+  .pt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px 7px;margin-bottom:7px;}
+  .pt-grid label{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--text-mute);min-width:0;}
+  .pt-grid .form-input{padding:5px 7px;font-size:12px;width:100%;box-sizing:border-box;}
+  .pt-hint{font-size:10.5px;color:var(--text-mute);line-height:1.6;margin-bottom:4px;}
+  .pt-row{display:grid;grid-template-columns:56px 1fr 12px 1fr;align-items:center;gap:6px;margin-bottom:5px;}
+  .pt-row .pt-n{font-size:11.5px;font-weight:700;color:var(--text-mute);}
+  .pt-row .pt-sep{text-align:center;font-size:11px;color:var(--text-mute);}
+  .pt-row .form-input{padding:5px 8px;font-size:12px;text-align:center;}
   /* 픽스56: 주 이동(◀ ▶ + 오늘) — 옛 🏫 학교 일정 버튼 자리 */
   .scb-week{display:none;align-items:center;gap:3px;margin-left:auto;flex:none;}
   .wk-nav,.wk-today{
@@ -1390,12 +1621,15 @@
     </div>
     <div class="tweaks-body">
 
-      <!-- 모드 -->
+      <!-- 모드 + 24시간 형식 (픽스81: 한 줄로 합쳐 세로 공간 확보) -->
       <div class="tw-group">
-        <div class="tw-label">모드</div>
-        <div class="tw-seg" id="modeSeg">
-          <button data-mode="light" class="on" onmousedown="setTwMode('light')">라이트</button>
-          <button data-mode="dark" onmousedown="setTwMode('dark')">다크</button>
+        <div class="tw-row">
+          <div class="tw-seg" id="modeSeg" style="flex:1;">
+            <button data-mode="light" class="on" onmousedown="setTwMode('light')">라이트</button>
+            <button data-mode="dark" onmousedown="setTwMode('dark')">다크</button>
+          </div>
+          <span style="flex-shrink:0;">🕐 24시간</span>
+          <div class="tw-toggle on" id="timeFmt" onmousedown="toggleTimeFmt()"></div>
         </div>
       </div>
 
@@ -1452,14 +1686,6 @@
         </div>
       </div>
 
-      <!-- 시간 형식 -->
-      <div class="tw-group">
-        <div class="tw-row">
-          <span>🕐 24시간 형식</span>
-          <div class="tw-toggle on" id="timeFmt" onmousedown="toggleTimeFmt()"></div>
-        </div>
-      </div>
-
       <!-- 시작 화면 (픽스53) -->
       <div class="tw-group">
         <div class="tw-row">
@@ -1472,6 +1698,17 @@
         </div>
       </div>
 
+      <!-- 🧩 화면 배치 (픽스81) -->
+      <div class="tw-group">
+        <div class="tw-row" style="align-items:center;">
+          <span class="tw-label">🧩 화면 배치</span>
+          <button class="pl-reset" onmousedown="plReset()">↩️ 기본값으로</button>
+        </div>
+        <div class="pl-map" id="plMap"></div>
+        <div class="pl-tray" id="plTray" style="display:none;"></div>
+        <div class="pl-hint"><b>◀ ▶</b> 반대쪽 칸으로 · <b>▲ ▼</b> 위아래 순서 · <b>✕</b> 숨기기</div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1481,7 +1718,7 @@
 
   <!-- ===== 좌측: 바로가기(퀵링크) + 오늘의 급식 + D-Day ===== -->
   <div class="left-col">
-    <div class="panel quicklinks-panel">
+    <div class="panel quicklinks-panel" id="qlPanel">
       <div class="panel-header">바로가기
         <a class="card-link" id="qlEditBtn" style="cursor:pointer;" onmousedown="qlToggleEdit()">편집</a>
       </div>
@@ -1490,11 +1727,22 @@
         <div class="ql-grid" id="qlGrid"></div>
       </div>
     </div>
-    <div class="panel meal-panel">
+    <!-- 픽스79: 📷 액자 — 4페이지에서 걸어둔 사진 한 장을 메인화면에 상시 표시 -->
+    <div class="panel photo-mini-panel" id="photoMiniPanel">
+      <div class="panel-header"><span id="pmTitle">📷 사진</span>
+        <span class="pm-nav">
+          <button onmousedown="pickPhotoFiles()" title="사진 추가">＋</button>
+          <button onmousedown="shiftFramePhoto(-1)" title="이전 사진" id="pmPrev" style="display:none;">◀</button>
+          <button onmousedown="shiftFramePhoto(1)"  title="다음 사진" id="pmNext" style="display:none;">▶</button>
+        </span>
+      </div>
+      <div class="photo-mini-body" id="photoMiniBody"></div>
+    </div>
+    <div class="panel meal-panel" id="mealPanel">
       <div class="panel-header tone-rose" id="mealPanelHeader">오늘의 급식</div>
       <div class="meal-body" id="mealBody"><div style="font-size:11px;color:var(--text-mute);text-align:center;padding:8px;">급식 정보 불러오는 중...</div></div>
     </div>
-    <div class="panel dday-panel">
+    <div class="panel dday-panel" id="ddayPanel">
       <div class="panel-header">D-Day · 다가오는 일</div>
       <div class="dday-body" style="padding:0 14px 14px;">
         <div class="dday-list" id="ddayList"></div>
@@ -1573,6 +1821,9 @@
         <div class="sched-control-bar">
           <div class="scb-group" id="scbNeis" style="display:none;">
             <button class="btn-sm" style="font-size:10px;padding:3px 10px;" id="neisReloadBtn" onmousedown="loadNeisTimetable(_schedWeekOffset)">🔄 이번 주 불러오기</button>
+            <!-- 픽스74: ⏰ 일과 시간은 나이스 쪽에만 둔다(사용자 결정) — 한 곳에서 잡으면 주안에도 적용되고,
+                 주안은 ✏️ 수동 편집 안에 교시별 시각 칸이 이미 있어 버튼이 둘일 이유가 없다. -->
+            <button class="btn-sm" style="font-size:10px;padding:3px 10px;" onmousedown="openModal('periodTimesModal')" title="수업 시작·종료 시각(시정표) 설정">⏰ 일과 시간</button>
             <span class="neis-sched-status" id="neisSchedStatus"></span>
           </div>
           <div class="scb-group" id="scbWeekly">
@@ -1602,6 +1853,7 @@
           <span>📝 학생 메모</span>
           <div style="display:flex;align-items:center;gap:5px;">
             <span id="memoSyncStatus" class="memo-sync-status"></span>
+            <button class="btn-sm" style="font-size:10px;padding:2px 8px;" onmousedown="openAttnStats()" title="이번 달 결석·지각·조퇴 집계">📊 출결 현황</button>
             <button class="btn-sm" style="font-size:10px;padding:2px 8px;color:var(--urgent);" onmousedown="resetMemos()">🗑 초기화</button>
             <button class="btn-sm" style="font-size:10px;padding:2px 8px;" onmousedown="syncMemoFromSheet()">📥 불러오기</button>
             <button class="btn-sm" style="font-size:10px;padding:2px 8px;" onmousedown="syncMemoToSheet(false)">📤 저장</button>
@@ -1614,6 +1866,9 @@
       </div>
     </div>
 
+    <!-- 픽스73: 사진 고르기 — §3-9.5에서 "가장 안정"이라고 확인된 file input 경로 -->
+    <input type="file" id="photoFileInput" accept="image/*" multiple style="display:none;" onchange="onPhotoFilesPicked(this)"/>
+
     <!-- ── 페이지 네비게이션 ── -->
     <div class="page-nav">
       <span class="page-label active" id="pageLabel1" onmousedown="switchPage(1)">🗓 이번 주</span>
@@ -1625,11 +1880,11 @@
 
   <!-- ===== 우측: 날씨 + 할 일 ===== -->
   <div class="right-col">
-    <div class="panel weather-panel">
+    <div class="panel weather-panel" id="weatherPanel">
       <div class="panel-header tone-sky" id="weatherPanelHeader">현재 날씨</div>
       <div class="weather-body" id="weatherBody"><div class="weather-msg">날씨 불러오는 중...</div></div>
     </div>
-    <div class="panel todo-panel">
+    <div class="panel todo-panel" id="todoPanel">
       <div class="panel-header">오늘 할 일 <span id="todoCount" style="margin-left:auto;font-size:11.5px;color:var(--text-mute);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
       <div class="todo-body">
         <div class="todo-prog" id="todoProg" style="display:none;">
@@ -1913,6 +2168,133 @@
   </div>
 </div>
 
+<!-- ========== 모달: 📷 사진 크게 보기 (픽스73) ========== -->
+<div class="modal-overlay" id="photoViewModal">
+  <div class="modal">
+    <div class="pv-wrap">
+      <img class="pv-img" id="pvImg" alt=""/>
+      <div class="pv-cap" id="pvCap"></div>
+      <div class="pv-bar">
+        <button onmousedown="shiftPhotoView(-1)">◀ 이전</button>
+        <span class="idx" id="pvIdx">1 / 1</span>
+        <button onmousedown="shiftPhotoView(1)">다음 ▶</button>
+        <button onmousedown="framePhotoFromView()" id="pvFrame">🖼 액자에 걸기</button>
+        <button onmousedown="editPhotoCaption()">✏️ 설명</button>
+        <button onmousedown="deletePhotoFromView()">🗑 삭제</button>
+        <button onmousedown="closePhotoView()">✕ 닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 모달: 🙋 출결 입력 (픽스72) ========== -->
+<div class="modal-overlay" id="attnModal">
+  <div class="modal" style="width:360px;">
+    <div class="modal-header">
+      <span class="modal-title">🙋 출결 기록</span>
+      <button class="modal-close" onmousedown="closeModal('attnModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" id="attnWho">학생</label>
+        <!-- 픽스75: 날짜를 바꿔 **지난 날 출결도 고칠 수 있다**(옛 구조는 오늘만 가능했다) -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;">
+          <span style="font-size:11px;color:var(--text-mute);flex:none;">📅 날짜</span>
+          <input class="form-input" type="text" id="attnDate" maxlength="10" placeholder="2026-09-07"
+                 style="max-width:130px;padding:5px 8px;font-size:12px;"
+                 oninput="formatDateInput(this)" onblur="_attnDateChanged()"/>
+          <button type="button" class="btn-sm" style="font-size:10px;padding:3px 8px;" onmousedown="_attnGotoToday()">오늘</button>
+        </div>
+        <div class="attn-types" id="attnTypes">
+          <button type="button" class="attn-type-btn" data-t="결석" onmousedown="_attnPick('결석')">결석</button>
+          <button type="button" class="attn-type-btn" data-t="지각" onmousedown="_attnPick('지각')">지각</button>
+          <button type="button" class="attn-type-btn" data-t="조퇴" onmousedown="_attnPick('조퇴')">조퇴</button>
+          <button type="button" class="attn-type-btn" data-t="결과" onmousedown="_attnPick('결과')">결과</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📝 사유 <span style="color:var(--text-muted);font-weight:400;">(선택)</span></label>
+        <input class="form-input" type="text" id="attnReason" placeholder="예) 질병 · 미인정 · 출석인정" maxlength="40"/>
+        <div class="attn-reason-chips">
+          <button type="button" onmousedown="_attnReason('질병')">질병</button>
+          <button type="button" onmousedown="_attnReason('미인정')">미인정</button>
+          <button type="button" onmousedown="_attnReason('기타')">기타</button>
+          <button type="button" onmousedown="_attnReason('출석인정')">출석인정</button>
+          <button type="button" onmousedown="_attnReason('교외체험학습')">교외체험학습</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:7px;margin-top:6px;">
+        <button class="save-btn" style="flex:1;margin:0;" onmousedown="saveAttendance()">💾 저장</button>
+        <button class="btn-sm" style="flex:0 0 auto;" onmousedown="clearAttendance()">🙆 출석으로</button>
+      </div>
+      <div style="margin-top:9px;font-size:10.5px;color:var(--text-mute);line-height:1.6;">
+        출석인 학생은 따로 기록하지 않습니다. 기록은 날짜별로 쌓여 <b>📊 출결 현황</b>에서 월별로 볼 수 있어요.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 모달: 📊 출결 현황 (픽스72) ========== -->
+<div class="modal-overlay" id="attnStatsModal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <span class="modal-title">📊 출결 현황</span>
+      <button class="modal-close" onmousedown="closeModal('attnStatsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="attn-stats-nav">
+        <button onmousedown="shiftAttnMonth(-1)">◀ 지난 달</button>
+        <span class="m" id="attnStatsMonth">2026년 9월</span>
+        <button onmousedown="shiftAttnMonth(1)">다음 달 ▶</button>
+        <button id="attnCopyBtn" onmousedown="copyAttnTable()" title="이 달 집계를 표로 복사 — 원하는 시트에 붙여넣으세요">📋 표 복사</button>
+      </div>
+      <div id="attnStatsBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 모달: ⏰ 학교 일과 시간(시정표) — 픽스71 ========== -->
+<div class="modal-overlay" id="periodTimesModal">
+  <div class="modal" style="width:430px;">
+    <div class="modal-header">
+      <span class="modal-title">⏰ 학교 일과 시간</span>
+      <button class="modal-close" onmousedown="closeModal('periodTimesModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="setup-notice" style="background:var(--sage-soft);border-color:var(--sage);">
+        💡 여기서 한 번만 잡아두면 <b>나이스 시간표와 주간학습안내 양쪽에 모두</b> 적용됩니다.
+        쉬는 시간은 교시 사이 간격으로 표현돼요.
+      </div>
+      <div class="form-group">
+        <label class="form-label">⚡ 한 번에 만들기 <span style="color:var(--text-muted);font-weight:400;">(아래 표가 자동으로 채워집니다)</span></label>
+        <div class="pt-grid">
+          <label>1교시 시작<input class="form-input" type="text" id="ptFirstStart" value="09:00" maxlength="5" placeholder="09:00"/></label>
+          <label>수업(분)<input class="form-input" type="number" id="ptLessonMin" value="40" min="10" max="90"/></label>
+          <label>쉬는 시간(분)<input class="form-input" type="number" id="ptBreakMin" value="10" min="0" max="40"/></label>
+          <label>연속 교시<input class="form-input" type="number" id="ptBlock" value="1" min="1" max="4"/></label>
+          <label>점심 시작<input class="form-input" type="text" id="ptLunchStart" value="12:10" maxlength="5" placeholder="12:10" onblur="_ptNormalizeEnd(this)"/></label>
+          <label>점심 끝<input class="form-input" type="text" id="ptLunchEnd" value="13:00" maxlength="5" placeholder="13:00" onblur="_ptNormalizeEnd(this)"/></label>
+          <label>교시 수<input class="form-input" type="number" id="ptCount" value="7" min="1" max="10"/></label>
+        </div>
+        <div class="pt-hint">
+          <b>연속 교시</b> — <b>1</b>이면 매 교시마다 쉬는 시간, <b>2</b>면 두 교시를 붙여서 하고 쉽니다(블록 수업).<br>
+          점심과 겹치는 교시는 자동으로 점심 뒤로 밀려요. 점심이 없으면 두 칸을 비워두세요.
+        </div>
+        <button class="btn-sm" style="margin-top:7px;font-size:11px;" onmousedown="applyPeriodPreset()">⚡ 표에 채우기</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🕘 교시별 시각 <span style="color:var(--text-muted);font-weight:400;">(직접 고쳐도 됩니다)</span></label>
+        <div id="ptRows"></div>
+      </div>
+      <div style="display:flex;gap:7px;margin-top:6px;">
+        <button class="save-btn" style="flex:1;margin:0;" onmousedown="savePeriodTimes()">💾 저장</button>
+        <button class="btn-sm" style="flex:0 0 auto;" onmousedown="resetPeriodTimes()">↩️ 기본값으로</button>
+      </div>
+      <div id="ptStatus" style="margin-top:8px;font-size:11.5px;color:var(--text-muted);line-height:1.6;min-height:18px;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ========== 모달: 바로가기 추가/편집 (픽스51) ========== -->
 <div class="modal-overlay" id="qlModal">
   <div class="modal" style="width:390px;">
@@ -2147,6 +2529,21 @@
         <div style="margin-top:4px;">
           <button class="save-btn" style="width:100%;margin:0;" onmousedown="saveMemoSettings()">💾 저장 & 연동 확인</button>
         </div>
+        <!-- 🔴 픽스90: 수동 동기화는 **개발자 옵션 안으로 숨긴다**(사용자 지적: "이렇게 복잡하면
+             다른 선생님들이 혼란스러울 것 같다"). PC 한 대만 쓰는 대다수에게는 쓸 일이 없는 조작이고,
+             안 눌러도 종전과 똑같이 동작한다. 켜는 법: 설정 → 💾 백업 → 「쌤보드 현재 버전」 글자를 7번. -->
+        <div id="devSyncBox" style="display:none;">
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button class="btn-sm" style="flex:1;" onmousedown="pullFromSheet()">📥 시트에서 불러오기</button>
+            <button class="btn-sm" style="flex:1;" onmousedown="saveSettingsToScript(true)">📤 지금 시트에 저장</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--text-muted);margin-top:5px;line-height:1.55;">
+            🔧 개발자 옵션 — 평소에는 <strong>자동</strong>으로 맞춰집니다(더 최근에 고친 쪽이 이깁니다).<br>
+            다른 PC에서 적은 게 안 보이면 <strong>📥 불러오기</strong>를 한 번 눌러 주세요.
+          </div>
+        </div>
+        <!-- 🔴 이 줄이 지금까지 HTML에 없어서 setBackupStatus()의 안내가 전부 사라지고 있었다 -->
+        <div id="backupStatus" style="margin-top:6px;font-size:11.5px;color:var(--accent);text-align:center;line-height:1.6;min-height:18px;"></div>
         <div id="rosterDiag" style="margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.6;"></div>
 
         <div class="divider"></div>
@@ -2202,7 +2599,8 @@
         <div class="divider"></div>
 
         <div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px;color:var(--text-mute);">
-          <span>쌤보드 현재 버전 <strong id="appVersionLabel" style="color:var(--text-soft);"></strong></span>
+          <!-- 픽스90: 여기를 7번 누르면 개발자 옵션이 켜진다/꺼진다 -->
+          <span onmousedown="_devTap()">쌤보드 현재 버전 <strong id="appVersionLabel" style="color:var(--text-soft);"></strong></span>
           <button class="btn-sm" style="flex:none;padding:4px 12px;font-size:11px;" onmousedown="checkForUpdateManual()">🔄 업데이트 확인</button>
         </div>
         <div id="updateCheckStatus" style="margin-top:6px;font-size:11px;color:var(--accent);text-align:center;min-height:16px;"></div>
@@ -2251,7 +2649,7 @@ function geminiAvailable(){ return !!((CFG.geminiApiKey||'').trim() || (GEMINI_P
 //     (GitHub 웹 편집 → Pages 자동 배포. latest는 "2.8"처럼 숫자만)
 //   · 오프라인/학교망 차단 시 조용히 무시 — 다른 기능에 영향 없음
 // ============================================================
-const APP_VERSION = '2.30';
+const APP_VERSION = '2.46';
 
 // ============================================================
 //   🔴 픽스57: 시트 통삭제 사고 방지 (2026-08-23 실제 사고 후 추가)
@@ -2283,8 +2681,46 @@ const MY_DATA_KEYS = [
   'neisSchedule','scheduleSource','schoolKind','neisClassName',
   'defaultPage','schoolEvents',
   'todosUpdatedAt','ddaysUpdatedAt',
-  'studentInfo','quickLinks','schoolHomepage'
+  'studentInfo','quickLinks','schoolHomepage',
+  'periodTimes','attendance','panelLayout',
+  'keyTimes'
 ];
+
+// 🔴 픽스89: **키마다 마지막으로 고친 시각**(`keyTimes = {키: epoch}`).
+//   왜 필요한가 — 부팅 복원은 `S.get(k,null)===null`인 키만 채워서, 로컬에 값이 있으면
+//   구글시트를 아예 안 읽었다. 그래서 학교 PC에서 적은 주간학습안내가 집 PC에 영영 안 오고,
+//   더 나쁘게는 집 PC의 낡은 블롭이 자동 저장으로 **시트를 통째로 덮어썼다**(2026-08-23 실사고).
+//   투두·D-Day만 `todosUpdatedAt` 덕에 "최신이 이긴다"로 돌고 있었는데, 그 방식을 전 키로 넓힌다.
+//   🔑 시각은 **내가 고쳤을 때만** 찍는다 — 복원(IDB·옆 JSON·시트)으로 들어온 값에 찍으면
+//   받아오자마자 "내가 더 최신"이 되어 상대 기기를 덮어쓴다. 그래서 `_suppressDirty` 게이트가 있다.
+//   선언은 **파일 상단**이어야 한다(S.set이 부팅 동기 구간에서 불린다 — 픽스86의 TDZ 교훈).
+let _dirtyKeys = new Set();
+let _suppressDirty = 0;
+let _BK_SET = null;
+function _isBackupKey(k){
+  // BACKUP_KEYS는 파일 한참 아래에 선언돼 있다 → 부팅 초반엔 TDZ. `typeof`는 TDZ에서도 던지므로
+  // try/catch로 받고, 아직 없으면 false(그 시점 S.set은 전부 부팅 배관이라 찍을 것도 없다).
+  if(!_BK_SET){ try{ _BK_SET = new Set(BACKUP_KEYS); }catch(e){ return false; } }
+  return _BK_SET.has(k);
+}
+
+// 🧩 화면 배치(픽스81)의 패널 목록 — 🔴 선언이 **여기(상단)** 있어야 한다.
+//   syncTweaksUI()는 정의 직후 top-level에서 호출되고, 그 안에서 applyPanelLayout →
+//   _normPanelLayout → PANEL_DEFS를 읽는다. 선언이 아래에 있으면 TDZ ReferenceError로
+//   부팅이 통째로 멈춘다(§2 — `typeof` 가드도 TDZ에서는 던지므로 소용없다).
+const PANEL_DEFS = [
+  {id:'qlPanel',        nm:'🔗 바로가기', col:'left'},
+  {id:'mealPanel',      nm:'🍽 급식',     col:'left'},
+  {id:'ddayPanel',      nm:'📌 D-Day',    col:'left'},
+  {id:'weatherPanel',   nm:'⛅ 날씨',     col:'right'},
+  {id:'todoPanel',      nm:'✅ 할 일',    col:'right'},
+  {id:'photoMiniPanel', nm:'📷 사진',     col:'right'}
+];
+const _PANEL_IDS = PANEL_DEFS.map(d => d.id);
+// 픽스86 자리 맞춤 판정의 상태값. 🔴 선언이 **여기(상단)** 있어야 한다 — 부팅 동기 구간의
+//   top-level syncTweaksUI() → applyPanelLayout() → _fitPanelColumns() → _fitWatch()가 읽는다.
+//   아래에 두면 `Cannot access '_fitWatching' before initialization`으로 부팅이 멈춘다(실측).
+let _fitT = null, _fitWatching = false;
 
 let _sheetRestoreDone = false;   // 부팅 복원(loadSettingsFromScript)이 끝났나
 // 개발 프리뷰 판별: 실사용 경로는 file://(앱·Lively)이므로 localhost면 100% 개발 중이다.
@@ -2370,6 +2806,25 @@ function _idbGet(k){
     req.onerror=()=>res(null);
   })).catch(()=>null);
 }
+// 픽스73: 쓰기 완료를 기다리는 판. 사진(수백 KB)은 fire-and-forget이면 저장 성공 여부를
+//   사용자에게 알려줄 수가 없고, 용량 초과(QuotaExceeded)도 조용히 삼켜진다.
+function _idbPut(k,v){
+  return _openIDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction('kv','readwrite');
+    tx.oncomplete=()=>res(true);
+    tx.onerror=()=>rej(tx.error||new Error('idb write failed'));
+    tx.onabort=()=>rej(tx.error||new Error('idb write aborted'));
+    tx.objectStore('kv').put(JSON.stringify(v),k);
+  }));
+}
+function _idbDel(k){
+  return _openIDB().then(db=>new Promise(res=>{
+    const tx=db.transaction('kv','readwrite');
+    tx.oncomplete=()=>res(true);
+    tx.onerror=()=>res(false);
+    tx.objectStore('kv').delete(k);
+  })).catch(()=>false);
+}
 
 // ── 4. localStorage ──────────────────────────────────────────
 function _lsSet(k,v){try{localStorage.setItem('db3_'+k,JSON.stringify(v));}catch{}}
@@ -2385,6 +2840,15 @@ const S={
     return def;
   },
   set(k,v){
+    // 픽스89: **값이 실제로 바뀐 내 편집**만 기록한다.
+    //   · 30초 자동 저장이 같은 값을 다시 써도 안 찍히게 이전 값과 비교한다.
+    //   · 복원 경로는 `_suppressDirty`로 감싸 두었다(위 주석 참조).
+    if(!_suppressDirty && k !== 'keyTimes' && _isBackupKey(k)){
+      let a, b;
+      try{ a = JSON.stringify(this.get(k,null)); }catch(e){ a = undefined; }
+      try{ b = JSON.stringify(v); }catch(e){ b = undefined; }
+      if(a !== b) _dirtyKeys.add(k);
+    }
     _mem[k]=v;
     _lSet(k,v);      // Lively
     _cSet(k,v);      // Cookie
@@ -2409,13 +2873,16 @@ const S={
 //   (iconArea·theme·투두가 유독 잘 살아남은 이유 = 원래 이 7개 목록에 있었기 때문)
 //   → 내보내기 대상 전체(MY_DATA_KEYS) + 내부 플래그까지 옮긴다. 목록을 다시 줄이지 말 것.
 async function restoreStorage(){
-  const EXTRA = ['memos','holidayApplied','_gemini35Migrated','updateDismissedVer'];
+  const EXTRA = ['memos','holidayApplied','_gemini35Migrated','updateDismissedVer','devMode'];
   const KEYS = [...new Set([].concat(MY_DATA_KEYS, EXTRA))];
-  for(const k of KEYS){
-    if(S.get(k,null)!==null) continue;   // 이미 있으면 스킵
-    const v=await _idbGet(k);
-    if(v!==null) S.set(k,v);
-  }
+  _suppressDirty++;   // 픽스89: 재수화는 내 편집이 아니다 — 시각을 찍지 않는다
+  try{
+    for(const k of KEYS){
+      if(S.get(k,null)!==null) continue;   // 이미 있으면 스킵
+      const v=await _idbGet(k);
+      if(v!==null) S.set(k,v);
+    }
+  } finally { _suppressDirty--; }
 }
 
 // ── 30초마다 자동 저장 ───────────────────────────────────────
@@ -2453,6 +2920,8 @@ async function _pollPhone(){
         const data = JSON.parse(txt);
         // PC가 막 편집해 아직 시트 저장(5초 debounce) 전이면 채택 보류 — 내 미저장 편집 보호
         const savePending = (typeof _pendingSheetSave!=='undefined') && _pendingSheetSave;
+        _suppressDirty++;   // 픽스89: 시트에서 받아온 값에 "내가 고침" 시각을 찍지 않는다
+        try{
         if(!savePending){
           const sTodo = Number(data.todosUpdatedAt || 0);
           const lTodo = Number(S.get('todosUpdatedAt', 0) || 0);
@@ -2473,6 +2942,7 @@ async function _pollPhone(){
             if(typeof renderDdaySettings === 'function') renderDdaySettings();
           }
         }
+        } finally { _suppressDirty--; }
         // 자리배치(liteData)는 시트로 동기화하지 않음 — 픽스43부터 쌤보드클래스(별도 파일)가 자체 관리, 본체는 관여 안 함.
       }
     }
@@ -2526,9 +2996,16 @@ const CFG={
   scheduleSource:     S.get('scheduleSource','weekly'),
   schoolKind:         S.get('schoolKind','els'),
   neisClassName:      S.get('neisClassName',''),
-  // 픽스53: 시작 화면(1=이번 주 / 2=캘린더 / 3=학생 메모) + 나이스 학사일정 주간 캐시
+  // 픽스53: 시작 화면(1=이번 주 / 2=캘린더 / 3=학생 메모 / 4=사진) + 나이스 학사일정 주간 캐시
   defaultPage:        S.get('defaultPage',1),
   schoolEvents:       S.get('schoolEvents',null),
+  // 픽스71: 학교 일과 시간(시정표) — 소스(나이스/주안) 공용. null이면 DEFAULT_SCHEDULE_PERIODS.
+  periodTimes:        S.get('periodTimes', null),
+  // 픽스72: 출결 기록 { 'YYYY-MM-DD': { studentKey: {t:'결석'|'지각'|'조퇴'|'병결'|'기타', r:'사유'} } }
+  //   출석(정상)은 저장하지 않는다 — 예외만 담아 블롭을 작게 유지.
+  attendance:         S.get('attendance', {}),
+  // 픽스81: 좌/우 패널 배치 {left:[id],right:[id],off:[id]}. null이면 PANEL_DEFS의 기본 자리.
+  panelLayout:        S.get('panelLayout', null),
   theme:              S.get('theme','default'),
   iconArea:           S.get('iconArea',355),
   taskbar:            S.get('taskbar',68),
@@ -2618,13 +3095,16 @@ async function tryLoadConfigFile(){
     // 구버전 호환: scriptUrl 필드 처리
     if(saved.scriptUrl && !saved.memoScriptUrl) saved.memoScriptUrl = saved.scriptUrl;
     let applied = false;
-    MY_DATA_KEYS.forEach(k=>{
-      if(saved[k] !== undefined && S.get(k, null) === null){
-        S.set(k, saved[k]);
-        if(k in CFG) CFG[k] = saved[k];
-        applied = true;
-      }
-    });
+    _suppressDirty++;   // 픽스89: 옆 JSON 복구도 내 편집이 아니다
+    try{
+      MY_DATA_KEYS.forEach(k=>{
+        if(saved[k] !== undefined && S.get(k, null) === null){
+          S.set(k, saved[k]);
+          if(k in CFG) CFG[k] = saved[k];
+          applied = true;
+        }
+      });
+    } finally { _suppressDirty--; }
     if(applied) console.log('[설정파일] 대시보드_설정.json에서 설정 복원됨');
     return applied;
   }catch(e){ /* 파일 없음 — 정상 */ }
@@ -2858,6 +3338,8 @@ async function initApp(){
   renderTodo();
   renderDday();
   renderQuickLinks(); // 픽스51: 바로가기 보드
+  renderMainPhoto();  // 픽스79: 메인화면 액자(IndexedDB 비동기 — 그려지면 채워진다)
+  setTimeout(renderMainPhoto, 600);   // 패널들이 자리를 잡은 뒤 한 번 더 재판정(부팅 직후엔 높이가 0일 수 있다)
   loadWeather();
   loadMeal();
   renderGcal();
@@ -3535,6 +4017,9 @@ function toggleTweaks(){
   const tw=document.getElementById('tweaks');
   const fab=document.getElementById('twFab');
   tw.classList.toggle('open'); fab.classList.toggle('tw-on');
+  // 픽스84: 열 때마다 지도를 다시 그린다 — 그 사이 창 크기·링크 수·할 일 수가 바뀌면
+  //   "자리 부족" 여부도 바뀌므로, 부팅 때 계산해 둔 배지는 스테일할 수 있다.
+  if(tw.classList.contains('open') && typeof renderPanelLayoutUI === 'function') renderPanelLayoutUI();
 }
 function closeTweaks(){
   document.getElementById('tweaks').classList.remove('open');
@@ -3629,6 +4114,10 @@ function syncTweaksUI(){
   if(tf) tf.classList.toggle('on', CFG.timeFormat24 !== false);
   // 시작 화면 (픽스53)
   _syncDefaultPageUI();
+  // 🧩 화면 배치 (픽스81) — 부팅·시트복원·가져오기가 전부 이 함수를 지나므로 여기 한 곳이면 된다.
+  applyPanelLayout();
+  renderPanelLayoutUI();
+  _syncDevUI();   // 픽스90: 개발자 옵션 표시 여부
 }
 syncTweaksUI();
 
@@ -3646,6 +4135,264 @@ function setDefaultPage(n){
   scheduleSettingsSave();          // §2-1: 데이터 변경 함수마다 직접 호출
   _syncDefaultPageUI();
   switchPage(CFG.defaultPage);     // 고른 화면을 바로 보여줘 선택 결과를 확인시켜 줌
+}
+
+// ── 🧩 화면 배치 (픽스81) ─────────────────────────────────────
+//   좌/우 패널을 켜고 끄고, 순서와 컬럼을 바꾼다.
+//   🔴 드래그 금지(§4-13) — 앱에서 보드 위를 끌면 바탕화면 러버밴드가 겹쳐 그려진다.
+//      그래서 순서 변경은 설정의 할일·D-Day와 같은 **▲▼ 버튼** 방식이다.
+//   🔴 새 패널을 만들면 여기 한 줄만 추가하면 된다 — 저장분에 없는 id는
+//      _normPanelLayout이 자기 기본 컬럼에 자동으로 붙여준다(기존 사용자 무영향).
+function _panelName(id){ const d = PANEL_DEFS.find(x => x.id === id); return d ? d.nm : id; }
+// 픽스86: 패널이 **최소한 요구하는** 세로.
+//   · 줄어들 수 있는 패널(바로가기·할 일·액자)은 CSS `min-height` — 앱에선 안쪽이 스크롤되므로
+//     최소치까지 눌려도 내용에 못 닿는 곳이 생기지 않는다.
+//   · 줄어들 수 없는 패널(급식·D-Day·날씨, `flex-shrink:0`)은 **지금 그려진 높이 그대로** —
+//     이쪽은 스크롤이 없어서 누르면 잘린 부분을 볼 방법이 아예 없다(실측: 급식 277→163).
+function _plMinH(el){
+  if(!el) return 0;
+  const cs = getComputedStyle(el);
+  if((parseFloat(cs.flexShrink) || 0) <= 0) return el.getBoundingClientRect().height;
+  return parseFloat(cs.minHeight) || 0;
+}
+
+// 🔴 픽스86: 자리가 모자랄 때 **맨 아래 패널부터** 빠진다.
+//   사용자 지적: "맨 아래에 있는 기능이 가려지는 게 정상 아니야? 니 맘대로 사진이 필요 없다고
+//   안 보이게 하지 마." — 맞는 말이다. v2.43까지는 위치와 무관하게 액자가 정해진 희생양이었다.
+//   이제 칸을 위에서부터 훑으며 각자의 최소 몫을 채워 주고, 더 못 담는 지점부터 **아래를 통째로**
+//   접는다. 무엇을 포기할지는 ▲▼ 순서로 사용자가 정한다.
+//   · 첫 패널은 접지 않는다 — 칸이 통째로 비면 "고장난 것"으로 보인다.
+//   · 살아남은 패널끼리의 크기 배분은 종전대로 flex가 한다(바로가기가 줄고 액자가 남는 식).
+function _fitPanelColumns(){
+  _fitWatch();
+  const lay = _panelLayout();
+  ['left','right'].forEach(k => {
+    const col = document.querySelector(k === 'left' ? '.left-col' : '.right-col');
+    if(!col) return;
+    const els = lay[k].map(id => document.getElementById(id)).filter(Boolean);
+    els.forEach(el => el.classList.remove('pl-nofit'));   // 먼저 전부 되살리고 다시 잰다
+    if(els.length < 2) return;
+    // 🔴 clientHeight에는 **패딩이 포함**된다 — `.right-col`은 `padding-top:44px`(위젯바 자리)이라
+    //   그냥 쓰면 44px을 더 있다고 착각해 칸이 넘친다(실측: 1092×614에서 오른쪽 16px 넘침).
+    const cs = getComputedStyle(col);
+    const avail = col.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+    if(avail <= 0) return;                                // 아직 레이아웃 전이면 판정하지 않는다
+    const gap = parseFloat(cs.rowGap) || 0;
+    let used = 0, cut = -1;
+    for(let i = 0; i < els.length; i++){
+      const next = used + (i ? gap : 0) + _plMinH(els[i]);
+      if(i > 0 && next > avail + 0.5){ cut = i; break; }
+      used = next;
+    }
+    if(cut >= 0) els.slice(cut).forEach(el => el.classList.add('pl-nofit'));
+  });
+}
+
+// 🔴 한 번 잰 값으로 굳으면 안 된다 — 부팅 최상단에서 부르는 판정은 **레이아웃이 잡히기 전**
+//   값을 보고 내려진다(실측: 여유가 996px인 오른쪽 칸에서 「할 일」이 접혔다). 게다가 급식·D-Day는
+//   내용이 나중에 도착하면서 높이가 커진다. 그래서 두 가지를 지켜보다 다시 잰다:
+//   ⓐ 칼럼 크기 변화(ResizeObserver — 부팅 정착·창 크기·배율) ⓑ 패널 **내용** 변화(MutationObserver).
+//   🔑 ⓑ에서 **속성(class)은 일부러 안 본다** — 우리가 붙이는 `pl-nofit`이 다시 자신을 깨워
+//   접었다 폈다 무한히 오가게 되기 때문이다. 내용(childList/characterData)만 본다.
+function _fitLater(){ clearTimeout(_fitT); _fitT = setTimeout(_fitPanelColumns, 120); }
+function _fitWatch(){
+  if(_fitWatching) return;
+  const cols = [document.querySelector('.left-col'), document.querySelector('.right-col')].filter(Boolean);
+  if(cols.length < 2) return;              // 아직 DOM이 없으면 다음 호출 때 다시 시도
+  _fitWatching = true;
+  if(window.ResizeObserver){
+    const ro = new ResizeObserver(_fitLater);
+    cols.forEach(c => ro.observe(c));
+  }
+  if(window.MutationObserver){
+    const mo = new MutationObserver(_fitLater);
+    _PANEL_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) mo.observe(el, {childList:true, subtree:true, characterData:true});
+    });
+  }
+}
+
+// "칼럼에는 들어 있는데 지금 화면에서는 못 보는가" — 지도의 ⚠ 판정(픽스84·86).
+//   ⓐ 자리가 없어 접힌 것(`pl-nofit`) ⓑ 앱에서 칼럼이 스크롤될 때 보이는 영역 아래로 밀린 것.
+//   사용자가 직접 끈 패널(pl-hidden)은 대상이 아니다.
+function _plCramped(id){
+  const el = document.getElementById(id);
+  if(!el || el.classList.contains('pl-hidden')) return false;
+  if(el.classList.contains('pl-nofit')) return true;
+  const col = el.parentElement;
+  if(!col || !col.clientHeight) return false;
+  const top = el.getBoundingClientRect().top - col.getBoundingClientRect().top + col.scrollTop;
+  return top + 8 > col.clientHeight;
+}
+
+// 저장분을 안전한 형태로 정규화한다: 모르는 id는 버리고, 빠진 id는 기본 컬럼에 붙인다.
+function _normPanelLayout(v){
+  const out = {left:[], right:[], off:[]};
+  const seen = {};
+  ['left','right','off'].forEach(k => {
+    const arr = (v && Array.isArray(v[k])) ? v[k] : [];
+    arr.forEach(id => {
+      if(_PANEL_IDS.indexOf(id) < 0 || seen[id]) return;   // 미지의 id·중복 제거
+      seen[id] = 1; out[k].push(id);
+    });
+  });
+  PANEL_DEFS.forEach(d => { if(!seen[d.id]) out[d.col].push(d.id); });   // 새로 생긴 패널
+  return out;
+}
+function _panelLayout(){ return _normPanelLayout(CFG.panelLayout); }
+
+// 실제 DOM에 반영 — 부팅·시트 복원·설정 가져오기 **모두** syncTweaksUI를 거치므로
+// 거기 한 곳에서만 부르면 된다(§2의 "복원 경로에 적용 함수 누락"을 구조적으로 차단).
+function applyPanelLayout(){
+  const lay = _panelLayout();
+  const cols = {left: document.querySelector('.left-col'), right: document.querySelector('.right-col')};
+  if(!cols.left || !cols.right) return;
+  ['left','right'].forEach(k => {
+    lay[k].forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.classList.remove('pl-hidden');
+      cols[k].appendChild(el);        // 순서대로 다시 붙이면 그게 곧 배치다
+    });
+  });
+  lay.off.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.add('pl-hidden');
+  });
+  // 한쪽이 통째로 비면 그 칼럼을 접는다 — 안 그러면 290px짜리 빈 띠가 남아 숨긴 보람이 없다.
+  const wrap = document.querySelector('.dashboard-wrapper');
+  if(wrap){
+    wrap.classList.toggle('pl-no-left',  lay.left.length  === 0);
+    wrap.classList.toggle('pl-no-right', lay.right.length === 0);
+  }
+  // 배치가 바뀌면 무엇이 칸에 들어가는지도 바뀐다 → 맨 아래부터 접는 판정을 다시 돌린다(픽스86).
+  _fitPanelColumns();
+}
+
+function _plSave(lay){
+  CFG.panelLayout = lay;
+  S.set('panelLayout', lay);
+  scheduleSettingsSave();            // §2-1
+  applyPanelLayout();
+  renderPanelLayoutUI();
+}
+
+// dir: 'up' | 'down' | 'left' | 'right'
+function plMove(id, dir){
+  const lay = _panelLayout();
+  const from = ['left','right','off'].find(k => lay[k].indexOf(id) >= 0);
+  if(!from || from === 'off') return;
+  const arr = lay[from], i = arr.indexOf(id);
+  if(dir === 'up' || dir === 'down'){
+    const j = i + (dir === 'up' ? -1 : 1);
+    if(j < 0 || j >= arr.length) return;
+    arr.splice(i,1); arr.splice(j,0,id);
+  }else{
+    if(dir === from) return;                       // 이미 그 컬럼
+    arr.splice(i,1);
+    lay[dir].push(id);                             // 반대 컬럼 맨 아래로
+  }
+  _plSave(lay);
+}
+function plHide(id){
+  const lay = _panelLayout();
+  ['left','right'].forEach(k => { const i = lay[k].indexOf(id); if(i >= 0) lay[k].splice(i,1); });
+  if(lay.off.indexOf(id) < 0) lay.off.push(id);
+  _plSave(lay);
+}
+function plShow(id){
+  const lay = _panelLayout();
+  const i = lay.off.indexOf(id);
+  if(i >= 0) lay.off.splice(i,1);
+  const d = PANEL_DEFS.find(x => x.id === id);
+  const k = (d && d.col === 'right') ? 'right' : 'left';
+  if(lay[k].indexOf(id) < 0) lay[k].push(id);      // 원래 살던 컬럼 맨 아래로
+  _plSave(lay);
+}
+function plReset(){
+  _plSave(_normPanelLayout(null));                 // 전부 기본 자리로
+}
+
+function renderPanelLayoutUI(){
+  const map = document.getElementById('plMap');
+  if(!map) return;
+  const lay = _panelLayout();
+  let cramped = 0;        // 픽스84: 자리 부족으로 지금 안 보이는 패널 수
+
+  // 🔴 인라인 핸들러(onmousedown="f('id')") 대신 **closure**로 붙인다 — §3-1의 규칙이자,
+  //   따옴표 escape가 템플릿 문자열을 지나며 깨지는 사고를 원천 차단한다.
+  const mkBtn = (glyph, tip, enabled, fn, cls) => {
+    const b = document.createElement('button');
+    b.textContent = glyph; b.title = tip;
+    if(cls) b.className = cls;
+    if(enabled) b.addEventListener('mousedown', e => { e.preventDefault(); fn(); });
+    else b.disabled = true;
+    return b;
+  };
+
+  const buildCol = (k, ttl) => {
+    const wrap = document.createElement('div'); wrap.className = 'pl-col';
+    const h = document.createElement('div'); h.className = 'pl-col-ttl'; h.textContent = ttl;
+    wrap.appendChild(h);
+    const arr = lay[k];
+    if(!arr.length){
+      const e = document.createElement('div'); e.className = 'pl-empty'; e.textContent = '비어 있음';
+      wrap.appendChild(e); return wrap;
+    }
+    arr.forEach((id, i) => {
+      const row = document.createElement('div'); row.className = 'pl-item';
+      // 픽스84: 자리가 없어 지금 화면에 안 나오는 패널은 ⚠ + 점선으로 알려준다.
+      if(_plCramped(id)){
+        row.classList.add('pl-cramped');
+        row.title = '자리가 모자라 지금은 안 보여요';
+        const w = document.createElement('span'); w.className = 'pl-warn'; w.textContent = '⚠';
+        row.appendChild(w);
+        cramped++;
+      }
+      const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = _panelName(id);
+      row.appendChild(nm);
+      row.appendChild(mkBtn('▲', '위로',   i > 0,              () => plMove(id, 'up')));
+      row.appendChild(mkBtn('▼', '아래로', i < arr.length - 1, () => plMove(id, 'down')));
+      const other = (k === 'left') ? 'right' : 'left';
+      row.appendChild(mkBtn(k === 'left' ? '▶' : '◀',
+                            (k === 'left' ? '오른쪽' : '왼쪽') + ' 칸으로',
+                            true, () => plMove(id, other)));
+      row.appendChild(mkBtn('✕', '숨기기', true, () => plHide(id), 'pl-off-btn'));
+      wrap.appendChild(row);
+    });
+    return wrap;
+  };
+
+  _fitPanelColumns();   // 픽스86: 지도를 그리기 직전에 다시 재야 ⚠가 스테일하지 않다
+  map.innerHTML = '';
+  map.appendChild(buildCol('left',  '◀ 왼쪽'));
+  map.appendChild(buildCol('right', '오른쪽 ▶'));
+
+  // 픽스84: 하나라도 자리 부족이면 안내문을 그쪽으로 바꿔 준다 — 무엇을 하면 되는지까지.
+  const hint = document.querySelector('.pl-hint');
+  if(hint){
+    hint.classList.toggle('pl-hint-warn', cramped > 0);
+    hint.textContent = cramped > 0
+      ? '⚠ 자리가 모자라 아래쪽부터 밀렸어요 — ▲ ▼로 순서를 바꾸면 됩니다.'
+      : '◀ ▶ 반대쪽 칸으로 · ▲ ▼ 위아래 순서 · ✕ 숨기기';
+  }
+
+  // 숨김 보관함 — 비어 있으면 통째로 감춰 평소 세로를 한 픽셀도 안 쓴다.
+  const tray = document.getElementById('plTray');
+  if(!tray) return;
+  tray.innerHTML = '';
+  if(!lay.off.length){ tray.style.display = 'none'; return; }
+  tray.style.display = '';
+  const t = document.createElement('span'); t.className = 'pl-tray-ttl'; t.textContent = '숨김';
+  tray.appendChild(t);
+  lay.off.forEach(id => {
+    const c = document.createElement('button');
+    c.className = 'pl-chip'; c.title = '다시 표시';
+    c.textContent = '＋ ' + _panelName(id);
+    c.addEventListener('mousedown', e => { e.preventDefault(); plShow(id); });
+    tray.appendChild(c);
+  });
 }
 
 // ============================================================
@@ -5447,6 +6194,9 @@ function qlDeleteFromModal(){
 //   유틸
 // ============================================================
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// 인라인 핸들러 안 JS 문자열 리터럴용 — escHtml은 작은따옴표·역슬래시를 건드리지 않아
+// onmousedown="f('${escHtml(v)}')" 형태에 그대로 쓰면 v에 '가 있을 때 핸들러가 깨진다.
+function escAttrJs(s){return escHtml(String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));}
 
 // ============================================================
 //   날짜 입력 자동 포맷 (YYYY-MM-DD)
@@ -5513,10 +6263,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mousedown', _closeCalendarDDOnOutsideClick, true);
 
   // 디자인 패널(#tweaks) — 외부 클릭으로 닫기 (다른 모달과 UX 일관성)
+  // 🔴 픽스82: 아래 판정은 **캡처 단계에서 미리** 해 둔다. 이 리스너는 버블 단계라
+  //   버튼 핸들러가 먼저 도는데, 🧩 화면 배치처럼 **자기 UI를 다시 그리는** 버튼은
+  //   그 사이 자신을 DOM에서 떼어낸다 → 여기 왔을 때 `tw.contains(e.target)`가 false가 되어
+  //   "바깥 클릭"으로 오판하고 패널을 닫아 버렸다(배치 한 번 바꿀 때마다 닫힘).
+  let _twDownInside = false;
+  document.addEventListener('mousedown', e => {
+    const tw = document.getElementById('tweaks');
+    _twDownInside = !!(tw && tw.contains(e.target));   // DOM이 아직 그대로인 시점
+  }, true);
   document.addEventListener('mousedown', e => {
     const tw = document.getElementById('tweaks');
     if(!tw || !tw.classList.contains('open')) return;
-    if(tw.contains(e.target)) return;
+    if(_twDownInside) return;
     const fab = document.getElementById('twFab');
     if(fab && fab.contains(e.target)) return; // fab 자체 클릭은 toggleTweaks가 처리
     closeTweaks();
@@ -6551,6 +7310,255 @@ if(typeof _origRenderGcalListForEditable === 'function'){
 }
 
 // ============================================================
+//   📷 사진 액자 — 픽스73(v2.31) → 픽스80(v2.38: 전용 페이지 폐지)
+//   ─────────────────────────────────────────────────────────
+//   사용자 결정(2026-09-08): **📷 사진 페이지를 없애고 메인화면 좌측 액자 하나로 일원화.**
+//   원래 요청이 "사진 페이지를 만드는 것보다 그냥 메인화면에서 보이면 좋겠다"였는데,
+//   픽스79에서 액자만 더하고 페이지를 남겨 뒀다가 이번에 페이지째 걷어냈다.
+//     · 추가   = 액자 헤더 [＋]
+//     · 넘기기 = 액자 헤더 [◀ ▶] (액자에 걸린 사진 자체가 바뀐다)
+//     · 크게 보기 / 설명 / 삭제 = 사진을 눌러 라이트박스에서
+//   갤러리 격자·페이저·편집 모드·액자/갤러리 탭은 **전량 삭제**(잔존 참조 0).
+//
+//   🔴 저장은 여전히 **IndexedDB 전용**(§2) — `photoIndex`(목록) + `photo_<id>`(축소 dataURL)
+//      + `photoMeta`(액자에 건 사진). CFG·시트·설정파일 내보내기와 무관하다.
+// ============================================================
+const PHOTO_MAX_EDGE  = 1280;   // 긴 변 기준 축소 — 벽지에서 보기엔 이걸로 충분하다
+const PHOTO_QUALITY   = 0.82;
+const PHOTO_MAX_COUNT = 300;
+
+let _photoIndex = null;   // [{id, cap, at}] — 최신이 앞
+let _photoCache = {};     // id → dataURL (이번 세션에서 읽어둔 것)
+let _photoView  = -1;     // 라이트박스가 보고 있는 인덱스
+let _photoMeta  = null;   // {frameId}
+
+async function loadPhotoIndex(){
+  if(_photoIndex) return _photoIndex;
+  const raw = await _idbGet('photoIndex');
+  _photoIndex = Array.isArray(raw) ? raw : [];
+  if(!_photoMeta){
+    const m = await _idbGet('photoMeta');
+    _photoMeta = (m && typeof m === 'object') ? m : {};
+    delete _photoMeta.mode;   // 픽스80: 갤러리/액자 모드는 폐지 — 옛 값이 남아 있어도 무시
+  }
+  return _photoIndex;
+}
+function _photoSaveIndex(){ return _idbPut('photoIndex', _photoIndex || []); }
+function _photoSaveMeta(){ return _idbPut('photoMeta', _photoMeta || {}); }
+function _photoNewId(){ return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+// 액자에 건 사진의 인덱스 — 지워졌거나 아직 안 골랐으면 첫 장
+function _frameIdx(){
+  if(!_photoIndex || !_photoIndex.length) return -1;
+  const i = _photoIndex.findIndex(ph => ph.id === (_photoMeta && _photoMeta.frameId));
+  return i >= 0 ? i : 0;
+}
+
+// 상태 문구는 액자 패널 **제목 자리**에 잠깐 띄운다 — 따로 줄을 둘 세로 여유가 없다.
+function setPhotoStatus(msg, hold){
+  const el = document.getElementById('pmTitle');
+  if(!el) return;
+  el.textContent = msg || '📷 사진';
+  if(msg && !hold) setTimeout(() => {
+    const cur = document.getElementById('pmTitle');
+    if(cur && cur.textContent === msg) cur.textContent = '📷 사진';
+  }, 4000);
+}
+
+// ── 추가 ────────────────────────────────────────────────────
+function pickPhotoFiles(){
+  const inp = document.getElementById('photoFileInput');
+  if(inp){ inp.value = ''; inp.click(); }
+}
+
+// 원본을 그대로 넣으면 사진 한 장에 5MB가 넘어간다 → 캔버스로 줄여 JPEG로 다시 뽑는다.
+function _photoShrink(file){
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onerror = () => reject(new Error('read'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('decode'));
+      img.onload = () => {
+        try{
+          const long = Math.max(img.width, img.height) || 1;
+          const scale = Math.min(1, PHOTO_MAX_EDGE / long);
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          const ctx = cv.getContext('2d');
+          ctx.fillStyle = '#fff';       // 투명 PNG를 JPEG로 바꿀 때 검게 되는 것 방지
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(cv.toDataURL('image/jpeg', PHOTO_QUALITY));
+        }catch(e){ reject(e); }
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
+async function onPhotoFilesPicked(input){
+  const files = Array.from(input?.files || []).filter(f => /^image\//.test(f.type));
+  if(!files.length) return;
+  await loadPhotoIndex();
+  const room = PHOTO_MAX_COUNT - _photoIndex.length;
+  if(room <= 0){
+    _uiAlert(`사진은 최대 ${PHOTO_MAX_COUNT}장까지 보관할 수 있어요.\n오래된 사진을 지우고 다시 시도해주세요.`);
+    return;
+  }
+  const list = files.slice(0, room);
+  let ok = 0, fail = 0;
+  for(let i = 0; i < list.length; i++){
+    setPhotoStatus(`📷 ${i+1}/${list.length}…`, true);
+    try{
+      const dataUrl = await _photoShrink(list[i]);
+      const id = _photoNewId();
+      await _idbPut('photo_' + id, dataUrl);          // 실패하면(용량 초과 등) 여기서 던진다
+      _photoCache[id] = dataUrl;
+      _photoIndex.unshift({id, cap:'', at:Date.now()});
+      ok++;
+    }catch(e){
+      fail++;
+      console.warn('[사진] 추가 실패:', list[i]?.name, e);
+    }
+  }
+  if(ok){
+    await _photoSaveIndex();
+    // 방금 올린 사진을 바로 액자에 건다 — 올렸는데 화면이 그대로면 된 건지 알 수 없다.
+    _photoMeta.frameId = _photoIndex[0].id;
+    await _photoSaveMeta();
+  }
+  await renderMainPhoto();
+  if(fail && !ok)      setPhotoStatus('⚠️ 저장 실패(공간 부족?)');
+  else if(fail)        setPhotoStatus(`✅ ${ok}장 · ⚠️ ${fail}장 실패`);
+  else                 setPhotoStatus(`✅ ${ok}장 추가`);
+  if(files.length > list.length) _uiAlert(`최대 ${PHOTO_MAX_COUNT}장까지만 보관할 수 있어 ${files.length - list.length}장은 담지 못했습니다.`);
+}
+
+// ── 메인화면 액자 ───────────────────────────────────────────
+// 🔴 픽스86: 액자 전용 자기-숨김(`_syncMainPhotoFit`/`pm-hidden`)은 폐지했다.
+//   "액자는 남는 자리를 받는 패널"이라는 전제 자체가 액자를 늘 정해진 희생양으로 만들었다.
+//   이제 액자도 다른 패널과 같은 규칙을 받는다 — 최소 몫은 CSS `min-height`,
+//   자리가 정말 모자랄 때 누가 빠질지는 `_fitPanelColumns()`가 **순서**로 정한다.
+async function renderMainPhoto(){
+  const body = document.getElementById('photoMiniBody');
+  if(!body) return;
+  await loadPhotoIndex();
+  const i = _frameIdx();
+  const prev = document.getElementById('pmPrev'), next = document.getElementById('pmNext');
+  const multi = _photoIndex.length > 1;
+  if(prev) prev.style.display = multi ? '' : 'none';
+  if(next) next.style.display = multi ? '' : 'none';
+  if(i < 0){
+    body.innerHTML = `<div class="pm-empty">📷 사진을 걸어보세요
+      <small style="opacity:.8;">위 <b>＋</b>를 눌러 올리면<br>여기에 크게 보입니다</small></div>`;
+    return;
+  }
+  const ph = _photoIndex[i];
+  if(_photoCache[ph.id] === undefined) _photoCache[ph.id] = await _idbGet('photo_' + ph.id);
+  const src = _photoCache[ph.id];
+  body.innerHTML = src
+    ? `<div class="pm-frame">
+         <img src="${src}" alt="${escHtml(ph.cap || '사진')}" draggable="false"
+              onmousedown="openPhotoView(${i})" title="${escHtml(ph.cap || '눌러서 크게 보기')}"/>
+         ${ph.cap ? `<span class="pm-cap">${escHtml(ph.cap)}</span>` : ''}
+       </div>`
+    : `<div class="pm-empty">사진을 불러올 수 없습니다.</div>`;
+}
+
+// 액자에 걸 사진을 앞뒤로 넘긴다(넘긴 사진이 그대로 액자에 남는다)
+async function shiftFramePhoto(d){
+  await loadPhotoIndex();
+  if(!_photoIndex.length) return;
+  const len = _photoIndex.length;
+  const next = ((_frameIdx() + d) % len + len) % len;
+  _photoMeta.frameId = _photoIndex[next].id;
+  await _photoSaveMeta();
+  renderMainPhoto();
+}
+
+// 라이트박스에서 보고 있는 사진을 액자에 건다
+async function framePhotoFromView(){
+  const ph = _photoIndex && _photoIndex[_photoView];
+  if(!ph) return;
+  _photoMeta.frameId = ph.id;
+  await _photoSaveMeta();
+  renderMainPhoto();
+  const b = document.getElementById('pvFrame');
+  if(b){ b.textContent = '✅ 걸었습니다'; setTimeout(() => { if(b) b.textContent = '🖼 액자에 걸기'; }, 2000); }
+}
+
+// 창·모니터가 바뀌면 칼럼 높이도 달라진다 → 무엇까지 담기는지 재판정(픽스86)
+let _pmResizeT = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_pmResizeT);
+  _pmResizeT = setTimeout(() => { if(typeof _fitPanelColumns === 'function') _fitPanelColumns(); }, 200);
+});
+
+// ── 크게 보기(라이트박스) ───────────────────────────────────
+async function openPhotoView(idx){
+  await loadPhotoIndex();
+  if(!_photoIndex.length) return;
+  _photoView = Math.max(0, Math.min(_photoIndex.length - 1, idx));
+  await _renderPhotoView();
+  openModal('photoViewModal');
+}
+
+async function _renderPhotoView(){
+  const ph = _photoIndex[_photoView];
+  if(!ph) return;
+  if(_photoCache[ph.id] === undefined) _photoCache[ph.id] = await _idbGet('photo_' + ph.id);
+  const img = document.getElementById('pvImg');
+  if(img) img.src = _photoCache[ph.id] || '';
+  const cap = document.getElementById('pvCap');
+  if(cap) cap.textContent = ph.cap || '';
+  const idxEl = document.getElementById('pvIdx');
+  if(idxEl) idxEl.textContent = `${_photoView+1} / ${_photoIndex.length}`;
+}
+
+function shiftPhotoView(d){
+  if(!_photoIndex || !_photoIndex.length) return;
+  const len = _photoIndex.length;
+  _photoView = ((_photoView + d) % len + len) % len;   // 끝에서 처음으로 감긴다
+  _renderPhotoView();
+}
+
+function closePhotoView(){ closeModal('photoViewModal'); }
+
+// 🔴 갤러리를 없앴으므로 **삭제 경로는 여기뿐**이다(픽스80).
+async function deletePhotoFromView(){
+  const ph = _photoIndex && _photoIndex[_photoView];
+  if(!ph) return;
+  if(!await _uiConfirm('이 사진을 삭제할까요?\n되돌릴 수 없습니다.', {title:'🗑️ 사진 삭제', danger:true, okText:'삭제'})) return;
+  const id = ph.id;
+  _photoIndex = _photoIndex.filter(x => x.id !== id);
+  delete _photoCache[id];
+  await _photoSaveIndex();
+  // 액자에 걸려 있던 사진을 지웠으면 액자도 비운다(_frameIdx가 첫 장으로 흘려보낸다)
+  if(_photoMeta && _photoMeta.frameId === id){ _photoMeta.frameId = ''; await _photoSaveMeta(); }
+  await _idbDel('photo_' + id);
+  await renderMainPhoto();
+  if(!_photoIndex.length){ closePhotoView(); setPhotoStatus('🗑️ 삭제했습니다.'); return; }
+  if(_photoView >= _photoIndex.length) _photoView = _photoIndex.length - 1;
+  _renderPhotoView();
+}
+
+// ── 설명(캡션) ──────────────────────────────────────────────
+async function editPhotoCaption(){
+  const ph = _photoIndex && _photoIndex[_photoView];
+  if(!ph) return;
+  const v = await _uiPrompt('사진 설명을 입력하세요. (비우면 지웁니다)', {value:ph.cap || '', placeholder:'예) 5월 운동회'});
+  if(v !== null){
+    ph.cap = String(v).trim().slice(0, 60);
+    await _photoSaveIndex();
+    await _renderPhotoView();
+    renderMainPhoto();
+  }
+}
+
+// ============================================================
 //   페이지 전환
 // ============================================================
 let currentPage = 1;
@@ -6665,9 +7673,12 @@ function renderMemoList(grade){
   // 작성 완료 수
   let filledCount = 0;
   students.forEach(s => { if((gradeMemos[String(s.no)]||'').trim()) filledCount++; });
+  // 픽스72: 오늘 출결 요약 — 우리 반 학생 것만 센다
+  const attnKeys = new Set(students.map(s => _sinfoKey(grade, s)));
+  const attnSum = _attnTodaySummary(attnKeys);
   // 픽스 17-B: 진단 UI 제거 (자정 시트 POST 제거되어 표시 의미 없음)
   el.innerHTML =
-    `<div class="memo-list-meta"><span>📅 오늘 ${escHtml(today)} 기록</span><span><b style="color:var(--accent-ink)">${filledCount}</b> / ${students.length}명 작성</span></div>` +
+    `<div class="memo-list-meta"><span>📅 오늘 ${escHtml(today)} 기록 ${attnSum}</span><span><b style="color:var(--accent-ink)">${filledCount}</b> / ${students.length}명 작성</span></div>` +
     students.map(s => {
       const nc = s.gender==='남' ? 'memo-name memo-name-m' : s.gender==='여' ? 'memo-name memo-name-f' : 'memo-name';
       const rawVal = String(gradeMemos[String(s.no)] || '');
@@ -6680,8 +7691,12 @@ function renderMemoList(grade){
         ? `<span style="font-size:9px;color:var(--accent-ink);flex-shrink:0;background:var(--accent-soft);padding:1px 5px;border-radius:3px;font-weight:700;">${escHtml(s.cls)}반</span>`
         : '';
       const noStr = String(s.no).padStart(2,'0');
-      return `<div class="memo-item${hasNote?' has-note':''}">
+      // 픽스72: 출결 칩 — 이름 왼쪽. 출석이면 흐린 점 하나라 평소엔 눈에 안 띈다.
+      const aKey = _sinfoKey(grade, s);
+      const aRec = _attnGet(_attnToday(), aKey);
+      return `<div class="memo-item${hasNote?' has-note':''}${aRec?' has-attn':''}">
         <span class="memo-no-chip">${escHtml(noStr)}</span>
+        ${_attnChipHtml(aKey, s.name)}
         <span class="${nc}">${escHtml(s.name)}</span>${genderBadge}${clsBadge}
         <input class="memo-input" type="text" placeholder="오늘 기록..." value="${val}"
           data-grade="${escHtml(grade)}" data-no="${s.no}"
@@ -6706,6 +7721,384 @@ function onMemoInput(input){
     if(val.trim()) item.classList.add('has-note');
     else item.classList.remove('has-note');
   }
+}
+
+// ============================================================
+//   🙋 출결 기록 — 픽스72 (v2.31)
+//   ─────────────────────────────────────────────────────────
+//   사용자 피드백(2026-09-07): "학생 메모에 결석·지각·조퇴도 함께 기록·관리하고 싶다".
+//   🔴 설계 제약(사용자 결정): **구글시트에 새 탭을 만들거나 Apps Script를 고치지 않는다.**
+//   → 이미 배포된 사본을 못 고치는 '수정 0 원칙'(§5)에 걸리기 때문.
+//   그래서 출결은 CFG.attendance 한 키에 담아 **기존 설정 블롭(_dashboard_settings)에 얹어**
+//   나른다. BACKUP_KEYS에 들어 있으므로 기존 saveSettings/loadSettings가 그대로 실어 간다.
+//
+//   ⚠️ 학생 메모(memos)와는 성격이 다르다 — 메모는 하루치 휘발성(§4-3)이지만
+//      출결은 날짜별로 쌓이는 영구 기록이다. 그래서 같은 화면에 있어도 저장소가 다르다.
+//
+//   구조: { 'YYYY-MM-DD': { studentKey: {t:'결석'|'지각'|'조퇴'|'결과', r:'사유'} } }
+//   출석(정상)은 저장하지 않는다 — 예외만 담아야 시트 셀(5만 자)에 여유가 생긴다.
+// ============================================================
+const ATTN_TYPES = ['결석','지각','조퇴','결과'];
+const ATTN_ABBR  = {'결석':'결','지각':'지','조퇴':'조','결과':'과'};
+// 픽스74: 출결 기록이 없는 학생은 '출'(출석). 옛 '·'은 무엇을 뜻하는지 알기 어려웠다.
+const ATTN_PRESENT = '출';
+// 시트 셀 한도를 지키기 위한 보존 기간. 한 학년도(3월~2월)를 넉넉히 덮는다.
+const ATTN_KEEP_DAYS = 400;
+
+let _attnEditKey = '';    // 지금 편집 중인 studentKey
+let _attnEditName = '';
+let _attnPickT = '';      // 모달에서 고른 유형
+let _attnEditDate = '';   // 픽스75: 지금 편집 중인 날짜(YYYY-MM-DD) — 오늘이 아닐 수 있다
+let _attnTableRows = null;   // 픽스75: 📋 표 복사용 (마지막으로 그린 집계)
+let _attnStatsMonth = null;  // {y, m} — 출결 현황이 보고 있는 달
+
+function _attnToday(){
+  return TEST_DATE ? TEST_DATE : _dateToYMD(new Date());   // §2: toISOString 금지
+}
+function _attnAll(){
+  if(!CFG.attendance || typeof CFG.attendance !== 'object') CFG.attendance = {};
+  return CFG.attendance;
+}
+function _attnOf(ymd){ return _attnAll()[ymd] || {}; }
+function _attnGet(ymd, key){ return _attnOf(ymd)[key] || null; }
+
+// 오래된 기록 정리 — 설정 블롭은 시트 한 셀에 통째로 들어가므로 무한정 쌓이면 위험하다.
+function _attnPrune(){
+  const all = _attnAll();
+  const cut = new Date();
+  cut.setDate(cut.getDate() - ATTN_KEEP_DAYS);
+  const cutYmd = _dateToYMD(cut);
+  let removed = 0;
+  Object.keys(all).forEach(d => {
+    if(d < cutYmd){ delete all[d]; removed++; }
+  });
+  return removed;
+}
+
+function _attnSet(ymd, key, t, reason){
+  const all = _attnAll();
+  if(!t){
+    if(all[ymd]){
+      delete all[ymd][key];
+      if(!Object.keys(all[ymd]).length) delete all[ymd];   // 빈 날짜는 남기지 않는다
+    }
+  }else{
+    if(!all[ymd]) all[ymd] = {};
+    const rec = {t};
+    const r = (reason || '').trim();
+    if(r) rec.r = r;
+    all[ymd][key] = rec;
+  }
+  _attnPrune();
+  CFG.attendance = all;
+  S.set('attendance', CFG.attendance);
+  scheduleSettingsSave();   // §2-1: 데이터 변경 함수마다 직접 호출
+}
+
+// ── 픽스75: 구글시트(누가기록)에서도 출결이 보이게 ─────────────
+//   사용자 지적: 설정 블롭은 시트 한 칸의 JSON이라 **사람이 시트에서 볼 수가 없다.**
+//   🔴 제약은 그대로 — 새 탭도, Apps Script 수정도 하지 않는다(§5 수정 0 원칙).
+//   그래서 기존 `write` 액션이 쓰는 **누가기록의 '내용' 칸 앞에 `[결석·질병]` 표식을 얹어** 보낸다.
+//   · 정본은 여전히 CFG.attendance(설정 블롭) — 시트 쪽은 **사람이 읽기 위한 사본**이다.
+//   · 읽을 때는 `_parseMemoResponse`(시트→로컬 단일 관문)에서 표식을 떼어내 메모를 원래대로 되돌린다.
+//     떼지 않으면 저장할 때마다 표식이 겹쳐 쌓인다.
+//   ⚠️ **오늘 것만** 실어 보낸다. `write`는 날짜별 upsert라, 지난 날짜로 쏘면
+//      그날 저장해 둔 메모를 표식만 남기고 덮어쓴다(로컬엔 그날 메모가 없으므로) = 데이터 파괴.
+// 🔴 픽스78: 표식 정규식이 둘로 갈렸다.
+//   · ATTN_MARK_RE   = **읽을 때 떼어낼** 표식 전부 (`[출석]` 포함) — 메모칸을 깨끗하게 유지
+//   · ATTN_ABSENT_RE = **정리해야 할** 결석성 표식만 — `[출석]`은 이미 정리된 상태라 다시 건드리면 안 된다
+const ATTN_MARK_RE   = /^\[(출석|결석|지각|조퇴|결과)(?:·[^\]]{0,40})?\]\s*/;
+const ATTN_ABSENT_RE = /^\[(결석|지각|조퇴|결과)(?:·[^\]]{0,40})?\]\s*/;
+// 출결을 해제했을 때 시트에 남길 값. 🔴 빈 문자열도 공백도 쓸 수 없다 —
+//   배포된 Apps Script의 doPost가 `const conStr = String(content||'').trim(); if(!conStr) continue;`
+//   라서 **빈 값은 통째로 건너뛴다**(공백도 trim되어 마찬가지). 실측으로 확인(2026-09-07).
+//   행 자체를 지우는 액션도 없어서(upsert 전용), '출석으로 정정됨'을 적는 것이 최선이다(사용자 결정).
+const ATTN_PRESENT_MARK = '[출석]';
+function _attnStripMark(t){ return String(t == null ? '' : t).replace(ATTN_MARK_RE, ''); }
+
+// 🔴 픽스76: 시트에 이미 적힌 **가공 전 원본**을 읽는다.
+//   `_parseMemoResponse`는 표식을 떼어내 버리므로, "표식이 남아 있는가"를 판단하려면 원본이 필요하다.
+async function _readSheetMemoRaw(grade){
+  const url = CFG.memoScriptUrl;
+  if(!url) return {};
+  const sep = url.includes('?') ? '&' : '?';
+  const clsParam = CFG.myClass ? '&cls=' + encodeURIComponent(CFG.myClass) : '';
+  const dateParam = TEST_DATE ? '&date=' + TEST_DATE : '';
+  const r = await fetch(url + sep + 'action=read&grade=' + encodeURIComponent(grade) + clsParam + dateParam);
+  const raw = JSON.parse(await r.text());
+  const g = (raw && typeof raw === 'object') ? raw[grade] : null;
+  return (g && typeof g === 'object') ? g : {};
+}
+
+function _attnDecorateForSheet(grade, gradeMemos, sheetRaw){
+  const day = _attnOf(_attnToday());
+  const out = {};
+  // ① 기존 메모에서 옛 표식을 먼저 떼어낸다(중복 누적 방지)
+  Object.keys(gradeMemos || {}).forEach(no => { out[no] = _attnStripMark(gradeMemos[no]); });
+  // ② 오늘 출결이 있는 학생에게 표식을 붙인다 — 메모가 없어도 행을 만든다
+  (ROSTER[grade] || []).forEach(st => {
+    if(CFG.myClass && st.cls && String(st.cls) !== String(CFG.myClass)) return;
+    const rec = day[_sinfoKey(grade, st)];
+    if(!rec) return;
+    const no = String(st.no);
+    const body = String(out[no] || '').trim();
+    out[no] = `[${rec.t}${rec.r ? '·' + rec.r : ''}]` + (body ? ' ' + body : '');
+  });
+  // ③ 빈 값은 보내지 않는다 (여기까지가 '보낼 내용이 있는' 학생)
+  Object.keys(out).forEach(no => { if(!String(out[no]).trim()) delete out[no]; });
+  // ④ 🔴 시트에는 표식이 남아 있는데 지금은 출결이 없는 학생 → **표식을 뗀 본문으로 덮어 지운다.**
+  //    `write`는 payload에 없는 학생 행을 건드리지 않으므로(= 지우지 못한다), 출결을 해제해도
+  //    누가기록에 `[결석·질병]`이 그대로 남아 있었다(사용자 신고). 명시적으로 덮어써야 사라진다.
+  //    본문이 있으면 본문만, 없으면 빈 값으로 보낸다.
+  //    ⚠️ 표식이 **있는 칸만** 건드린다 — 다른 기기가 적어둔 일반 메모는 손대지 않기 위해서다.
+  Object.keys(sheetRaw || {}).forEach(no => {
+    if(no in out) return;                                  // 이미 보낼 내용이 있으면 그대로
+    const rawTxt = String(sheetRaw[no] == null ? '' : sheetRaw[no]);
+    // 결석성 표식이 아니면(일반 메모거나 이미 `[출석]`으로 정리된 칸) 건드리지 않는다
+    if(!ATTN_ABSENT_RE.test(rawTxt)) return;
+    // 🔴 픽스78: 빈 문자열도 공백도 **Apps Script가 건너뛴다**(doPost의 `trim()` 후 falsy 검사 — 소스 확인).
+    //   행 삭제 액션도 없으므로, 본문이 있으면 본문만 남기고 **없으면 `[출석]`으로 정정**한다(사용자 결정).
+    out[no] = _attnStripMark(rawTxt) || ATTN_PRESENT_MARK;
+  });
+  return out;
+}
+
+// 학생 메모 줄의 출결 칩 — 출석이면 조용한 점 하나
+function _attnChipHtml(key, name){
+  const rec = _attnGet(_attnToday(), key);
+  const label = rec ? (ATTN_ABBR[rec.t] || ATTN_PRESENT) : ATTN_PRESENT;
+  const tAttr = rec ? ` data-t="${escHtml(rec.t)}"` : '';
+  const tip = rec ? `${rec.t}${rec.r ? ' · ' + rec.r : ''}` : '출석 (클릭해서 결석·지각·조퇴 기록)';
+  return `<button class="attn-chip"${tAttr} title="${escHtml(tip)}"
+            onmousedown="openAttnModal(event,'${escAttrJs(key)}')">${escHtml(label)}</button>`;
+}
+
+// 오늘 요약 — "결석 1 · 지각 2" (없으면 빈 문자열)
+function _attnTodaySummary(keys){
+  const day = _attnOf(_attnToday());
+  const cnt = {};
+  Object.keys(day).forEach(k => {
+    if(keys && !keys.has(k)) return;      // 우리 반 학생만
+    cnt[day[k].t] = (cnt[day[k].t] || 0) + 1;
+  });
+  const parts = ATTN_TYPES.filter(t => cnt[t]).map(t => `${t} ${cnt[t]}`);
+  return parts.length ? `<span class="attn-summary">🙋 ${parts.join(' · ')}</span>` : '';
+}
+
+// 이름은 인자로 받지 않고 명렬표에서 찾는다 — 이름에 따옴표가 들어가도 안전하게.
+function _attnNameOf(key){
+  const s = _attnStudents().find(x => x.key === key);
+  return s ? s.name : '학생';
+}
+// 'YYYY-MM-DD' → '9.7.(월)'
+function _attnDateLabel(ymd){
+  const d = new Date(ymd + 'T00:00:00');
+  if(isNaN(d.getTime())) return ymd;
+  const days = ['일','월','화','수','목','금','토'];
+  return `${d.getMonth()+1}.${d.getDate()}.(${days[d.getDay()]})`;
+}
+// 픽스75: ymd를 넘기면 그 날짜 기록을 연다(출결 현황의 날짜별 목록에서 호출)
+function openAttnModal(ev, key, name, ymd){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  _attnEditKey = key;
+  _attnEditName = name || _attnNameOf(key);
+  _attnEditDate = /^\d{4}-\d{2}-\d{2}$/.test(ymd || '') ? ymd : _attnToday();
+  const de = document.getElementById('attnDate');
+  if(de) de.value = _attnEditDate;
+  _attnLoadRecord();
+  openModal('attnModal');
+}
+// 지금 날짜·학생에 저장된 기록을 모달에 채운다
+function _attnLoadRecord(){
+  const rec = _attnGet(_attnEditDate, _attnEditKey);
+  _attnPickT = rec ? rec.t : '';
+  const who = document.getElementById('attnWho');
+  if(who) who.textContent = `${_attnEditName || '학생'} · ${_attnDateLabel(_attnEditDate)}`;
+  const rs = document.getElementById('attnReason');
+  if(rs) rs.value = rec ? (rec.r || '') : '';
+  _attnSyncTypeUI();
+}
+// 날짜 칸을 고치면 그 날 기록으로 갈아탄다(옮기는 게 아니라 '그 날을 편집')
+function _attnDateChanged(){
+  const el = document.getElementById('attnDate');
+  if(!el) return;
+  const v = (el.value || '').trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v) || isNaN(new Date(v + 'T00:00:00').getTime())){
+    el.value = _attnEditDate;   // 형식이 깨지면 되돌린다
+    return;
+  }
+  if(v === _attnEditDate) return;
+  _attnEditDate = v;
+  _attnLoadRecord();
+}
+function _attnGotoToday(){
+  const el = document.getElementById('attnDate');
+  if(el) el.value = _attnToday();
+  _attnDateChanged();
+}
+
+function _attnSyncTypeUI(){
+  document.querySelectorAll('#attnTypes .attn-type-btn').forEach(b => {
+    b.classList.toggle('on', b.dataset.t === _attnPickT);
+  });
+}
+function _attnPick(t){
+  _attnPickT = (_attnPickT === t) ? '' : t;   // 같은 걸 다시 누르면 해제
+  _attnSyncTypeUI();
+}
+function _attnReason(txt){
+  const el = document.getElementById('attnReason');
+  if(el) el.value = txt;
+}
+
+function saveAttendance(){
+  if(!_attnEditKey) return;
+  _attnDateChanged();   // 칸에 손대고 바로 저장을 눌러도 반영되게
+  const reason = (document.getElementById('attnReason')?.value || '').trim();
+  _attnSet(_attnEditDate, _attnEditKey, _attnPickT, reason);
+  _afterAttnEdit();
+}
+
+function clearAttendance(){
+  if(!_attnEditKey) return;
+  _attnDateChanged();
+  _attnSet(_attnEditDate, _attnEditKey, '', '');
+  _afterAttnEdit();
+}
+
+// 저장/해제 뒤 화면 갱신 — 출결 현황이 열려 있으면 그것도 다시 그린다
+function _afterAttnEdit(){
+  closeModal('attnModal');
+  renderMemoList(currentMemoGrade);
+  const stats = document.getElementById('attnStatsModal');
+  if(stats && stats.classList.contains('open')) renderAttnStats();
+  // 픽스76: 출결은 로컬에 바로 저장되지만 **구글시트 누가기록은 📤 저장을 눌러야** 바뀐다.
+  //   (해제한 표식을 지우는 것도 그때 함께 일어난다)
+  setMemoStatus('📤 저장을 눌러야 구글시트 누가기록에도 반영됩니다.');
+  setTimeout(() => setMemoStatus(''), 5000);
+}
+
+// 이 달 집계를 탭 구분 표로 클립보드에 — 선생님이 쓰는 아무 시트에나 붙여넣을 수 있게
+async function copyAttnTable(){
+  const rows = _attnTableRows;
+  const btn = document.getElementById('attnCopyBtn');
+  if(!rows || !rows.length){ if(btn) btn.textContent = '복사할 내용 없음'; setTimeout(()=>{ if(btn) btn.textContent='📋 표 복사'; }, 1800); return; }
+  const txt = rows.map(r => r.join('\t')).join('\n');
+  const flash = () => { if(btn){ btn.textContent = '✅ 복사됨'; setTimeout(()=>{ if(btn) btn.textContent='📋 표 복사'; }, 1600); } };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    for(const wait of [0, 300]){   // 앱은 클릭 200ms 뒤에야 포커스를 잡는다(픽스69와 같은 이유)
+      if(wait) await new Promise(r => setTimeout(r, wait));
+      try{ await navigator.clipboard.writeText(txt); flash(); return; }catch(e){}
+    }
+  }
+  if(_copyPlainText(txt)){ flash(); return; }
+  await _uiPrompt('복사가 막힌 환경이에요 — 아래 내용을 Ctrl+C로 복사하세요.', {value: txt, title: '📋 출결 표 복사'});
+}
+
+// ── 📊 출결 현황(월별 집계) ─────────────────────────────────
+function openAttnStats(){
+  const n = new Date();
+  _attnStatsMonth = {y:n.getFullYear(), m:n.getMonth()+1};
+  renderAttnStats();
+  openModal('attnStatsModal');
+}
+function shiftAttnMonth(d){
+  if(!_attnStatsMonth) return;
+  let y = _attnStatsMonth.y, m = _attnStatsMonth.m + d;
+  if(m < 1){ m = 12; y--; }
+  if(m > 12){ m = 1; y++; }
+  _attnStatsMonth = {y:y, m:m};
+  renderAttnStats();
+}
+
+// 우리 반 학생 목록(학생 메모와 같은 기준) → [{key, no, name}]
+function _attnStudents(){
+  const grade = currentMemoGrade;
+  if(!grade || !ROSTER[grade]) return [];
+  let arr = ROSTER[grade].slice();
+  if(CFG.myClass) arr = arr.filter(s => !s.cls || String(s.cls) === String(CFG.myClass));
+  return arr.map(s => ({key:_sinfoKey(grade, s), no:s.no, name:s.name}));
+}
+
+function renderAttnStats(){
+  const body = document.getElementById('attnStatsBody');
+  const lab = document.getElementById('attnStatsMonth');
+  if(!body || !_attnStatsMonth) return;
+  const y = _attnStatsMonth.y, m = _attnStatsMonth.m;
+  if(lab) lab.textContent = `${y}년 ${m}월`;
+  const students = _attnStudents();
+  if(!students.length){
+    body.innerHTML = '<div style="font-size:11.5px;color:var(--text-mute);padding:18px;text-align:center;line-height:1.7;">명렬표가 없습니다.<br>⚙ 설정 → 📊 구글시트 연동에서 명렬표를 먼저 불러와주세요.</div>';
+    return;
+  }
+  const prefix = `${y}-${String(m).padStart(2,'0')}`;
+  const all = _attnAll();
+  const days = Object.keys(all).filter(d => d.indexOf(prefix) === 0).sort();
+  // 학생별 집계
+  const tally = {};
+  students.forEach(s => tally[s.key] = {결석:0, 지각:0, 조퇴:0, 결과:0});
+  const logs = [];
+  days.forEach(d => {
+    const rows = all[d];
+    students.forEach(s => {
+      const rec = rows[s.key];
+      if(!rec || !tally[s.key] || !(rec.t in tally[s.key])) return;
+      tally[s.key][rec.t]++;
+      logs.push({d:d, key:s.key, name:s.name, no:s.no, t:rec.t, r:rec.r || ''});
+    });
+  });
+  const total = {결석:0, 지각:0, 조퇴:0, 결과:0};
+  students.forEach(s => ATTN_TYPES.forEach(t => total[t] += tally[s.key][t]));
+  const grand = ATTN_TYPES.reduce((a,t) => a + total[t], 0);
+  if(!grand){
+    _attnTableRows = null;
+    body.innerHTML = `<div style="font-size:12px;color:var(--text-mute);padding:24px;text-align:center;line-height:1.8;">
+      ${y}년 ${m}월에는 기록된 출결이 없습니다. 🎉<br>
+      <small style="opacity:.8;">학생 메모 화면에서 이름 왼쪽 칩을 눌러 기록할 수 있어요.</small></div>`;
+    return;
+  }
+  _attnTableRows = [[`${y}년 ${m}월 출결`], ['번호','이름'].concat(ATTN_TYPES, ['합계'])];
+  let html = '<table class="attn-table"><thead><tr>'
+    + '<th style="text-align:left;">학생</th>'
+    + ATTN_TYPES.map(t => `<th>${t}</th>`).join('')
+    + '<th>합계</th></tr></thead><tbody>';
+  students.forEach(s => {
+    const row = tally[s.key];
+    const sum = ATTN_TYPES.reduce((a,t) => a + row[t], 0);
+    if(!sum) return;   // 개근 학생은 표에서 빼 눈에 띄어야 할 것만 남긴다
+    html += `<tr><td class="nm">${escHtml(String(s.no))}. ${escHtml(s.name)}</td>`
+          + ATTN_TYPES.map(t => `<td class="${row[t]?'':'z'}">${row[t] || '·'}</td>`).join('')
+          + `<td><b>${sum}</b></td></tr>`;
+    _attnTableRows.push([s.no, s.name].concat(ATTN_TYPES.map(t => row[t]), [sum]));
+  });
+  _attnTableRows.push(['','반 합계'].concat(ATTN_TYPES.map(t => total[t]), [grand]));
+  html += `<tr class="sum"><td class="nm">반 합계</td>`
+        + ATTN_TYPES.map(t => `<td>${total[t] || '·'}</td>`).join('')
+        + `<td>${grand}</td></tr>`;
+  html += '</tbody></table>';
+  // 날짜별 상세
+  html += '<div class="attn-log">';
+  const byDay = {};
+  logs.forEach(l => { (byDay[l.d] = byDay[l.d] || []).push(l); });
+  Object.keys(byDay).sort().forEach(d => {
+    const dd = new Date(d + 'T00:00:00');
+    const dayKo = ['일','월','화','수','목','금','토'][dd.getDay()];
+    // 픽스75: 각 항목을 누르면 **그 날짜 그대로** 수정 모달이 열린다(지난 날 정정 경로)
+    const items = byDay[d]
+      .sort((a,b) => a.no - b.no)
+      .map(l => `<button class="attn-log-item" onmousedown="openAttnModal(event,'${escAttrJs(l.key)}','',` +
+                `'${escAttrJs(l.d)}')" title="눌러서 고치기">${escHtml(l.name)} ${escHtml(l.t)}` +
+                `${l.r ? `(${escHtml(l.r)})` : ''}</button>`)
+      .join(' ');
+    html += `<div><span class="d">${+d.slice(5,7)}/${+d.slice(8,10)}(${dayKo})</span> ${items}</div>`;
+  });
+  html += '</div>';
+  html += `<div style="margin-top:10px;font-size:10.5px;color:var(--text-mute);line-height:1.6;">
+    항목을 누르면 <b>그 날짜 그대로 고칠 수 있어요.</b> 고친 내용을 누가기록 시트에 반영하려면
+    학생 메모 화면에서 <b>📤 저장</b>을 눌러주세요 — 그때 <b>[결석·질병]</b> 표식이 다시 적히고,
+    해제한 학생은 <b>[출석]</b>으로 정정됩니다(오늘 것만). 🔴 <b>행 자체는 지울 수 없어요</b> —
+    구글시트 앱스스크립트에 행 삭제 기능이 없고 빈 값은 무시되기 때문입니다. 기록은 구글시트 설정에 백업되며 최근 ${ATTN_KEEP_DAYS}일치를 보관해요.</div>`;
+  body.innerHTML = html;
 }
 
 async function resetMemos(){
@@ -6738,24 +8131,57 @@ function _filterMemosByMyClass(grade, gradeMemos){
 async function syncMemoToSheet(silent){
   const url = CFG.memoScriptUrl;
   if(!url){ if(!silent) setMemoStatus('⚠️ Apps Script URL을 설정해주세요.'); return; }
+  // 🔴 픽스76: 이 함수는 `_scriptPost`를 거치지 않고 **생 fetch로 POST**한다 —
+  //   그래서 픽스57-②의 프리뷰 가드가 여기엔 안 걸려 있었다(사용자가 누를 때만 도는 함수라
+  //   자동 저장 사고 경로는 아니었지만, 검증 중 실수로 부르면 실 누가기록이 바뀐다).
+  //   같은 가드를 여기에도 둔다.
+  if(IS_DEV_PREVIEW && !window.__ALLOW_DEV_SHEET_WRITE){
+    console.warn('[가드] 개발 프리뷰에서 차단된 메모 저장(write)');
+    if(!silent) setMemoStatus('🛡 개발 프리뷰에서는 시트 저장이 차단됩니다.');
+    return;
+  }
   if(!silent) setMemoStatus('📤 저장 중...');
   try{
     const memos = S.get('memos', {});
     // 현재 학년 데이터만 저장 (myClass 잔재 차단 가드)
     const gradeMemos = _filterMemosByMyClass(currentMemoGrade, memos[currentMemoGrade] || {});
-    const gradeData = {[currentMemoGrade]: gradeMemos};
+    // 픽스75: 오늘 출결을 `[결석·질병]` 표식으로 얹어 누가기록에서도 보이게 한다.
+    // 픽스76: 보내기 전에 시트 원본을 한 번 읽어 **해제된 출결의 표식을 지운다**(실패하면 정리만 건너뛴다).
+    let sheetRaw = {};
+    try{ sheetRaw = await _readSheetMemoRaw(currentMemoGrade); }
+    catch(e){ console.warn('[출결] 시트 원본 읽기 실패 — 표식 정리 없이 저장합니다', e); }
+    const payload = _attnDecorateForSheet(currentMemoGrade, gradeMemos, sheetRaw);
+    // 픽스77: 이번에 '비우려고' 보낸 학생들 — 저장 뒤 정말 비워졌는지 확인하는 데 쓴다
+    const clearing = Object.keys(sheetRaw || {}).filter(no =>
+      ATTN_ABSENT_RE.test(String(sheetRaw[no] == null ? '' : sheetRaw[no])) &&
+      !ATTN_ABSENT_RE.test(String(payload[no] == null ? '' : payload[no])));
     await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({
         action:'write',
-        data: gradeData,
+        data: {[currentMemoGrade]: payload},
         cls: CFG.myClass || '',
         ...(TEST_DATE && {date: TEST_DATE})
       })
     });
-    setMemoStatus('✅ 저장 완료');
-    setTimeout(() => setMemoStatus(''), 3000);
+    // 🔴 픽스77: 비우기가 실제로 먹혔는지 **다시 읽어 확인한다.**
+    //   Apps Script를 못 고치는 구조라 write가 어떻게 처리하는지 코드로 알 수 없다 —
+    //   조용히 실패하면 사용자는 "지워진다더니?"만 겪는다(실제로 그랬다). 결과를 말해 주는 편이 정직하다.
+    let stuck = [];
+    if(clearing.length){
+      try{
+        const after = await _readSheetMemoRaw(currentMemoGrade);
+        stuck = clearing.filter(no => ATTN_ABSENT_RE.test(String(after[no] == null ? '' : after[no])));
+      }catch(e){ console.warn('[출결] 저장 후 확인 실패', e); }
+    }
+    if(stuck.length){
+      setMemoStatus(`✅ 저장 완료 · ⚠️ ${stuck.length}명은 시트에서 안 지워졌어요 (번호 ${stuck.join(', ')} — 내용 칸을 직접 비워주세요)`);
+      setTimeout(() => setMemoStatus(''), 9000);
+    }else{
+      setMemoStatus(clearing.length ? `✅ 저장 완료 · 출결 ${clearing.length}건 [출석]으로 정정` : '✅ 저장 완료');
+      setTimeout(() => setMemoStatus(''), 3000);
+    }
   }catch{
     if(!silent) setMemoStatus('⚠️ 저장 실패 (URL 확인 필요)');
   }
@@ -6764,7 +8190,21 @@ async function syncMemoToSheet(silent){
 function _parseMemoResponse(raw){
   const data = {};
   if(raw && typeof raw === 'object'){
-    Object.entries(raw).forEach(([k,v]) => { if(!k.startsWith('_')) data[k] = v; });
+    Object.entries(raw).forEach(([k,v]) => {
+      if(k.startsWith('_')) return;
+      // 픽스75: 누가기록에 얹어 보낸 출결 표식을 떼어내 메모를 원래 글로 되돌린다.
+      //   (안 떼면 저장 → 불러오기를 반복할 때마다 `[결석][결석]…`으로 쌓인다)
+      if(v && typeof v === 'object' && !Array.isArray(v)){
+        const g = {};
+        Object.entries(v).forEach(([no, txt]) => {
+          const t = _attnStripMark(txt);
+          if(String(t).trim()) g[no] = t;   // 표식만 있던 칸은 빈 메모가 되므로 아예 담지 않는다
+        });
+        data[k] = g;
+      }else{
+        data[k] = v;
+      }
+    });
   }
   return data;
 }
@@ -6858,6 +8298,32 @@ const DEFAULT_SCHEDULE_PERIODS = [
 ];
 const DEFAULT_SCHEDULE_DAYS = ['월','화','수','목','금'];
 const _DAY_TO_INDEX = {'일':0,'월':1,'화':2,'수':3,'목':4,'금':5,'토':6};
+
+// ── 픽스71: 학교 일과 시간(시정표) ────────────────────────────
+//   학교마다 1교시 시작·수업 길이·쉬는 시간·점심시간이 달라서, 기본값(09:00 시작 40분 수업)이
+//   안 맞는 학교에서는 '지금 교시' 강조가 엉뚱한 칸에 걸렸다. 옛 구조에서는 시정을 넣을 곳이
+//   주간학습안내 편집 모달 안뿐이라 **나이스 시간표만 쓰는 선생님은 손댈 방법이 아예 없었다.**
+//   → CFG.periodTimes 를 두 소스 공용 설정으로 두고 ⏰ 모달에서 직접 잡게 한다.
+function _periodsValid(arr){
+  return Array.isArray(arr) && arr.some(p => p && typeof p.start === 'string' && /\d/.test(p.start));
+}
+function _clonePeriods(arr){
+  return (arr || []).map(p => ({n:p.n, name:p.name || (p.n+'교시'), start:p.start||'', end:p.end||''}));
+}
+// 화면에 그릴 교시 행: 시간표 자체가 들고 있는 periods가 정본, 없으면 학교 시정, 그것도 없으면 기본값.
+//   (⏰ 모달이 저장할 때 두 시간표의 periods 시각까지 같이 맞춰 주므로 실사용에선 셋이 일치한다)
+function _activePeriods(ws, isNeis){
+  // 🔴 픽스77: 나이스는 **교시 수까지** ⏰ 학교 일과 시간이 정본이다.
+  //   나이스 응답에는 시각도 교시 수도 없다(과목만 온다) — 격자의 행 수는 순전히 우리가 정하는 값이다.
+  //   그런데 픽스71이 "교시 수는 건드리지 않는다"고 정해 둔 탓에, 저장돼 있던 7행짜리
+  //   neisSchedule.periods가 그대로 남아 **6교시로 설정해도 7교시(옛 기본값 14:40~15:20)가 계속 떴다**
+  //   (사용자 신고 — 게다가 그 빈 행에 NOW 강조까지 걸렸다).
+  //   ⚠️ 주안(주간학습안내)은 반대다 — ✏️ 수동 편집의 '교시 수'가 사용자의 명시적 선택이므로 그쪽이 이긴다.
+  if(isNeis && _periodsValid(CFG.periodTimes)) return CFG.periodTimes;
+  if(ws && _periodsValid(ws.periods)) return ws.periods;
+  if(_periodsValid(CFG.periodTimes)) return CFG.periodTimes;
+  return DEFAULT_SCHEDULE_PERIODS;
+}
 
 // 시간표 셀 값 정규화: 문자열(v2.2 구버전) 또는 {subject,content} → {subject,content}
 function _normalizeScheduleCell(v){
@@ -7099,7 +8565,7 @@ function renderWeeklySchedule(){
     return;
   }
   const days = ws.days.slice();
-  const periods = (ws.periods && ws.periods.length) ? ws.periods : DEFAULT_SCHEDULE_PERIODS;
+  const periods = _activePeriods(ws, isNeis);   // 픽스71·77
   // 픽스58: 이 격자가 정말 '표시 중인 주'의 내용인가?
   //   나이스는 그 주를 조회해 온 것이라 항상 참. 주안은 사용자가 임의 주를 넣으므로 라벨로 확인한다.
   //   확인 안 되면 날짜·학사일정 배지·휴업일 흐림을 전부 숨긴다(엉뚱한 주의 방학이 얹히는 것 방지).
@@ -7196,7 +8662,7 @@ function _highlightCurrentPeriod(){
   //   휴업일 칸 위에 accent 배경(.current)이 겹쳐 "반투명 분홍 덩어리"가 다시 생긴다.
   const todayOffEv = _schoolEventsOf(_weekYmdByDay([todayKey])[todayKey]).find(e => e.off);
   if(todayOffEv) return;
-  const periods = (ws.periods && ws.periods.length) ? ws.periods : DEFAULT_SCHEDULE_PERIODS;
+  const periods = _activePeriods(ws, CFG.scheduleSource === 'neis');   // 픽스71·77
   const nowMin = now.getHours()*60 + now.getMinutes();
   // 픽스53: 현재 교시 + 지난 교시(흐리게) 판정
   // 픽스55: 진행바 제거로 '다음 교시(next)' 계산은 불필요해져 함께 삭제
@@ -7585,10 +9051,12 @@ function _neisLoadStatus(filled, cls, off){
 // 교시 시간(periods): 사용자가 나이스 소스에서 시정을 한번 잡아뒀으면 보존, 아니면 기본값.
 // 픽스56: 다른 주도 같은 시정을 써야 해서 함수로 뺐다.
 function _neisPeriods(){
+  // 픽스71: ⏰ 학교 일과 시간이 잡혀 있으면 그것이 정본.
+  //   (없으면 이전처럼 직전 나이스 시간표의 periods를 물려받아 기존 사용자 데이터를 지킨다)
+  if(_periodsValid(CFG.periodTimes)) return _clonePeriods(CFG.periodTimes);
   const prev = CFG.neisSchedule;
   const prevPeriods = (prev && Array.isArray(prev.periods)) ? prev.periods : [];
-  const hasUserPeriods = prevPeriods.some(p => p && typeof p.start === 'string' && /\d/.test(p.start));
-  return hasUserPeriods ? prevPeriods : DEFAULT_SCHEDULE_PERIODS.map(p => Object.assign({}, p));
+  return _periodsValid(prevPeriods) ? prevPeriods : DEFAULT_SCHEDULE_PERIODS.map(p => Object.assign({}, p));
 }
 
 // NEIS row[] → neisSchedule 구조 구성 (weeklySchedule과 동일 스키마, content는 빈값)
@@ -7852,7 +9320,9 @@ const BACKUP_KEYS = ['todos','ddays','theme','iconArea','taskbar',
                      'neisSchedule','scheduleSource','schoolKind','neisClassName',
                      'defaultPage','schoolEvents',
                      'todosUpdatedAt','ddaysUpdatedAt',
-                     'studentInfo','quickLinks','schoolHomepage'];
+                     'studentInfo','quickLinks','schoolHomepage',
+                     'periodTimes','attendance','panelLayout',
+                     'keyTimes'];
 // 자리배치(liteData)는 구글시트 백업에서 제외 — 픽스43부터 본체에서 완전 분리(쌤보드클래스 자체 관리).
 
 function setBackupStatus(msg, duration=4000){
@@ -7893,6 +9363,9 @@ function _syncCfgFromStore(){
     neisClassName:      S.get('neisClassName',''),
     defaultPage:        S.get('defaultPage',1),      // 픽스53
     schoolEvents:       S.get('schoolEvents',null),  // 픽스53
+    periodTimes:        S.get('periodTimes',null),   // 픽스71
+    attendance:         S.get('attendance',{}),      // 픽스72
+    panelLayout:        S.get('panelLayout',null),   // 픽스81
     gcalList:           S.get('gcalList',[]),
     gcalColor:          S.get('gcalColor','#7eb8c9'),
     editableCalendars:  S.get('editableCalendars',[]),
@@ -7950,6 +9423,44 @@ function _applyRestoredSettings(){
 // overwrite=true: 기존 값 포함 전체 덮어쓰기 (새 기기 복원)
 // overwrite=false: 누락된 키만 채움 (startup merge)
 // showAlert=true: 결과 알림 표시
+// 🔧 픽스90: 개발자 옵션 — 평범한 사용자에게 필요 없는 조작을 평소엔 감춰 둔다.
+//   표시 갱신은 `syncTweaksUI()` 안에서 부른다 — 부팅·시트복원·가져오기가 전부 그 함수를 지나므로
+//   "복원 경로에 적용 함수 누락"(픽스54·58·60의 3연속 버그)이 구조적으로 불가능해진다.
+function _syncDevUI(){
+  const box = document.getElementById('devSyncBox');
+  if(box) box.style.display = S.get('devMode', false) ? '' : 'none';
+}
+let _devTapN = 0, _devTapT = 0;
+function _devTap(){
+  const now = Date.now();
+  _devTapN = (now - _devTapT < 3000) ? _devTapN + 1 : 1;
+  _devTapT = now;
+  if(_devTapN < 7) return;
+  _devTapN = 0;
+  const on = !S.get('devMode', false);
+  S.set('devMode', on);   // BACKUP_KEYS가 아니라 이 PC에만 남는다(기기별 설정이 맞다)
+  _syncDevUI();
+  const el = document.getElementById('updateCheckStatus');
+  if(el){
+    el.textContent = on ? '🔧 개발자 옵션 ON — 📊 구글시트 연동 탭에 수동 동기화 버튼이 생겼어요'
+                        : '🔧 개발자 옵션 OFF';
+    setTimeout(()=>{ if(el) el.textContent=''; }, 5000);
+  }
+}
+
+// 픽스89: 구글시트 내용으로 이 PC를 맞춘다(수동·덮어쓰기).
+//   자동 규칙은 "더 최신이 이긴다"라서, 새 PC처럼 **시각 기록이 아예 없는** 경우엔
+//   자동으로 안 당겨온다 — 그때 한 번 눌러 주는 용도다.
+async function pullFromSheet(){
+  if(!CFG.memoScriptUrl){ setBackupStatus('⚠️ 먼저 Apps Script URL을 저장해 주세요.'); return; }
+  const ok = await _uiConfirm(
+    '구글시트에 저장된 내용으로 이 PC의 설정을 덮어씁니다.\n이 PC에서만 고치고 아직 시트에 안 올라간 내용이 있다면 사라집니다.',
+    {title:'📥 시트에서 불러오기', danger:true, okText:'덮어쓰기', cancelText:'취소'});
+  if(!ok) return;
+  setBackupStatus('⏳ 불러오는 중…', 0);
+  await loadSettingsFromScript(true, true);
+}
+
 async function loadSettingsFromScript(overwrite=false, showAlert=false){
   // 픽스57-①: URL이 없으면 복원할 것도 없으니 게이트를 바로 연다(안 열면 저장이 영영 미뤄진다)
   if(!CFG.memoScriptUrl){ _sheetRestoreDone = true; return; }
@@ -7964,12 +9475,30 @@ async function loadSettingsFromScript(overwrite=false, showAlert=false){
     }
     const data = JSON.parse(text);
     let applied = false;
-    BACKUP_KEYS.forEach(k=>{
-      if(data[k]!==undefined && (overwrite || S.get(k,null)===null)){
-        S.set(k, data[k]); applied=true;
-      }
-    });
-    if(applied) _applyRestoredSettings();
+    // 🔴 픽스89: 채택 규칙 세 가지 — ⓐ 종전대로 로컬이 비어 있으면 채우고
+    //   ⓑ **시트 쪽 수정 시각이 더 최신이면 받아온다**(기기 간 동기화의 핵심)
+    //   ⓒ `overwrite`면 무조건(수동 「📥 시트에서 불러오기」·시트 URL 교체 경로).
+    //   받아온 키는 **시트의 시각을 그대로 물려받는다** — 안 그러면 방금 받은 값이
+    //   "내가 더 최신"으로 보여 상대 기기에 도로 밀려간다.
+    const sT = (data.keyTimes && typeof data.keyTimes === 'object') ? data.keyTimes : {};
+    const lT = Object.assign({}, S.get('keyTimes', {}) || {});
+    _suppressDirty++;
+    try{
+      BACKUP_KEYS.forEach(k=>{
+        if(k === 'keyTimes' || data[k] === undefined) return;
+        const newer = Number(sT[k] || 0) > Number(lT[k] || 0);
+        if(overwrite || S.get(k,null)===null || newer){
+          S.set(k, data[k]);
+          lT[k] = Number(sT[k] || 0);
+          applied = true;
+        }
+      });
+      S.set('keyTimes', lT);
+      // 🔴 재렌더도 **억제 안에서** 돌려야 한다(실측으로 잡음) — `_applyRestoredSettings`가
+      //   부르는 `applyTheme` 등이 값을 S에 되쓰는데, 그게 "내 편집"으로 잡히면 방금 시트에서
+      //   받아온 값이 곧바로 "내가 더 최신"이 되어 **상대 기기로 되밀린다**.
+      if(applied) _applyRestoredSettings();
+    } finally { _suppressDirty--; }
     if(showAlert) setBackupStatus(applied?'✅ 복원 완료!':'ℹ️ 변경된 설정 없음');
   }catch(e){
     if(showAlert) setBackupStatus('❌ 복원 실패: ' + e.message);
@@ -7990,6 +9519,18 @@ function scheduleSettingsSave(){
   _saveTimer=setTimeout(()=>saveSettingsToScript(false), 5000);
 }
 
+// 픽스89: 이번 편집으로 바뀐 키에 "지금" 시각을 찍는다. 저장이 네트워크에서 실패해도
+//   시각은 로컬에 남는다 — 내 편집이 더 최신인 것은 사실이므로 그게 맞다.
+function _stampDirty(){
+  if(!_dirtyKeys.size) return;
+  const t = Object.assign({}, S.get('keyTimes', {}) || {});
+  const now = Date.now();
+  _dirtyKeys.forEach(k => { t[k] = now; });
+  _dirtyKeys.clear();
+  _suppressDirty++;
+  try{ S.set('keyTimes', t); } finally { _suppressDirty--; }
+}
+
 async function saveSettingsToScript(showAlert=false){
   if(!CFG.memoScriptUrl){ _pendingSheetSave=false; if(showAlert) setBackupStatus('⚠️ Apps Script URL이 없습니다.'); return; }
   // 픽스57-②: 개발 프리뷰는 실 시트에 절대 쓰지 않는다(콘솔에서 __ALLOW_DEV_SHEET_WRITE=true로 해제 가능)
@@ -8006,6 +9547,7 @@ async function saveSettingsToScript(showAlert=false){
     return;
   }
   try{
+    _stampDirty();   // 픽스89: 이번에 고친 키들의 수정 시각을 남기고 블롭에 함께 실어 보낸다
     const settings={};
     BACKUP_KEYS.forEach(k=>{ const v=S.get(k,null); if(v!==null) settings[k]=v; });
     const r = await fetch(CFG.memoScriptUrl,{
@@ -9329,8 +10871,10 @@ function renderScheduleEditGrid(){
   days.forEach(d => { html += `<div class="schedule-edit-head">${escHtml(d)}</div>`; });
   for(let i=1; i<=periodCount; i++){
     const existing = existingPeriods.find(p => p.n === i);
-    const startVal = existing?.start || (DEFAULT_SCHEDULE_PERIODS[i-1]?.start || '');
-    const endVal = existing?.end || (DEFAULT_SCHEDULE_PERIODS[i-1]?.end || '');
+    // 픽스71: 주안에 아직 시각이 없으면 ⏰ 학교 일과 시간을 먼저 쓴다(없을 때만 기본값)
+    const school = _periodsValid(CFG.periodTimes) ? CFG.periodTimes.find(p => p.n === i) : null;
+    const startVal = existing?.start || school?.start || (DEFAULT_SCHEDULE_PERIODS[i-1]?.start || '');
+    const endVal   = existing?.end   || school?.end   || (DEFAULT_SCHEDULE_PERIODS[i-1]?.end || '');
     html += `<div class="schedule-edit-row-label">
       <input type="text" class="schedule-edit-time-start" data-n="${i}" placeholder="${i}교시 시작" value="${escHtml(startVal)}" maxlength="5" onblur="_scheduleAutoFillEnd(this)"/>
       <input type="text" class="schedule-edit-time-end"   data-n="${i}" placeholder="종료" value="${escHtml(endVal)}" maxlength="5" onblur="_scheduleNormalizeEndTime(this)"/>
@@ -9399,6 +10943,16 @@ function saveScheduleEdit(){
     lastUpdated: _dateToYMD(new Date())
   };
   S.set('weeklySchedule', CFG.weeklySchedule);
+  // 픽스71: 여기서 잡은 교시 시각을 학교 일과 시간(공용)에도 반영해 나이스 쪽과 어긋나지 않게 한다.
+  //   교시 번호로 병합 — 학교 시정이 더 많은 교시를 들고 있어도 그 뒤 교시는 그대로 둔다.
+  if(_periodsValid(periods)){
+    const base = _periodsValid(CFG.periodTimes) ? _clonePeriods(CFG.periodTimes) : [];
+    const byN = {};
+    base.forEach(p => byN[p.n] = p);
+    periods.forEach(p => { if(p.start) byN[p.n] = {n:p.n, name:p.name, start:p.start, end:p.end}; });
+    CFG.periodTimes = Object.keys(byN).map(k => byN[k]).sort((a,b) => a.n - b.n);
+    S.set('periodTimes', CFG.periodTimes);
+  }
   scheduleSettingsSave();
   renderWeeklySchedule();
   const st = document.getElementById('scheduleEditStatus');
@@ -9433,7 +10987,8 @@ function initScheduleEditModal(){
   });
   // 교시 수 초기화
   const pc = document.getElementById('scheduleEditPeriodCount');
-  if(pc) pc.value = (ws && ws.periods && ws.periods.length) ? ws.periods.length : 6;
+  if(pc) pc.value = (ws && ws.periods && ws.periods.length) ? ws.periods.length
+                  : (_periodsValid(CFG.periodTimes) ? Math.min(10, CFG.periodTimes.length) : 6);
   // 주차 라벨 초기화
   const wl = document.getElementById('scheduleEditWeekLabel');
   if(wl) wl.value = (ws && ws.weekLabel) || '';
@@ -9445,6 +11000,227 @@ function initScheduleEditModal(){
     el.addEventListener('change', renderScheduleEditGrid);
   });
   if(pc) pc.addEventListener('change', renderScheduleEditGrid);
+}
+
+// ============================================================
+//   ⏰ 학교 일과 시간(시정표) 모달 — 픽스71 (v2.31)
+//   ─────────────────────────────────────────────────────────
+//   사용자 피드백(2026-09-07): "학교마다 다른 일과 운영 시간을 직접 조정할 수 있으면".
+//   옛 구조에서는 교시 시각을 넣는 칸이 ✏️ 주간학습안내 편집 모달 안에만 있어서,
+//   나이스 시간표만 쓰는 선생님은 시정을 바꿀 방법이 아예 없었다(기본값 09:00/40분 고정).
+//   → CFG.periodTimes 를 두 소스 공용 설정으로 두고 여기서 잡는다.
+// ============================================================
+function _ptSeed(){
+  // 우선순위: 이미 잡아둔 학교 시정 → 나이스 시간표가 물고 있던 값 → 주안 값 → 기본값
+  if(_periodsValid(CFG.periodTimes)) return _clonePeriods(CFG.periodTimes);
+  if(CFG.neisSchedule && _periodsValid(CFG.neisSchedule.periods)) return _clonePeriods(CFG.neisSchedule.periods);
+  if(CFG.weeklySchedule && _periodsValid(CFG.weeklySchedule.periods)) return _clonePeriods(CFG.weeklySchedule.periods);
+  return _clonePeriods(DEFAULT_SCHEDULE_PERIODS);
+}
+
+function renderPeriodTimeRows(list){
+  const wrap = document.getElementById('ptRows');
+  if(!wrap) return;
+  wrap.innerHTML = (list || []).map(p => `<div class="pt-row">
+      <span class="pt-n">${escHtml(String(p.n))}교시</span>
+      <input class="form-input pt-start" type="text" data-n="${p.n}" maxlength="5" placeholder="09:00" value="${escHtml(p.start||'')}" onblur="_ptAutoFillEnd(this)"/>
+      <span class="pt-sep">~</span>
+      <input class="form-input pt-end"   type="text" data-n="${p.n}" maxlength="5" placeholder="09:40" value="${escHtml(p.end||'')}" onblur="_ptNormalizeEnd(this)"/>
+    </div>`).join('');
+}
+
+// 🔴 주안 모달의 _scheduleAutoFillEnd를 그대로 쓰면 안 된다 — 그 함수는 종료칸을
+//   `.schedule-edit-time-end[data-n=N]`으로 찾아 **무조건 덮어쓰므로**, 숨어 있는
+//   주간학습안내 편집 모달의 값을 건드린다. 여기 전용으로 따로 둔다(빈 칸만 채움).
+function _ptAutoFillEnd(el){
+  if(!el) return;
+  const normalized = _normalizeTimeInput(el.value);
+  if(normalized && normalized !== el.value) el.value = normalized;
+  if(!normalized) return;
+  const startMin = _hhmmToMin(normalized);
+  if(startMin == null) return;
+  const endEl = document.querySelector(`#ptRows .pt-end[data-n="${el.dataset.n}"]`);
+  if(!endEl || (endEl.value || '').trim()) return;   // 사용자가 넣어둔 값은 덮지 않는다
+  endEl.value = _ptMinToHHMM(startMin + 40);
+}
+function _ptNormalizeEnd(el){
+  if(!el) return;
+  const normalized = _normalizeTimeInput(el.value);
+  if(normalized && normalized !== el.value) el.value = normalized;
+}
+
+function initPeriodTimesModal(){
+  const seed = _ptSeed();
+  const cnt = document.getElementById('ptCount');
+  if(cnt) cnt.value = Math.min(10, Math.max(1, seed.length || 7));
+  // 1교시 시작·수업 길이는 현재 값에서 역산해 프리셋 칸에 미리 채워둔다
+  const first = seed[0];
+  const fs = document.getElementById('ptFirstStart');
+  if(fs && first && first.start) fs.value = first.start;
+  const sMin = _hhmmToMin(first && first.start), eMin = _hhmmToMin(first && first.end);
+  if(sMin != null && eMin != null && eMin > sMin){
+    const lm = document.getElementById('ptLessonMin');
+    if(lm) lm.value = eMin - sMin;
+  }
+  // 픽스75: 교시 사이 간격을 전부 재서 ① 점심(가장 큰 간격) ② 블록 크기(간격 0이 이어지는 길이)
+  //   ③ 쉬는 시간(점심을 뺀 나머지 중 가장 작은 양수)을 한꺼번에 역산한다.
+  const gaps = [];
+  for(let i = 0; i < seed.length - 1; i++){
+    const e = _hhmmToMin(seed[i].end), ns = _hhmmToMin(seed[i+1].start);
+    gaps.push((e == null || ns == null) ? null : (ns - e));
+  }
+  // 점심 = 가장 큰 간격 (뒤에서 '쉬는 시간보다 확실히 길 때'만 채택)
+  let gapAt = -1, gapMax = 0;
+  gaps.forEach((g, i) => { if(g != null && g > gapMax){ gapMax = g; gapAt = i; } });
+  // 쉬는 시간 = 점심을 뺀 양수 간격 중 최솟값
+  let brkGuess = null;
+  gaps.forEach((g, i) => {
+    if(g == null || i === gapAt || g <= 0) return;
+    if(brkGuess == null || g < brkGuess) brkGuess = g;
+  });
+  // 블록 = 첫 양수 간격까지의 교시 수 (0,20,0,… 이면 2교시가 한 블록)
+  let blockGuess = 1;
+  for(let i = 0; i < gaps.length; i++){
+    if(gaps[i] == null) break;
+    if(gaps[i] > 0){ blockGuess = i + 1; break; }
+  }
+  const bmEl = document.getElementById('ptBreakMin');
+  if(bmEl && brkGuess != null) bmEl.value = brkGuess;
+  const blEl = document.getElementById('ptBlock');
+  if(blEl) blEl.value = Math.min(4, Math.max(1, blockGuess));
+  const lsEl = document.getElementById('ptLunchStart'), leEl = document.getElementById('ptLunchEnd');
+  if(lsEl && leEl){
+    if(gapAt >= 0 && gapMax >= (brkGuess == null ? 0 : brkGuess) + 10){
+      lsEl.value = seed[gapAt].end;
+      leEl.value = seed[gapAt+1].start;
+    }else{
+      lsEl.value = ''; leEl.value = '';   // 점심으로 볼 만한 간격이 없으면 비워 둔다
+    }
+  }
+  renderPeriodTimeRows(seed);
+  const st = document.getElementById('ptStatus');
+  if(st) st.textContent = '';
+}
+
+function _ptMinToHHMM(m){
+  const mm = ((m % 1440) + 1440) % 1440;
+  return String(Math.floor(mm/60)).padStart(2,'0') + ':' + String(mm%60).padStart(2,'0');
+}
+
+// ⚡ 1교시 시작 + 수업/쉬는 시간 + 점심 시각으로 표를 통째 생성
+//   픽스74: 점심을 "몇 교시 뒤 + 몇 분"이 아니라 **시작~끝 시각**으로 받는다(사용자 요청).
+//   학교 시정표는 "점심 12:10~13:00"처럼 적혀 있지 "4교시 뒤 50분"으로 적혀 있지 않다.
+//   교시를 차례로 놓다가 **점심시간을 침범하는 교시가 나오면 그 교시부터 점심 뒤로 민다.**
+function applyPeriodPreset(){
+  const num = (id, def) => {
+    const v = parseInt((document.getElementById(id)||{}).value, 10);
+    return isNaN(v) ? def : v;
+  };
+  const st = document.getElementById('ptStatus');
+  const fail = (msg) => { if(st){ st.style.color='var(--urgent)'; st.textContent = msg; } };
+  const start = _hhmmToMin((document.getElementById('ptFirstStart')||{}).value);
+  if(start == null) return fail('⚠️ 1교시 시작 시각을 09:00 형식으로 입력해주세요.');
+  const lesson = Math.min(90, Math.max(10, num('ptLessonMin', 40)));
+  const brk    = Math.min(40, Math.max(0,  num('ptBreakMin', 10)));
+  const count  = Math.min(10, Math.max(1,  num('ptCount', 7)));
+  // 픽스75: 블록 수업 — 🔴 "교시가 끝나면 늘 쉬는 시간"이라고 단정하면 안 된다(사용자 학교 실사례:
+  //   1-2교시 블록 → 20분 → 3-4교시 블록 → 점심 → 5-6교시 블록). 블록이 끝날 때만 쉰다.
+  const block  = Math.min(4, Math.max(1, num('ptBlock', 1)));
+  // 점심: 둘 다 비면 '점심 없음', 한쪽만 채우거나 순서가 뒤집히면 알려준다
+  const lsRaw = (document.getElementById('ptLunchStart')||{}).value || '';
+  const leRaw = (document.getElementById('ptLunchEnd')||{}).value   || '';
+  const lunchOn = !!(lsRaw.trim() || leRaw.trim());
+  let lunchStart = null, lunchEnd = null;
+  if(lunchOn){
+    lunchStart = _hhmmToMin(lsRaw); lunchEnd = _hhmmToMin(leRaw);
+    if(lunchStart == null || lunchEnd == null)
+      return fail('⚠️ 점심 시작·끝 시각을 12:10 형식으로 둘 다 입력해주세요. (점심이 없으면 두 칸을 비워두세요)');
+    if(lunchEnd <= lunchStart) return fail('⚠️ 점심 끝나는 시각이 시작보다 빨라요.');
+    if(lunchStart < start) return fail('⚠️ 점심시간이 1교시 시작보다 앞서 있어요.');
+  }
+  const list = [];
+  let cur = start, lunchDone = false;
+  for(let i=1; i<=count; i++){
+    // 이 교시가 점심시간과 겹치면(끝이 점심 시작을 넘으면) 통째로 점심 뒤로
+    if(lunchOn && !lunchDone && cur + lesson > lunchStart){
+      cur = lunchEnd;
+      lunchDone = true;
+    }
+    list.push({n:i, name:i+'교시', start:_ptMinToHHMM(cur), end:_ptMinToHHMM(cur+lesson)});
+    cur += lesson;
+    if(i % block === 0) cur += brk;   // 블록이 끝나는 교시 뒤에만 쉬는 시간
+  }
+  renderPeriodTimeRows(list);
+  if(st){
+    st.style.color='var(--text-muted)';
+    const lunchNote = (lunchOn && lunchDone) ? ` · 점심 ${_ptMinToHHMM(lunchStart)}~${_ptMinToHHMM(lunchEnd)}` : '';
+    st.textContent = `표를 채웠습니다. 확인 후 💾 저장을 눌러주세요. (${list[0].start} ~ ${list[list.length-1].end}${lunchNote})`;
+  }
+}
+
+function _ptCollect(){
+  const list = [];
+  document.querySelectorAll('#ptRows .pt-row').forEach(row => {
+    const sEl = row.querySelector('.pt-start'), eEl = row.querySelector('.pt-end');
+    if(!sEl) return;
+    const nn = parseInt(sEl.dataset.n, 10);
+    list.push({n:nn, name:nn+'교시', start:(sEl.value||'').trim(), end:(eEl?.value||'').trim()});
+  });
+  return list;
+}
+
+// 저장된 시간표(주안/나이스)의 periods 시각을 교시 번호로 맞춰 갱신한다.
+//   🔴 교시 "수"는 건드리지 않는다 — 주안은 사용자가 5교시만 넣어둘 수 있는데
+//      학교 시정(7교시)을 그대로 덮으면 빈 행 2개가 생겨 격자가 이상해진다.
+function _ptApplyTo(ws, times){
+  if(!ws || !Array.isArray(ws.periods) || !ws.periods.length) return false;
+  const byN = {};
+  times.forEach(t => byN[t.n] = t);
+  ws.periods = ws.periods.map(p => {
+    const t = byN[p.n];
+    return t ? {n:p.n, name:p.name || (p.n+'교시'), start:t.start, end:t.end} : p;
+  });
+  return true;
+}
+
+function savePeriodTimes(){
+  const list = _ptCollect();
+  const st = document.getElementById('ptStatus');
+  if(!_periodsValid(list)){
+    if(st){ st.style.color='var(--urgent)'; st.textContent='⚠️ 최소 한 교시는 시작 시각을 입력해주세요.'; }
+    return;
+  }
+  CFG.periodTimes = list;
+  S.set('periodTimes', CFG.periodTimes);
+  // 픽스77: 나이스는 **통째 교체**(교시 수까지) — 남아 있던 행이 빈 교시로 계속 떠 있던 문제.
+  //   주안은 시각만 맞춘다(교시 수는 ✏️ 수동 편집이 정본).
+  if(CFG.neisSchedule && Array.isArray(CFG.neisSchedule.periods)){
+    CFG.neisSchedule.periods = _clonePeriods(list);
+    S.set('neisSchedule', CFG.neisSchedule);
+  }
+  if(_ptApplyTo(CFG.weeklySchedule, list)) S.set('weeklySchedule', CFG.weeklySchedule);
+  // 픽스56의 다른 주 메모리 슬롯도 같은 시정을 쓰게 (저장은 안 함 — 이번 주만 영속)
+  try{
+    Object.keys(_schedWeekCache || {}).forEach(k => {
+      const sc = _schedWeekCache[k] && _schedWeekCache[k].schedule;
+      if(sc && Array.isArray(sc.periods)) sc.periods = _clonePeriods(list);
+    });
+  }catch{}
+  scheduleSettingsSave();
+  renderWeeklySchedule();
+  if(st){
+    st.style.color='var(--accent)';
+    st.textContent = `✅ 저장되었습니다. 나이스·주간학습안내 양쪽에 적용됩니다.`;
+    setTimeout(()=>{ if(st) st.textContent=''; }, 3500);
+  }
+}
+
+async function resetPeriodTimes(){
+  if(!await _uiConfirm('일과 시간을 기본값(09:00 시작 · 40분 수업 · 10분 쉬는 시간)으로 되돌릴까요?',
+                       {title:'↩️ 기본값으로', okText:'되돌리기'})) return;
+  renderPeriodTimeRows(_clonePeriods(DEFAULT_SCHEDULE_PERIODS));
+  const st = document.getElementById('ptStatus');
+  if(st){ st.style.color='var(--text-muted)'; st.textContent='기본값을 표에 채웠습니다. 💾 저장을 눌러야 반영됩니다.'; }
 }
 
 // openModal 훅 — AI 통합 모달이 열릴 때 두 탭 모두 초기화
@@ -9468,6 +11244,9 @@ function initScheduleEditModal(){
     }
     if(id === 'scheduleEditModal'){
       initScheduleEditModal();
+    }
+    if(id === 'periodTimesModal'){   // 픽스71
+      initPeriodTimesModal();
     }
     // 하위 호환: 옛 ID로 호출되어도 통합 모달로 안내
     if(id === 'todoExtractModal' || id === 'parentMessageModal'){
