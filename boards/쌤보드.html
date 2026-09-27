@@ -1196,6 +1196,9 @@
   }
   .memo-sync-bar{display:flex;align-items:center;gap:6px;padding:5px 10px;flex-shrink:0;border-top:1px solid var(--border);}
   .memo-sync-status{font-size:10px;color:var(--text-muted);flex:1;}
+  /* 픽스95: 제목과 버튼 사이에 끼어 있어 좁은 화면(1092×614)에선 폭 82px로 눌려 긴 문구가 12줄 기둥이 됐다(실측 124px).
+     실패 문구는 저절로 안 지워지므로 그대로 두면 부푼 제목 줄이 계속 남는다 → 최대 2줄, 전문은 마우스를 올리면(title). */
+  .memo-sync-status{min-width:0;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;}
 
   /* ===== 시간표 패널 v2.3 ===== */
   .schedule-panel{flex:1;min-height:0;display:flex;flex-direction:column;container-type:inline-size;}
@@ -2235,7 +2238,7 @@
 </div>
 
 <!-- ========== 모달: 📊 출결 현황 (픽스72) ========== -->
-<div class="modal-overlay" id="attnStatsModal">
+<div class="modal-overlay" id="attnStatsModal" data-no-backdrop-close="1"><!-- 픽스95: 달을 넘기면 상자가 줄어 손 뗀 곳이 배경이 된다 → 배경 클릭으로 안 닫히게 -->
   <div class="modal modal-wide">
     <div class="modal-header">
       <span class="modal-title">📊 출결 현황</span>
@@ -2545,12 +2548,9 @@
         <!-- 🔴 이 줄이 지금까지 HTML에 없어서 setBackupStatus()의 안내가 전부 사라지고 있었다 -->
         <div id="backupStatus" style="margin-top:6px;font-size:11.5px;color:var(--accent);text-align:center;line-height:1.6;min-height:18px;"></div>
         <div id="rosterDiag" style="margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.6;"></div>
-
-        <div class="divider"></div>
-        <div class="setup-notice" style="border-color:rgba(126,184,201,0.35);background:rgba(126,184,201,0.08);">
-          🪑 <strong>자리배치 · 포인트 · 1인1역</strong>은 별도 프로그램 <code style="background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:4px;">쌤보드클래스</code>로!<br>
-          <span style="color:var(--text-secondary);">Lively에서 (2번) 화면 배경으로 <strong>쌤보드클래스</strong> 파일을 지정하면 자리배치도·랜덤뽑기·포인트·1인1역·수업 타이머를 쓸 수 있어요. (위와 같은 앱스스크립트 주소를 넣으면 명렬표 연동, 시트 없이 학생 직접 입력도 가능)</span>
-        </div>
+        <!-- 픽스96: 여기 있던 「🪑 자리배치·포인트·1인1역은 별도 프로그램 쌤보드클래스로! Lively에서 (2번) 화면 배경으로…」
+             안내 상자를 삭제했다(사용자 결정 2026-09-28) — Lively 시절 안내라 앱 사용자에겐 틀린 말이고,
+             앱은 모니터별로 쌤보드클래스를 고르는 화면이 따로 있다. -->
       </div>
 
       <!-- 📱 모바일 탭 -->
@@ -2649,7 +2649,7 @@ function geminiAvailable(){ return !!((CFG.geminiApiKey||'').trim() || (GEMINI_P
 //     (GitHub 웹 편집 → Pages 자동 배포. latest는 "2.8"처럼 숫자만)
 //   · 오프라인/학교망 차단 시 조용히 무시 — 다른 기능에 영향 없음
 // ============================================================
-const APP_VERSION = '2.46';
+const APP_VERSION = '2.51';
 
 // ============================================================
 //   🔴 픽스57: 시트 통삭제 사고 방지 (2026-08-23 실제 사고 후 추가)
@@ -2723,6 +2723,148 @@ const _PANEL_IDS = PANEL_DEFS.map(d => d.id);
 let _fitT = null, _fitWatching = false;
 
 let _sheetRestoreDone = false;   // 부팅 복원(loadSettingsFromScript)이 끝났나
+
+// ============================================================
+//   🔴 Apps Script 응답 검증 (픽스92 — 2026-09-21 규명, §5)
+//   ─────────────────────────────────────────────────────────
+//   이 스크립트는 **실패를 HTTP 200 + `{error:'…'}`로 돌려준다.**
+//   Spreadsheet 서비스 일시 타임아웃·동시 실행 충돌·쿼터가 전부 거기로 온다.
+//   그런데 보드의 가드는 `r.ok`와 `Object.keys().length`뿐이라 그 응답이
+//   **성공으로 통과**했고, 화면은 "학생 0명 · 일정 0개 · 에러 0"이 됐다
+//   (09-18 "내 학생들 어디갔어" 사건 — 명렬표와 캘린더가 동시에 비었던 이유).
+//   그래서 응답을 받는 **모든 경로**가 이 관문을 지나게 한다.
+//   💡 기억할 것: 이 스크립트에서 `r.ok`는 "성공"을 뜻하지 않는다.
+//   🔴 선언이 **여기(상단)** 있어야 한다 — 부팅 동기 구간이 읽을 수 있다(§2 TDZ).
+// ============================================================
+const _sheetFails = {};   // {영역: {msg, at}} — 비어 있으면 정상
+let _saveFailStreak = 0;  // 설정 저장 연속 실패 횟수(1회는 곧 재시도되므로 화면에 안 띄운다)
+let _saveRetryT = null;   // 픽스94: 저장 실패 후 스스로 다시 보내는 타이머
+let _restoreRetryT = null, _restoreRetryN = 0;   // 픽스94: 부팅 복원 실패 후 재시도
+
+// ============================================================
+//   🔴🔴 Apps Script 요청 직렬화 큐 (픽스93 — 2026-09-22 실측으로 규명)
+//   ─────────────────────────────────────────────────────────
+//   Apps Script는 **같은 사용자의 실행을 직렬화**한다. 그런데 부팅하면 본체가
+//   loadSettings·roster·phone·read·calendarEvents를 거의 동시에 쏘고 거기에
+//   클래스 roster까지 붙어서, **뒤에 선 요청이 앞의 것을 전부 기다린다.**
+//   실측(같은 시트·같은 회선):
+//     · 하나씩 순차로  → phone 2.3초 / roster 3.7초 / loadSettings 9.1초
+//     · 부팅처럼 동시 5건 → 18.2 / 24.1 / 26.1 / 27.5 / **54.4초**
+//   12초(→20초) 타임아웃은 당연히 초과한다 — 09-18 "내 학생들 어디갔어" 사건에서
+//   본체 캘린더·명렬표와 클래스 학생이 **동시에** 사라진 것이 정확히 이 모양이다.
+//   그래서 **보드가 먼저 한 줄로 세운다.** 동시에 쏘지 않으면 각자 제 시간에 끝난다.
+//   🔴 규칙: Apps Script로 나가는 새 함수를 만들면 **반드시 이 큐를 지나게 할 것**(§2).
+//   ⚠️ 중첩 금지 — 큐에 들어간 함수 안에서 또 큐 함수를 부르면 교착한다.
+//      큐는 **최상위 진입점에만** 걸고(예: syncMemoToSheet), 그 안에서 부르는
+//      읽기(`_readSheetMemoRaw`)는 큐 없이 생 fetch로 둔다.
+// ============================================================
+let _sqChain = Promise.resolve();
+// 🔴 픽스94: **끝나지 않는 요청 하나가 줄 전체를 막으면 안 된다.**
+//   큐 안 요청 대부분은 타임아웃이 없다(2.46과 같은 동작을 지키려고 일부러 안 넣었다).
+//   그런데 줄을 세우고 나니, 절전 복귀 직후처럼 응답이 멎은 요청 하나가 **설정 저장까지**
+//   앱을 다시 켤 때까지 붙잡는 구조가 됐다(실측: 멎은 요청 뒤의 명렬표가 15초 동안 출발조차 못 함).
+//   → 한 요청이 60초를 넘기면 줄은 다음으로 넘어간다. 그 요청 자체는 취소하지 않고 계속 기다린다.
+//   넘어간 뒤 두 요청이 겹치는 건 2.46과 같은 상태라 해롭지 않다.
+const _SQ_WATCHDOG_MS = 60000;
+function _sheetQueue(fn){
+  const prev = _sqChain;
+  const p = prev.then(fn, fn);   // 앞이 실패해도 뒤는 돈다
+  _sqChain = prev.then(function(){   // 체인 자체는 끊기지 않게 + 한 요청당 60초 상한
+    return new Promise(function(done){
+      const t = setTimeout(function(){
+        console.warn('[시트] 요청이 ' + (_SQ_WATCHDOG_MS / 1000) + '초 넘게 끝나지 않아 다음 요청을 먼저 보냅니다');
+        done();
+      }, _SQ_WATCHDOG_MS);
+      p.then(function(){ clearTimeout(t); done(); }, function(){ clearTimeout(t); done(); });
+    });
+  });
+  return p;
+}
+
+// 응답 본문(text)을 파싱하고 `{error:…}`면 throw. 성공하면 파싱 결과를 준다.
+function _scriptParse(text, what){
+  let data;
+  try{ data = JSON.parse(text); }
+  catch(e){ throw new Error((what || '응답') + '을 읽지 못했어요'); }
+  if(data && typeof data === 'object' && !Array.isArray(data) && data.error){
+    throw new Error('시트 오류 — ' + data.error);
+  }
+  return data;
+}
+// fetch 응답 하나를 통째로 검증(HTTP + 본문)
+async function _scriptRead(r, what){
+  if(!r.ok) throw new Error('연결 실패 (HTTP ' + r.status + ')');
+  return _scriptParse(await r.text(), what);
+}
+// 실패/성공 기록 — 화면 표시는 _syncSheetWarn()이 맡는다
+function _noteSheetFail(what, err){
+  const msg = (err && err.message) ? err.message : String(err || '알 수 없는 오류');
+  _sheetFails[what] = {msg, at: Date.now()};
+  console.warn('[시트] ' + what + ' 실패:', msg);
+  _syncSheetWarn();
+}
+function _noteSheetOk(what){
+  if(!_sheetFails[what]) return;
+  delete _sheetFails[what];
+  _syncSheetWarn();
+}
+// 🔑 조용히 비어 있는 화면이 제일 나쁘다 — 실패는 화면에 드러낸다.
+//   자가 치유(명렬표·캘린더 10분 인터벌)가 성공하면 이 칩은 **스스로 사라진다.**
+function _syncSheetWarn(){
+  const keys = Object.keys(_sheetFails);
+  let el = document.getElementById('sheetWarn');
+  // 🔑 픽스93: "불러오는 중"과 "못 불러왔음"은 다르다 — 앞엣것은 기다리면 되는 상태다.
+  if(!keys.length && !_rosterLoading){ if(el) el.remove(); return; }
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'sheetWarn';
+    el.style.cssText = 'position:fixed;right:10px;bottom:88px;z-index:141;max-width:290px;'
+      + 'background:var(--card);border:1px solid var(--urgent);border-radius:var(--radius-sm);'
+      + 'box-shadow:var(--shadow-2);padding:10px 12px;font-family:var(--font-ko);color:var(--text);cursor:pointer;'
+      + 'word-break:break-word;overflow-wrap:anywhere;';   // 시트 오류 문구는 길이가 제멋대로다 — 칩 밖으로 새지 않게
+    el.title = '눌러서 지금 다시 시도';
+    el.addEventListener('mousedown', function(){ retrySheet(); });
+    document.body.appendChild(el);
+  }
+  if(!keys.length && _rosterLoading){
+    el.style.borderColor = 'var(--border-strong)';
+    el.innerHTML =
+      '<div style="font-size:12.5px;font-weight:700;">📡 명렬표를 불러오는 중이에요…</div>'
+      + '<div style="font-size:11px;color:var(--text-soft);margin-top:4px;line-height:1.5;">'
+      + '구글시트 응답이 느립니다 — 잠시만요' + (_rosterRetry > 0 ? ' (' + (_rosterRetry + 1) + '번째 시도)' : '') + '</div>';
+    return;
+  }
+  el.style.borderColor = 'var(--urgent)';
+  el.innerHTML =
+    '<div style="font-size:12.5px;font-weight:700;color:var(--urgent);">⚠️ 구글시트에서 못 받은 게 있어요</div>'
+    + keys.map(function(k){
+        return '<div style="font-size:11px;color:var(--text-soft);margin-top:4px;line-height:1.5;">· <b>'
+          + escHtml(k) + '</b> — ' + escHtml(_sheetFails[k].msg) + '</div>';
+      }).join('')
+    + '<div style="font-size:10.5px;color:var(--text-mute);margin-top:6px;">잠시 뒤 자동으로 다시 시도합니다 · 눌러서 지금 시도</div>';
+}
+function retrySheet(){
+  _rosterRetry = 0;
+  if(typeof loadRoster === 'function') loadRoster(false);
+  if(typeof loadSettingsFromScript === 'function' && _sheetFails['설정 복원']) loadSettingsFromScript(false);
+  // 픽스94: 저장 실패도 여기서 다시 보낸다 — 옛 코드는 이걸 빠뜨려서 칩을 눌러도 '설정 저장'이 안 지워졌다.
+  if(typeof saveSettingsToScript === 'function' && _sheetFails['설정 저장']) saveSettingsToScript(false);
+  if(typeof reloadGcalEvents === 'function'){ _calEventsCache = {}; reloadGcalEvents(); }
+}
+// 🔴 픽스94: 부팅 복원이 실패하면(대개 로그인 직후 네트워크가 늦게 붙은 경우) 스스로 다시 시도한다.
+//   안 하면 칩이 눌러 줄 때까지 남고, 무엇보다 **다른 기기의 최신 편집을 이번 세션 내내 못 받는다.**
+function _scheduleRestoreRetry(){
+  clearTimeout(_restoreRetryT);
+  const d = [15000, 60000, 300000][_restoreRetryN] || 600000;
+  _restoreRetryN++;
+  _restoreRetryT = setTimeout(function(){
+    _restoreRetryT = null;
+    if(!_sheetFails['설정 복원']) return;   // 그 사이 칩 클릭 등으로 이미 풀렸다
+    // 창이 열려 있으면 미룬다 — 복원이 채택되면 populateSettings()가 입력 중인 칸을 덮어쓴다.
+    if(document.querySelector('.modal-overlay.open')){ _restoreRetryN--; _scheduleRestoreRetry(); return; }
+    loadSettingsFromScript(false);
+  }, d);
+}
 // 개발 프리뷰 판별: 실사용 경로는 file://(앱·Lively)이므로 localhost면 100% 개발 중이다.
 const IS_DEV_PREVIEW = /^https?:$/.test(location.protocol)
   && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
@@ -2908,16 +3050,21 @@ window.addEventListener('beforeunload',()=>{
 // ============================================================
 let _phonePollBusy = false;
 async function _pollPhone(){
-  if(_phonePollBusy) return;
+  if(_phonePollBusy) return;                    // 가드는 큐 **밖**에 — 큐에 쌓이면 연속 2번 돈다
   if(typeof CFG==='undefined' || !CFG.memoScriptUrl) return;
   _phonePollBusy = true;
+  return _sheetQueue(_pollPhone_q);
+}
+async function _pollPhone_q(){
   try{
     const sep = CFG.memoScriptUrl.includes('?') ? '&' : '?';
     const r = await fetch(CFG.memoScriptUrl + sep + 'action=loadSettings');
     if(r.ok){
       const txt = await r.text();
       if(txt && txt.trim() !== '{}'){
-        const data = JSON.parse(txt);
+        // 30초마다 도는 경로라 화면 표시는 하지 않는다 — 다만 `{error:…}`를
+        // 설정 블롭으로 착각해 흘려보내지는 않는다(_scriptParse가 throw → 아래 catch).
+        const data = _scriptParse(txt, '설정');
         // PC가 막 편집해 아직 시트 저장(5초 debounce) 전이면 채택 보류 — 내 미저장 편집 보호
         const savePending = (typeof _pendingSheetSave!=='undefined') && _pendingSheetSave;
         _suppressDirty++;   // 픽스89: 시트에서 받아온 값에 "내가 고침" 시각을 찍지 않는다
@@ -2963,7 +3110,7 @@ async function _pollPhoneMemos(){
     const clsParam = CFG.myClass ? '&cls=' + encodeURIComponent(CFG.myClass) : '';
     const dateParam = (typeof TEST_DATE!=='undefined' && TEST_DATE) ? '&date=' + TEST_DATE : '';
     const r = await fetch(url + sep + 'action=read' + gradeParam + clsParam + dateParam);
-    const sheetData = _parseMemoResponse(JSON.parse(await r.text()));
+    const sheetData = _parseMemoResponse(await _scriptRead(r, '학생 메모'));
     const local = S.get('memos', {});
     const prevGrade = local[currentMemoGrade] || {};
     // 로컬 우선: 시트값 위에 로컬을 덮어씀 (PC가 손댄 학생은 로컬 유지, 폰이 추가한 학생은 시트값 흡수)
@@ -3396,25 +3543,118 @@ setInterval(() => loadRoster(true), 600000);
 
 let ROSTER = {}; // 명렬표 로드 전 빈 상태
 let _rosterLoaded = false;
+let _rosterRetry = 0;      // 픽스92: 실패 후 재시도 횟수
+let _rosterLoading = false;   // 픽스93: 지금 불러오는 중인가(화면이 "없음"과 구분하게)
+// 🔑 픽스93: 20초 한 번보다 **짧게 여러 번**이 낫다. 실측상 응답이 1.5~12초로 널을 뛰는데,
+//   한 번에 20초를 기다리면 그 20초 내내 화면이 "학생이 없어요"라서 사용자가 고장으로 본다.
+//   (09-22 로그: 보드 로드 35초 만에 앱을 끄셨다 — 자동 복구가 돌 기회조차 없었다.)
+const _ROSTER_TIMEOUT = [8000, 12000, 20000];        // 시도마다 점점 길게
+const _ROSTER_BACKOFF = [1500, 5000, 15000, 60000];  // 실패 후 다음 시도까지
+let _rosterLoadT = null;
+// ⚠️ 로딩 표시는 **3초 넘게 걸릴 때만** 띄운다 — 빠른 부팅에서 칩이 반짝하고 사라지면
+//   그게 더 거슬리고, 무엇보다 "문제가 있나?" 하고 쳐다보게 만든다.
+function _rosterLoadingOn(){
+  if(_rosterLoading || _rosterLoadT) return;
+  _rosterLoadT = setTimeout(function(){ _rosterLoadT = null; _rosterLoading = true; _syncSheetWarn(); }, 3000);
+}
+function _rosterLoadingOff(){
+  clearTimeout(_rosterLoadT); _rosterLoadT = null;
+  _rosterLoading = false;
+  _syncSheetWarn();   // 🔑 성공해도 이걸 불러야 로딩 칩이 지워진다(_noteSheetOk는 실패 기록이 있을 때만 그린다)
+}
 
-async function loadRoster(silent){
-  // 1순위: Apps Script URL 설정된 경우 (action=roster)
-  if(CFG.memoScriptUrl){
-    try{
-      const sep  = CFG.memoScriptUrl.includes('?') ? '&' : '?';
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 12000);
-      const r    = await fetch(CFG.memoScriptUrl + sep + 'action=roster', {signal: ctrl.signal});
-      clearTimeout(tid);
-      if(r.ok){
-        const data = JSON.parse(await r.text());
-        if(data && Object.keys(data).length){ _applyRoster(data, silent); return; }
-      }
-    }catch(e){ if(!silent) console.warn('[명렬표] Apps Script 실패:', e.message); }
+// 🔴 명렬표 응답이 "진짜 명렬표 모양"인지 본다(픽스92).
+//   `{error:'…'}`는 키가 1개라 옛 가드 `Object.keys().length`를 그대로 통과했다.
+//   더 나쁜 건 학년 미설정 사용자다 — `ROSTER['error']`가 **문자열**이라
+//   렌더 함수가 `.map`에서 통째로 터진다(실측). 모양까지 확인하는 이유.
+function _rosterShapeOk(d){
+  if(!d || typeof d !== 'object' || Array.isArray(d)) return false;
+  if(d.error) return false;
+  const ks = Object.keys(d);
+  return ks.length > 0 && ks.some(function(k){ return Array.isArray(d[k]); });
+}
+
+async function loadRoster(silent){ return _sheetQueue(function(){ return _loadRoster_q(silent); }); }
+async function _loadRoster_q(silent){
+  // Apps Script URL이 없으면 불러올 곳이 없다(픽스64: 옛 CSV 폴백 제거 — 위 주석 참조)
+  if(!CFG.memoScriptUrl){
+    if(!silent) console.warn('[명렬표] ⚙ 설정 → 구글시트 연동에서 Apps Script URL을 등록해주세요');
+    return false;
   }
-
-  // 픽스64: 옛 CSV 폴백(개발자 시트 ID 하드코딩) 제거 — 위 주석 참조.
-  if(!silent) console.warn('[명렬표] 불러오지 못했습니다 — ⚙ 설정 → 구글시트 연동에서 Apps Script URL을 등록해주세요');
+  // 🔴 픽스94: 이미 명렬표가 떠 있으면 이번 호출은 **갱신**(10분 주기·설정 복원 뒤)이다.
+  //   갱신은 화면에 아무것도 띄우지 않는다 — 2.46과 똑같이. 이걸 안 가르니(둘 다 실측으로 확인)
+  //   ① 응답이 3초만 넘어도 10분마다 "불러오는 중" 칩이 떴다 사라졌고(순차 응답이 평균 3.7초다)
+  //   ② 갱신이 한 번 실패하면 재시도 타이머가 "이미 불러왔음"을 보고 건너뛰어
+  //      **"불러오는 중" 칩이 다음 10분 주기까지 남았다.**
+  const refresh = _rosterLoaded;
+  if(!refresh) _rosterLoadingOn();
+  let why = '', empty = false, hard = false;
+  try{
+    const sep  = CFG.memoScriptUrl.includes('?') ? '&' : '?';
+    const ctrl = new AbortController();
+    const tmo  = _ROSTER_TIMEOUT[Math.min(_rosterRetry, _ROSTER_TIMEOUT.length - 1)];
+    const tid  = setTimeout(() => ctrl.abort(), tmo);
+    const r    = await fetch(CFG.memoScriptUrl + sep + 'action=roster', {signal: ctrl.signal});
+    clearTimeout(tid);
+    if(!r.ok) why = '연결 실패 (HTTP ' + r.status + ')';
+    else{
+      const txt = await r.text();
+      let data = null;
+      try{ data = JSON.parse(txt); }catch(e){ why = '응답을 읽지 못했어요'; }
+      if(!why && data && data.error){
+        // 🔴 픽스95: '컬럼 인식 실패'는 일시 오류가 아니라 **시트 첫 줄(머리글) 문제**다(getRoster 소스 —
+        //   '학년'·'번호'·'이름/성명' 칸을 못 찾으면 이 문구를 준다). 옛 칩은 "시트 오류 — 컬럼 인식 실패"라
+        //   선생님이 뭘 고쳐야 할지 알 수 없었다 → 할 일을 말해 주고, 다시 두드려도 같은 답이니 바로 알린다.
+        if(data.error === '컬럼 인식 실패'){ why = '「학생 명렬표」 탭 첫 줄에 학년·번호·이름 칸 제목이 있는지 확인해 주세요'; hard = true; }
+        else why = '시트 오류 — ' + data.error;
+      }
+      else if(!why && _rosterShapeOk(data)){
+        _applyRoster(data, silent);
+        _rosterRetry = 0;
+        delete _sheetFails['명렬표'];
+        _rosterLoadingOff();
+        return true;
+      }
+      // 🔴 픽스94: `{}`는 **오류가 아니다** — Apps Script가 「학생 명렬표」 탭이 없거나 학생이 0명일 때
+      //   주는 정상 응답이다(getRoster 소스 확인). 명렬표 없이 할 일·캘린더만 쓰는 선생님도 있으니
+      //   2.46처럼 조용히 넘어간다 — 실패로 보면 **꺼지지 않는 경고 칩**이 된다(실측).
+      else if(!why && data && typeof data === 'object' && !Array.isArray(data) && !Object.keys(data).length) empty = true;
+      else if(!why) why = '명렬표 모양을 알아볼 수 없어요';
+    }
+  }catch(e){
+    why = (e && e.name === 'AbortError') ? '구글시트 응답이 느려요' : ('연결 실패 — ' + (e.message || ''));
+  }
+  if(empty){
+    _rosterRetry = 0; delete _sheetFails['명렬표']; _rosterLoadingOff();
+    if(!silent) console.info('[명렬표] 시트의 「학생 명렬표」 탭이 비어 있습니다');
+    return false;
+  }
+  if(refresh){
+    // 갱신 실패 — 떠 있는 명렬표를 그대로 두고 조용히 넘어간다(다음 10분 주기에 다시 시도).
+    if(!silent) console.warn('[명렬표] 갱신 실패(기존 명렬표 유지):', why);
+    return false;
+  }
+  if(hard){
+    // 픽스95: 「불러오는 중」을 거치지 않고 바로 알린다. 시트를 고치면 10분 주기가 스스로 거둬 간다.
+    clearTimeout(_rosterLoadT); _rosterLoadT = null; _rosterLoading = false;
+    _noteSheetFail('명렬표', new Error(why));
+    if(!silent) console.warn('[명렬표] 머리글 인식 실패:', why);
+    return false;
+  }
+  // 🔑 처음 두 번의 실패는 **아직 "실패"라고 부르지 않는다** — 곧 다시 두드리기 때문이다.
+  //   "고장났다"가 아니라 "느려서 다시 시도 중"으로 보여야 사용자가 기다린다.
+  const tryNo = _rosterRetry + 1;
+  if(_rosterRetry < _ROSTER_BACKOFF.length){
+    const d = _ROSTER_BACKOFF[_rosterRetry++];
+    if(tryNo <= 2){ delete _sheetFails['명렬표']; _rosterLoadingOn(); _syncSheetWarn(); }
+    else { clearTimeout(_rosterLoadT); _rosterLoadT = null; _rosterLoading = false; _noteSheetFail('명렬표', new Error(why)); }
+    setTimeout(function(){ if(!_rosterLoaded) loadRoster(true); }, d);
+  } else {
+    clearTimeout(_rosterLoadT); _rosterLoadT = null; _rosterLoading = false;
+    _noteSheetFail('명렬표', new Error(why));   // 그 뒤로는 10분 인터벌이 계속 시도한다
+  }
+  if(!silent) console.warn('[명렬표] 시도 ' + tryNo + ' 실패:', why);
+  return false;
 }
 
 function _applyRoster(data, silent){
@@ -6814,7 +7054,8 @@ function _applyTimeInputMode(){
 }
 
 // Apps Script GET 헬퍼 (?action=... 기존 패턴 재사용)
-async function _scriptGet(action, params){
+async function _scriptGet(action, params){ return _sheetQueue(function(){ return _scriptGet_q(action, params); }); }
+async function _scriptGet_q(action, params){
   if(!CFG.memoScriptUrl) throw new Error('Apps Script URL이 설정되지 않았습니다.');
   const sep = CFG.memoScriptUrl.includes('?')?'&':'?';
   let url = CFG.memoScriptUrl + sep + 'action=' + encodeURIComponent(action);
@@ -6824,13 +7065,14 @@ async function _scriptGet(action, params){
     }
   }
   const r = await fetch(url);
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const text = await r.text();
-  try{ return JSON.parse(text); }catch(e){ throw new Error('응답 파싱 실패'); }
+  // 🔴 `r.ok`만 보면 안 된다 — 실패도 200 + {error:…}로 온다(위 관문 주석 참조).
+  //   여기서 throw해야 호출부(캘린더 목록·일정)가 "0개"가 아니라 "실패"로 처리한다.
+  return await _scriptRead(r, action);
 }
 
 // Apps Script POST 헬퍼
-async function _scriptPost(body){
+async function _scriptPost(body){ return _sheetQueue(function(){ return _scriptPost_q(body); }); }
+async function _scriptPost_q(body){
   if(!CFG.memoScriptUrl) throw new Error('Apps Script URL이 설정되지 않았습니다.');
   // 픽스57-②: 개발 프리뷰(localhost)에서는 실 시트·실 캘린더를 바꾸는 POST를 전부 차단.
   //   메모 write·캘린더 생성/수정/삭제까지 포함 — 검증하다 실데이터를 건드리는 사고를 막는다.
@@ -6843,9 +7085,11 @@ async function _scriptPost(body){
     headers:{'Content-Type':'text/plain'},
     body:JSON.stringify(body)
   });
-  if(!r.ok) throw new Error('HTTP '+r.status);
+  if(!r.ok) throw new Error('연결 실패 (HTTP ' + r.status + ')');
   const text = await r.text();
-  try{ return JSON.parse(text); }catch(e){ throw new Error('응답 파싱 실패'); }
+  // ⚠️ 여기서는 `{error:…}`를 **throw하지 않고 그대로 돌려준다** — 캘린더 저장·삭제 호출부가
+  //   이미 `res.error`를 읽어 **권한 부여 안내**(§3-5)까지 띄우기 때문이다. 던지면 그 안내가 죽는다.
+  try{ return JSON.parse(text); }catch(e){ throw new Error('응답을 읽지 못했어요'); }
 }
 
 // 내 캘린더 목록 불러오기 → 체크박스 렌더
@@ -6928,7 +7172,12 @@ async function loadEditableCalendarEvents(startStr, endStr){
     const cached = _calEventsCache[cacheKey];
     if(cached && Date.now() - cached.time < CAL_EVENTS_CACHE_MS) return cached.data;
     const res = await _scriptGet('calendarEvents', {calendarIds, start:startStr, end:endStr});
-    if(!Array.isArray(res)) return [];
+    // 🔴 옛 코드는 여기서 그냥 `return []`이라 **일정 0개 · 에러 0**으로 보였다(픽스92).
+    //   09-18에 "구글캘린더 연동이 안 된다"고 하신 게 정확히 이 경로다.
+    // 🔴 픽스94: `{error:…}`는 위 `_scriptGet`이 이미 던진다. 여기까지 온 "배열 아닌 응답"은
+    //   **캘린더 기능이 없는 옛 Apps Script**(모르는 action이면 누가기록을 돌려준다 — doGet 소스)뿐이다.
+    //   그런 선생님은 iCal로 일정이 멀쩡히 보이므로 2.46처럼 조용히 넘어간다(칩을 띄우면 영구 경고가 된다).
+    if(!Array.isArray(res)){ console.warn('[캘린더] 이 Apps Script는 calendarEvents를 지원하지 않습니다 — iCal만 사용'); return []; }
     const colorMap = {};
     cals.forEach(c=>{ colorMap[c.id] = c.color || '#7eb8c9'; });
     const data = res.map(ev=>{
@@ -6953,9 +7202,10 @@ async function loadEditableCalendarEvents(startStr, endStr){
     });
     // 픽스 18-A: 캐시 저장
     _calEventsCache[cacheKey] = {data, time: Date.now()};
+    _noteSheetOk('캘린더 일정');
     return data;
   }catch(e){
-    console.warn('[editableCalendar] fetch 실패:', e.message);
+    _noteSheetFail('캘린더 일정', e);
     return [];
   }
 }
@@ -7613,9 +7863,11 @@ let _memoDebounce = null;
 const TEST_DATE = ''; // 테스트용 날짜 오버라이드 ('' 로 비우면 오늘 날짜 사용)
 let _memoAutoSynced = false;  // 세션당 1회만 시트에서 자동 불러오기
 
-function setMemoStatus(msg){
+function setMemoStatus(msg, tip){
   const el = document.getElementById('memoSyncStatus');
-  if(el) el.textContent = msg;
+  if(!el) return;
+  el.textContent = msg;
+  el.title = tip || msg || '';   // 픽스95: 칸이 2줄로 잘려도 마우스를 올리면 전문이 보이게
 }
 
 function renderMemoGradeTabs(){
@@ -7825,7 +8077,7 @@ async function _readSheetMemoRaw(grade){
   const clsParam = CFG.myClass ? '&cls=' + encodeURIComponent(CFG.myClass) : '';
   const dateParam = TEST_DATE ? '&date=' + TEST_DATE : '';
   const r = await fetch(url + sep + 'action=read&grade=' + encodeURIComponent(grade) + clsParam + dateParam);
-  const raw = JSON.parse(await r.text());
+  const raw = await _scriptRead(r, '누가기록');
   const g = (raw && typeof raw === 'object') ? raw[grade] : null;
   return (g && typeof g === 'object') ? g : {};
 }
@@ -8128,7 +8380,10 @@ function _filterMemosByMyClass(grade, gradeMemos){
   return filtered;
 }
 
-async function syncMemoToSheet(silent){
+// ⚠️ 이 함수는 안에서 시트를 **읽고(원본) → 쓰고 → 다시 읽어 확인**한다 —
+//   그래서 큐는 **여기 바깥 한 겹만** 건다(안쪽 `_readSheetMemoRaw`는 생 fetch 그대로).
+async function syncMemoToSheet(silent){ return _sheetQueue(function(){ return _syncMemoToSheet_q(silent); }); }
+async function _syncMemoToSheet_q(silent){
   const url = CFG.memoScriptUrl;
   if(!url){ if(!silent) setMemoStatus('⚠️ Apps Script URL을 설정해주세요.'); return; }
   // 🔴 픽스76: 이 함수는 `_scriptPost`를 거치지 않고 **생 fetch로 POST**한다 —
@@ -8155,7 +8410,7 @@ async function syncMemoToSheet(silent){
     const clearing = Object.keys(sheetRaw || {}).filter(no =>
       ATTN_ABSENT_RE.test(String(sheetRaw[no] == null ? '' : sheetRaw[no])) &&
       !ATTN_ABSENT_RE.test(String(payload[no] == null ? '' : payload[no])));
-    await fetch(url, {
+    const wr = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({
@@ -8165,6 +8420,25 @@ async function syncMemoToSheet(silent){
         ...(TEST_DATE && {date: TEST_DATE})
       })
     });
+    // 🔴 픽스95: **응답을 읽는다.** Apps Script는 실패도 HTTP 200 + {error}로 준다(doPost의 catch — 소스 확인).
+    //   옛 코드는 응답을 버리고 무조건 "✅ 저장 완료"를 띄웠다(실측: {error}·HTTP 500 모두 "저장 완료").
+    //   그런데 자정이 되면 보드는 **시트에 저장됐는지 확인하지 않고** 로컬 메모를 지운다(_autoArchiveMemos) —
+    //   즉 거짓 완료 표시 = 그날 누가기록이 시트에도 PC에도 안 남는다. 확실한 실패만 실패로 부르고(픽스93),
+    //   응답을 못 읽은 경우는 "보냈다"고 정직하게 말한다.
+    if(!wr.ok) throw new Error('연결 실패 (HTTP ' + wr.status + ')');
+    const wtxt = await wr.text();
+    let wres = null;
+    try{ wres = JSON.parse(wtxt); }catch(e){ wres = null; }
+    if(wres && wres.error) throw new Error('시트 오류 — ' + wres.error);
+    if(!(wres && wres.ok)){
+      console.warn('[메모] 저장 응답을 확인하지 못했습니다(저장 자체는 됐을 수 있음):', String(wtxt).slice(0, 80));
+      if(!silent){
+        setMemoStatus('📤 보냈지만 응답 확인 못 함 — 잠시 뒤 📥 불러오기로 확인해 주세요',
+          '저장을 보냈지만 시트의 응답을 읽지 못했어요. 저장은 됐을 수 있습니다 — 잠시 뒤 📥 불러오기로 확인해 주세요.');
+        setTimeout(() => setMemoStatus(''), 9000);
+      }
+      return;
+    }
     // 🔴 픽스77: 비우기가 실제로 먹혔는지 **다시 읽어 확인한다.**
     //   Apps Script를 못 고치는 구조라 write가 어떻게 처리하는지 코드로 알 수 없다 —
     //   조용히 실패하면 사용자는 "지워진다더니?"만 겪는다(실제로 그랬다). 결과를 말해 주는 편이 정직하다.
@@ -8182,8 +8456,16 @@ async function syncMemoToSheet(silent){
       setMemoStatus(clearing.length ? `✅ 저장 완료 · 출결 ${clearing.length}건 [출석]으로 정정` : '✅ 저장 완료');
       setTimeout(() => setMemoStatus(''), 3000);
     }
-  }catch{
-    if(!silent) setMemoStatus('⚠️ 저장 실패 (URL 확인 필요)');
+  }catch(e){
+    // 픽스95: 원인을 말해 준다(옛 문구는 무엇이든 "URL 확인 필요"였다). 실패 문구는 저절로 지우지 않는다 —
+    //   선생님이 봐야 다시 누를 수 있다.
+    const net  = !!(e && e.name === 'TypeError' && /fetch/i.test(e.message || ''));
+    const full = net ? '인터넷에 연결되지 않았어요' : ((e && e.message) || '알 수 없는 오류');
+    const why  = net ? '인터넷 연결'
+               : /^시트 오류/.test(full) ? '시트 오류'
+               : (full.match(/HTTP \d+/) || ['오류'])[0];
+    if(!silent) setMemoStatus('⚠️ 저장 실패(' + why + ') — 📤 다시 눌러 주세요',
+      '누가기록 저장 실패 — ' + full + ' · 📤 저장을 다시 눌러 주세요');
   }
 }
 
@@ -8209,7 +8491,8 @@ function _parseMemoResponse(raw){
   return data;
 }
 
-async function syncMemoFromSheet(){
+async function syncMemoFromSheet(){ return _sheetQueue(_syncMemoFromSheet_q); }
+async function _syncMemoFromSheet_q(){
   const url = CFG.memoScriptUrl;
   if(!url){ setMemoStatus('⚠️ Apps Script URL 설정 필요 (⚙ 설정 → 구글시트 연동)'); return; }
   setMemoStatus('📥 불러오는 중...');
@@ -8219,7 +8502,7 @@ async function syncMemoFromSheet(){
     const clsParam = CFG.myClass ? '&cls=' + encodeURIComponent(CFG.myClass) : '';
     const dateParam = TEST_DATE ? '&date=' + TEST_DATE : '';
     const r = await fetch(url + sep + 'action=read' + gradeParam + clsParam + dateParam);
-    const data = _parseMemoResponse(JSON.parse(await r.text()));
+    const data = _parseMemoResponse(await _scriptRead(r, '학생 메모'));
     // 현재 학년 데이터만 로컬에 반영
     const memos = S.get('memos', {});
     memos[currentMemoGrade] = data[currentMemoGrade] || {};
@@ -8227,8 +8510,9 @@ async function syncMemoFromSheet(){
     renderMemoList(currentMemoGrade);
     setMemoStatus('✅ 불러오기 완료');
     setTimeout(() => setMemoStatus(''), 3000);
-  }catch{
-    setMemoStatus('⚠️ 불러오기 실패 (URL 확인 필요)');
+  }catch(e){
+    // 🔴 픽스92: 옛 문구는 원인이 무엇이든 "URL 확인 필요"였다 — 시트 오류였을 때 엉뚱한 곳을 보게 만든다.
+    setMemoStatus('⚠️ 불러오기 실패 — ' + (e && e.message ? e.message : '알 수 없는 오류'));
   }
 }
 
@@ -8236,6 +8520,10 @@ async function autoSyncMemoFromSheet(){
   await _checkMemoDateRollover();
   if(_memoAutoSynced) return;
   if(!currentMemoGrade) return;
+  if(!CFG.memoScriptUrl) return;
+  return _sheetQueue(_autoSyncMemoFromSheet_q);
+}
+async function _autoSyncMemoFromSheet_q(){
   const url = CFG.memoScriptUrl;
   if(!url) return;
   try{
@@ -8244,7 +8532,7 @@ async function autoSyncMemoFromSheet(){
     const clsParam = CFG.myClass ? '&cls=' + encodeURIComponent(CFG.myClass) : '';
     const dateParam = TEST_DATE ? '&date=' + TEST_DATE : '';
     const r = await fetch(url + sep + 'action=read' + gradeParam + clsParam + dateParam);
-    const sheetData = _parseMemoResponse(JSON.parse(await r.text()));
+    const sheetData = _parseMemoResponse(await _scriptRead(r, '학생 메모'));
     const local = S.get('memos', {});
     // 현재 학년만 병합 (로컬 우선)
     const memos = Object.assign({}, local);
@@ -9104,6 +9392,7 @@ async function saveMemoSettings(){
   S.set('memoScriptUrl', url);
   _memoAutoSynced = false;
   if(url){
+    _rosterRetry = 0;   // 픽스94: 앞서 재시도를 다 써버렸어도 새 주소는 처음부터 두드린다
     loadRoster(false);
     loadPhoneFromSheet(false);
     if(url !== prevUrl){
@@ -9464,16 +9753,23 @@ async function pullFromSheet(){
 async function loadSettingsFromScript(overwrite=false, showAlert=false){
   // 픽스57-①: URL이 없으면 복원할 것도 없으니 게이트를 바로 연다(안 열면 저장이 영영 미뤄진다)
   if(!CFG.memoScriptUrl){ _sheetRestoreDone = true; return; }
+  return _sheetQueue(function(){ return _loadSettingsFromScript_q(overwrite, showAlert); });
+}
+async function _loadSettingsFromScript_q(overwrite, showAlert){
   try{
     const sep = CFG.memoScriptUrl.includes('?')?'&':'?';
     const r = await fetch(CFG.memoScriptUrl + sep + 'action=loadSettings');
-    if(!r.ok) return;
+    if(!r.ok) throw new Error('연결 실패 (HTTP ' + r.status + ')');
     const text = await r.text();
     if(!text||text.trim()==='{}') {
       if(showAlert) setBackupStatus('⚠️ 저장된 설정이 없습니다. 먼저 "지금 저장"을 눌러주세요.');
+      _restoreRetryN = 0; clearTimeout(_restoreRetryT); _restoreRetryT = null;
+      _noteSheetOk('설정 복원');
       return;
     }
-    const data = JSON.parse(text);
+    // 🔴 픽스92: 옛 코드는 `{}`만 특별 취급해서 **`{error:…}`를 설정 블롭으로 취급**했다 —
+    //   그러면 아무 키도 안 맞아 **조용히 아무것도 복원되지 않는다**(에러도 안 뜬다).
+    const data = _scriptParse(text, '설정');
     let applied = false;
     // 🔴 픽스89: 채택 규칙 세 가지 — ⓐ 종전대로 로컬이 비어 있으면 채우고
     //   ⓑ **시트 쪽 수정 시각이 더 최신이면 받아온다**(기기 간 동기화의 핵심)
@@ -9500,8 +9796,12 @@ async function loadSettingsFromScript(overwrite=false, showAlert=false){
       if(applied) _applyRestoredSettings();
     } finally { _suppressDirty--; }
     if(showAlert) setBackupStatus(applied?'✅ 복원 완료!':'ℹ️ 변경된 설정 없음');
+    _restoreRetryN = 0; clearTimeout(_restoreRetryT); _restoreRetryT = null;
+    _noteSheetOk('설정 복원');
   }catch(e){
+    _noteSheetFail('설정 복원', e);
     if(showAlert) setBackupStatus('❌ 복원 실패: ' + e.message);
+    if(!overwrite && !showAlert) _scheduleRestoreRetry();   // 픽스94
   }finally{
     // 픽스57-①: 성공이든 실패든 복원 시도는 끝났다 → 이제부터 시트 저장 허용
     _sheetRestoreDone = true;
@@ -9532,6 +9832,7 @@ function _stampDirty(){
 }
 
 async function saveSettingsToScript(showAlert=false){
+  // 🔑 사전 가드는 큐 **밖**에서 — 여기서 걸릴 요청이 큐를 점유하면 복원·명렬표가 그만큼 밀린다.
   if(!CFG.memoScriptUrl){ _pendingSheetSave=false; if(showAlert) setBackupStatus('⚠️ Apps Script URL이 없습니다.'); return; }
   // 픽스57-②: 개발 프리뷰는 실 시트에 절대 쓰지 않는다(콘솔에서 __ALLOW_DEV_SHEET_WRITE=true로 해제 가능)
   if(IS_DEV_PREVIEW && !window.__ALLOW_DEV_SHEET_WRITE){
@@ -9546,6 +9847,9 @@ async function saveSettingsToScript(showAlert=false){
     _saveTimer = setTimeout(()=>saveSettingsToScript(showAlert), 1000);
     return;
   }
+  return _sheetQueue(function(){ return _saveSettingsToScript_q(showAlert); });
+}
+async function _saveSettingsToScript_q(showAlert){
   try{
     _stampDirty();   // 픽스89: 이번에 고친 키들의 수정 시각을 남기고 블롭에 함께 실어 보낸다
     const settings={};
@@ -9555,12 +9859,43 @@ async function saveSettingsToScript(showAlert=false){
       headers:{'Content-Type':'text/plain'},
       body:JSON.stringify({action:'saveSettings', settings})
     });
-    if(showAlert){
-      const res=await r.json().catch(()=>({}));
-      setBackupStatus(res.ok?'✅ 저장 완료!':'❌ 저장 실패');
+    // 🔴 픽스92: 옛 코드는 **`showAlert`일 때만** 응답을 읽었다 — 자동 저장(5초 디바운스)이
+    //   조용히 실패해도 아무도 몰랐다. 시트 저장은 통째 재작성이라 실패를 모르는 게 가장 위험하다.
+    if(!r.ok) throw new Error('연결 실패 (HTTP ' + r.status + ')');
+    const text = await r.text();
+    let res = null;
+    try{ res = JSON.parse(text); }catch(e2){ res = null; }
+    if(res && res.error) throw new Error('시트 오류 — ' + res.error);
+    clearTimeout(_saveRetryT); _saveRetryT = null;   // 픽스94: 응답을 받았으면 재시도 예약은 필요 없다
+    if(res && res.ok){
+      _saveFailStreak = 0;
+      _noteSheetOk('설정 저장');
+      if(showAlert) setBackupStatus('✅ 저장 완료!');
+    } else {
+      // 🔴🔴 픽스93: **"응답을 못 읽었다"를 "저장 실패"라고 부르지 않는다.**
+      //   실측(09-22): 혼잡할 때 응답만 못 받고 스크립트는 정상 실행돼 시트에 저장돼 있었다
+      //   (시트의 keyTimes가 로컬과 초 단위까지 일치). 그런데 화면엔 "저장을 확인해 주지
+      //   않았어요"가 떠서 **멀쩡한 상태를 고장이라고 알렸다**. 모르는 것을 실패라고 부르면
+      //   늑대 소년이 되어 정작 진짜 실패를 흘려보내게 된다 → 콘솔에만 남긴다.
+      _saveFailStreak = 0;
+      _noteSheetOk('설정 저장');
+      console.warn('[시트] 저장 응답을 확인하지 못했습니다(저장 자체는 됐을 수 있음):', String(text).slice(0, 80));
+      if(showAlert) setBackupStatus('✅ 저장을 보냈어요 (응답 확인은 못 했습니다)');
     }
   }catch(e){
+    // 🔑 **연속 2회**부터 화면에 띄운다(1회는 대개 일시적이다).
+    // 🔴 픽스94: 그리고 **실패하면 스스로 다시 보낸다.** 옛 주석은 "5초 뒤 자동 저장이 다시 시도한다"고
+    //   했지만 실제로는 **다음 편집이 있어야만** 저장이 다시 나갔다 — 편집이 없으면 시트는 옛 상태 그대로였고
+    //   칩도 영영 안 지워졌다(칩의 "잠시 뒤 자동으로 다시 시도합니다"가 거짓이었다).
+    _saveFailStreak++;
+    if(_saveFailStreak >= 2) _noteSheetFail('설정 저장', e);
+    else console.warn('[시트] 설정 저장 실패(1회차 — 곧 재시도):', e.message);
     if(showAlert) setBackupStatus('❌ 저장 실패: '+e.message);
+    clearTimeout(_saveRetryT);
+    _saveRetryT = setTimeout(function(){
+      _saveRetryT = null;
+      if(!_pendingSheetSave) saveSettingsToScript(false);   // 그 사이 새 편집이 있으면 그 저장이 대신한다
+    }, _saveFailStreak >= 2 ? 600000 : 60000);
   }finally{
     _pendingSheetSave=false;
   }
@@ -9713,6 +10048,9 @@ if(window.chrome && window.chrome.webview){
 function _clearPhoneCache(){ CFG.phoneData=null; S.set('phoneData',null); }
 async function loadPhoneFromSheet(silent){
   if(!CFG.memoScriptUrl){ return; }
+  return _sheetQueue(function(){ return _loadPhoneFromSheet_q(silent); });
+}
+async function _loadPhoneFromSheet_q(silent){
   try{
     const sep  = CFG.memoScriptUrl.includes('?') ? '&' : '?';
     const ctrl = new AbortController();
@@ -9721,6 +10059,11 @@ async function loadPhoneFromSheet(silent){
     clearTimeout(tid);
     if(!r.ok){ _clearPhoneCache(); return; }
     const csv  = await r.text();
+    // 🔴 픽스92: 이 액션도 실패하면 CSV가 아니라 `{"error":"…"}`가 온다(쉼표가 있어 옛 가드를 통과했다).
+    if(csv.trim().startsWith('{')){
+      if(!silent) console.warn('[내선번호] 시트 오류 응답:', csv.slice(0,120));
+      _clearPhoneCache(); return;
+    }
     if(!csv.includes(',')){ _clearPhoneCache(); return; }
     const parsed = _parsePhoneCSV(csv);
     if(parsed && parsed.length){
@@ -11283,7 +11626,7 @@ function _showUpdateBadge(info){ // 새 버전이면 배지 표시 후 true, 아
   const latest=String(info.latest);
   const el=document.createElement('div');
   el.id='updateBadge';
-  el.style.cssText='position:fixed;right:10px;bottom:88px;z-index:140;max-width:270px;background:var(--card);border:1px solid var(--border-strong);border-radius:var(--radius-sm);box-shadow:var(--shadow-2);padding:11px 13px;font-family:var(--font-ko);color:var(--text);opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s;';
+  el.style.cssText='position:fixed;right:10px;bottom:'+(document.getElementById('sheetWarn')?168:88)+'px;z-index:140;max-width:270px;background:var(--card);border:1px solid var(--border-strong);border-radius:var(--radius-sm);box-shadow:var(--shadow-2);padding:11px 13px;font-family:var(--font-ko);color:var(--text);opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s;';
   const note=info.note?('<div style="font-size:11px;color:var(--text-soft);margin-top:4px;line-height:1.5;">'+escHtml(String(info.note))+'</div>'):'';
   el.innerHTML=
     '<div style="font-size:12.5px;font-weight:700;">🔔 쌤보드 새 버전 v'+escHtml(latest)+' 나왔어요!</div>'+note+

@@ -70,6 +70,11 @@ input,textarea{user-select:text;}
   background:var(--card-soft);border:1px solid var(--border);border-radius:var(--radius-pill);padding:5px 12px;}
 .sync-chip .d{width:7px;height:7px;border-radius:50%;background:var(--sage);}
 .sync-chip.busy .d{background:var(--accent);animation:pulse 1s infinite;}
+.sync-chip.warn{background:var(--rose-soft);border-color:color-mix(in srgb,var(--rose) 40%,var(--border));color:var(--rose-ink);cursor:pointer;}
+.sync-chip{max-width:300px;min-width:0;}
+.sync-chip .d{flex:0 0 auto;}
+.sync-chip #syncTxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sync-chip.warn .d{background:var(--rose);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 .tool-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--card);
   border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--text);padding:8px 14px;cursor:pointer;
@@ -121,8 +126,12 @@ input,textarea{user-select:text;}
 .swap-banner.show{display:flex;}
 .swap-banner b{font-weight:800;}
 
-/* Lively: overflow:auto 금지 → hidden. computeSeatSize가 한 화면에 맞춰 사이즈 (넘치면 아래=교실뒤가 잘림, 칠판쪽 앞줄 보존) */
+/* Lively: overflow:auto 금지 → hidden. computeSeatSize가 한 화면에 맞춰 사이즈 (넘치면 아래=교실뒤가 잘림, 칠판쪽 앞줄 보존)
+   픽스91부터 앱(html.in-app) 안에서만 그 잘린 부분에 스크롤로 닿을 수 있다 — 기본은 여전히 "한 화면에 맞추기"다. */
 .seat-scroll{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+/* 픽스91: 모둠 배치 + 짧은 화면에서는 좌석을 최소 크기로 줄여도 마지막 줄이 넘친다(블록 여백 때문) →
+   포인트 화면과 같은 이유로 앱 안에서만 스크롤. .vcenter는 "넘치지 않을 때만" 붙으므로 위쪽 잘림 없음. */
+html.in-app .seat-scroll{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;}
 .seat-scroll.vcenter{justify-content:center;justify-content:safe center;}  /* 여백 넉넉할 때만 세로 가운데. safe = 콘텐츠가 넘치면 위쪽(칠판/앞줄)이 안 잘리고 start로 폴백 (Lively 폰트차로 살짝 넘쳐도 안전) */
 .seat-area{margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:2px;width:100%;}
 
@@ -174,6 +183,11 @@ input,textarea{user-select:text;}
 /* ====== 포인트 ====== */
 .pt-toolbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .pt-toolbar .ttl{font-weight:800;font-size:16px;letter-spacing:-.02em;display:flex;align-items:center;gap:7px;}
+/* 픽스91: 화면 밖에 학생이 남아 있을 때만 뜨는 안내 (앱=스크롤하면 보임 / 비앱=사실만 알림) */
+/* 문구가 툴바를 밀어 그리드 높이를 깎으면 본말전도 → 좁아지면 이 칩이 먼저 줄어든다(min-width:0 + 말줄임) */
+.pt-toolbar .more-hint{font-size:12.5px;color:var(--text-soft);font-weight:800;background:var(--card-soft);
+  border:1px solid var(--border);border-radius:var(--radius-pill);padding:5px 11px;white-space:nowrap;
+  min-width:0;overflow:hidden;text-overflow:ellipsis;}
 .pt-toolbar .sum{font-size:12.5px;color:var(--accent-ink);font-weight:800;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));border-radius:var(--radius-pill);padding:5px 13px;font-variant-numeric:tabular-nums;white-space:nowrap;}
 /* 다중선택 일괄 포인트 바 */
 .pt-bulk-bar{flex:0 0 auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:9px 11px;background:var(--card-soft);border:1px solid var(--border);border-radius:14px;}
@@ -184,7 +198,10 @@ input,textarea{user-select:text;}
 .pt-card.selectable{cursor:pointer;}
 .pt-card.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent);}
 .pt-card .pt-check{margin-left:auto;font-size:16px;font-weight:900;color:var(--accent);width:18px;text-align:center;flex:0 0 auto;}
+/* 픽스91: 인원이 많고 화면이 짧으면 카드가 다 안 들어간다(카드 최소 폭 210px라 열을 더 늘릴 수 없는 구간).
+   그동안은 overflow:hidden이라 넘친 학생이 "보이지도 눌리지도" 않았다 → 앱 안에서만 진짜 스크롤 허용(§2 예외). */
 .pt-scroll{flex:1;min-height:0;overflow:hidden;}
+html.in-app .pt-scroll{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;}
 .pt-grid{display:grid;gap:11px;align-content:start;}
 .pt-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:11px 13px;display:flex;
   align-items:center;gap:9px;box-shadow:var(--shadow-1);transition:box-shadow .12s, transform .12s;position:relative;overflow:hidden;min-height:0;}
@@ -621,7 +638,7 @@ html.in-app .nt-ta{overflow-y:auto;}
         <button class="icon-btn" title="알림장 (칠판 모드)" onmousedown="openNoticeOv()">📋</button>
         <button class="snd-btn" id="sndBtn" title="소리" onmousedown="toggleSound()">🔊</button>
         <button class="icon-btn" title="설정" onmousedown="openModal('settingsModal')">⚙</button>
-        <div class="sync-chip" id="syncChip"><span class="d"></span><span id="syncTxt">로컬 저장</span></div>
+        <div class="sync-chip" id="syncChip" onmousedown="if(this.classList.contains('warn'))retryRoster()"><span class="d"></span><span id="syncTxt">로컬 저장</span></div>
       </div>
     </div>
 
@@ -641,6 +658,7 @@ html.in-app .nt-ta{overflow-y:auto;}
     <div class="pt-toolbar">
       <span class="ttl">⭐ 포인트</span>
       <span class="sum" id="ptTotal"></span>
+      <span class="more-hint" id="ptMoreHint" style="display:none;"></span>
       <div class="spacer"></div>
       <div class="toggle" id="tgPtMulti" onmousedown="togglePtMulti()"><span class="sw"></span>✓ 여러 명</div>
       <button class="tool-btn" id="ptSortBtn" onmousedown="togglePtSort()">번호순</button>
@@ -1164,19 +1182,108 @@ function parseRosterCSV(csv){
     if(!g||!no||!nm)continue;if(/^\d+$/.test(g))g+='학년';(res[g]=res[g]||[]).push({no,cls,name:nm,gender:gen||'남'});}
   Object.values(res).forEach(a=>a.sort((x,y)=>x.cls!==y.cls?(parseInt(x.cls)||0)-(parseInt(y.cls)||0):x.no-y.no));return res;
 }
-async function loadRoster(){
-  if(!CFG.url)return;
-  try{const sep=CFG.url.includes('?')?'&':'?';const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),12000);
-    const r=await fetch(CFG.url+sep+'action=roster',{signal:ctrl.signal});clearTimeout(tid);
-    if(r.ok){const d=JSON.parse(await r.text());if(d&&Object.keys(d).length){ROSTER=d;_rosterLoaded=true;renderAll();return;}}
-  }catch(e){console.warn('[명렬표] 실패',e.message);}
+/* 🔴 Apps Script는 실패도 HTTP 200으로 돌려준다 — 본문이 `{error:'…'}`다(2026-09-21 실측).
+   옛 가드는 `Object.keys(d).length`뿐이라 **키가 하나인 `{error:…}`가 성공으로 통과**했고,
+   그래서 `_rosterLoaded=true`인 채 학생 0명·에러 0이 됐다(09-18 "내 학생들 어디갔어" 사건).
+   이제 ① error 키 ② 학년별 배열 모양까지 확인하고, 실패는 화면(동기화 칩·빈 상태)에 드러낸다. */
+/* 🔑 "학생이 없다"와 "명렬표를 못 받았다"는 전혀 다른 상황인데 옛 화면은 똑같이 보였다.
+   못 받은 경우엔 그렇게 말하고, 다시 시도할 길을 준다. */
+function _emptyStudentsHTML(icon){
+  // 🔴 픽스93: **"불러오는 중"과 "학생이 없음"은 전혀 다른 상태인데 옛 화면은 똑같이 보였다.**
+  //   20초 동안 "아직 학생이 없어요"를 보고 있으면 누구나 고장으로 읽는다(실제로 그러셨다).
+  if(sheetMode()&&_rosterLoading)
+    return '<div class="empty-hint"><span class="big">📡</span>명렬표를 불러오는 중이에요…<br>'
+      +'<span style="font-size:13px">구글시트 응답이 느립니다 — 잠시만요'
+      +(_rosterRetry>0?' ('+(_rosterRetry+1)+'번째 시도)':'')+'</span></div>';
+  // 픽스94: 시트는 잘 연결됐는데 「학생 명렬표」 탭이 비어 있는 경우 — 실패가 아니므로 어디를 채우면 되는지만 알려준다.
+  if(sheetMode()&&_rosterEmpty)
+    return '<div class="empty-hint"><span class="big">'+icon+'</span>아직 학생이 없어요.<br>구글시트의 <b>「학생 명렬표」</b> 탭이 비어 있습니다.<br>'
+      +'<span style="font-size:13px">학생을 입력하면 10분 안에 저절로 나타나요</span></div>';
+  if(sheetMode()&&_rosterFail)
+    return '<div class="empty-hint"><span class="big">📡</span>명렬표를 불러오지 못했어요.<br>'+esc(_rosterFail)
+      +'<br><button class="tool-btn" style="margin-top:10px" onmousedown="retryRoster()">🔄 다시 시도</button></div>';
+  return '<div class="empty-hint"><span class="big">'+icon+'</span>아직 학생이 없어요.<br><b>⚙ 설정</b>에서 시트를 연동하거나 학생을 직접 입력하세요.</div>';
 }
+function _rosterShapeOk(d){
+  if(!d || typeof d!=='object' || Array.isArray(d)) return false;
+  if(d.error) return false;
+  const ks=Object.keys(d);
+  return ks.length>0 && ks.some(k=>Array.isArray(d[k]));
+}
+let _rosterFail='';       // 마지막 실패 사유(빈 문자열 = 정상)
+let _rosterRetry=0;       // 실패 후 재시도 횟수
+let _rosterLoading=false; // 픽스93: 지금 불러오는 중인가 — "없음"과 반드시 구분해야 한다
+let _rosterEmpty=false;   // 픽스94: 시트는 연결됐는데 명렬표 탭이 비어 있음(`{}`) — 실패가 아니다
+// 🔑 픽스93: 20초 한 번보다 **짧게 여러 번**이 낫다.
+//   09-22 로그: 보드 로드 35초 만에 앱을 끄셨다 — 20초 타임아웃 + 30초 재시도라
+//   **자동 복구가 돌 기회조차 없었다.** 그리고 그 20초 내내 화면은 "아직 학생이 없어요"였다.
+const _ROSTER_TIMEOUT=[8000,12000,20000];        // 시도마다 점점 길게
+const _ROSTER_BACKOFF=[1500,5000,15000,60000];   // 실패 후 다음 시도까지
+async function loadRoster(silent){
+  if(!CFG.url)return false;
+  // 🔴 픽스94: 이미 학생이 떠 있으면 이번 호출은 **갱신**(10분 주기·설정 저장)이다 — 화면을 건드리지 않는다.
+  //   옛 1.14는 갱신 때마다 ① 칩을 "불러오는 중"으로 바꾸고 화면을 통째로 다시 그렸고
+  //   ② 갱신이 한 번 실패하면 재시도가 "이미 불러왔음"을 보고 건너뛰어 그 표시가 10분간 남았다.
+  //   게다가 다시 그리기가 자리 뽑기(2.4초 셔플)·돌림판 도중에 걸리면 돌던 이름이 멈춘다.
+  const refresh=_rosterLoaded;
+  if(!refresh){_rosterLoading=true;_rosterFail='';_rosterEmpty=false;renderAll();}
+  let why='',empty=false;
+  try{
+    // 🔴 실측(2026-09-22): 하나씩 순차로 부르면 2~9초인데, 부팅처럼 여러 건이 겹치면
+    //   Apps Script가 직렬화해 18~54초가 된다. 그래서 ① 클래스는 늦게 출발하고(아래 init)
+    //   ② 한 번에 오래 기다리는 대신 짧게 여러 번 두드린다.
+    const sep=CFG.url.includes('?')?'&':'?';const ctrl=new AbortController();
+    const tmo=_ROSTER_TIMEOUT[Math.min(_rosterRetry,_ROSTER_TIMEOUT.length-1)];
+    const tid=setTimeout(()=>ctrl.abort(),tmo);
+    const r=await fetch(CFG.url+sep+'action=roster',{signal:ctrl.signal});clearTimeout(tid);
+    if(!r.ok) why='연결 실패 (HTTP '+r.status+')';
+    else{
+      const txt=await r.text();
+      let d=null;
+      try{ d=JSON.parse(txt); }catch(e){ why='응답을 읽지 못했어요'; }
+      if(!why && d && d.error) why='시트 오류 — '+d.error;
+      else if(!why && _rosterShapeOk(d)){
+        const same=refresh&&JSON.stringify(d)===JSON.stringify(ROSTER);   // 갱신인데 내용이 같으면 다시 그릴 이유가 없다
+        ROSTER=d;_rosterLoaded=true;_rosterFail='';_rosterEmpty=false;_rosterRetry=0;_rosterLoading=false;
+        if(!same)_renderAllWhenIdle();
+        return true;
+      }
+      // 🔴 픽스94: `{}`는 **오류가 아니다** — Apps Script가 「학생 명렬표」 탭이 없거나 학생이 0명일 때 주는
+      //   정상 응답이다(getRoster 소스 확인). 재시도해도 같은 답이 오므로 "불러오는 중 → 실패"로 보이면 안 된다.
+      else if(!why && d && typeof d==='object' && !Array.isArray(d) && !Object.keys(d).length) empty=true;
+      else if(!why) why='명렬표 모양을 알아볼 수 없어요';
+    }
+  }catch(e){ why=(e&&e.name==='AbortError')?'구글시트 응답이 느려요':('연결 실패 — '+(e.message||'')); }
+  if(empty){
+    if(!refresh){_rosterLoading=false;_rosterFail='';_rosterEmpty=true;_rosterRetry=0;renderAll();}
+    return false;
+  }
+  // 갱신 실패 — 떠 있는 학생을 그대로 두고 조용히 넘어간다(다음 10분 주기에 다시 시도).
+  if(refresh){ if(!silent)console.warn('[명렬표] 갱신 실패(기존 명렬표 유지):',why); return false; }
+  // 🔑 처음 두 번의 실패는 **아직 "실패"라고 부르지 않는다** — 곧 다시 두드리기 때문이다.
+  //   "고장났다"가 아니라 "느려서 다시 시도 중"으로 보여야 사용자가 기다린다.
+  const tryNo=_rosterRetry+1;
+  if(_rosterRetry<_ROSTER_BACKOFF.length){
+    const d=_ROSTER_BACKOFF[_rosterRetry++];
+    if(tryNo<=2){ _rosterLoading=true; _rosterFail=''; }
+    else { _rosterLoading=false; _rosterFail=why; }
+    setTimeout(()=>{if(sheetMode()&&!_rosterLoaded)loadRoster(true);},d);
+  } else { _rosterLoading=false; _rosterFail=why; }   // 그 뒤로는 10분 인터벌이 계속 시도한다
+  if(!silent)console.warn('[명렬표] 시도 '+tryNo+' 실패:',why);
+  renderAll();
+  return false;
+}
+function retryRoster(){ if(!sheetMode())return; _rosterRetry=0; _rosterFail=''; loadRoster(false); }
+// 픽스94: 자리 셔플·뽑기 애니메이션 중에는 다시 그리지 않고, 끝난 뒤에 그린다(돌던 이름이 멈추지 않게).
+function _renderAllWhenIdle(){ if(_shuffling||_picking){ setTimeout(_renderAllWhenIdle,1000); return; } renderAll(); }
 function parseManual(text){const out=[];let idx=0;text.split(/\r?\n/).forEach(line=>{line=line.trim();if(!line)return;
   let[nm,gen]=line.split(/[,\t]/).map(s=>(s||'').trim());if(!nm)return;if(!/^[남여]/.test(gen||''))gen='남';else gen=gen[0];
   out.push({no:++idx,cls:'',name:nm,gender:gen});});return out;}
 function getStudents(){
   let list=[];
-  if(sheetMode()){const gkey=CFG.grade?(CFG.grade+'학년'):Object.keys(ROSTER)[0];let arr=(ROSTER[gkey]||[]).slice();
+  // 🔴 `ROSTER['error']`처럼 배열이 아닌 값이 들어오면 아래 .map에서 통째로 터진다 — 모양을 확인하고 쓴다.
+  if(sheetMode()){const gkey=CFG.grade?(CFG.grade+'학년'):(Object.keys(ROSTER).find(k=>Array.isArray(ROSTER[k]))||'');
+    let arr=(Array.isArray(ROSTER[gkey])?ROSTER[gkey]:[]).slice();
     if(CFG.cls)arr=arr.filter(s=>!s.cls||String(s.cls)===String(CFG.cls));
     list=arr.map(s=>({key:`${gkey}-${s.cls||'_'}-${s.no}`,no:s.no,name:s.name,gender:s.gender,cls:s.cls}));}
   else{list=liteData.manual.map((s,i)=>({key:`m${i}`,no:s.no||i+1,name:s.name,gender:s.gender||'남',cls:''}));}
@@ -1316,11 +1423,13 @@ function seatInnerHTML(i,st){
     <span class="s-no">${st.no}번</span><span class="s-name">${esc(st.name)}</span>${metaHtml}</div>`;
 }
 function renderSeats(){
+  // 픽스91: 모둠 배치가 넘쳐 스크롤 중일 때, 자리를 누를 때마다(=재렌더) 맨 위로 튀지 않게
+  const _sSc=document.querySelector('#view-seat .seat-scroll'),_sKeep=_sSc?_sSc.scrollTop:0;
   ensureSeatDims();computeSeatSize();
   liteData._swap=document.getElementById('tgSwap').classList.contains('on');
   const host=document.getElementById('seatHost');
   const{cols,rows,assign}=liteData.seats;const students=getStudents();
-  if(!students.length){host.innerHTML='<div class="empty-hint"><span class="big">🪑</span>아직 학생이 없어요.<br><b>⚙ 설정</b>에서 시트를 연동하거나 학생을 직접 입력하세요.</div>';
+  if(!students.length){host.innerHTML=_emptyStudentsHTML('🪑');
     document.getElementById('seatPool').innerHTML='<span class="pool-label">📦 미배치</span>';return;}
   const total=cols*rows;const byIdx=i=>{const sk=assign[i];return sk?students.find(s=>s.key===sk):null;};
   let html='';const mode=liteData.layout;
@@ -1350,6 +1459,7 @@ function renderSeats(){
   else{poolEl.style.display='';
     poolEl.innerHTML='<span class="pool-label">📦 미배치</span>'+pool.map(s=>`<span class="chip g-${s.gender}${_selPool===s.key?' sel':''}" data-stu="${s.key}">${s.no}·${esc(s.name)}</span>`).join('');
     poolEl.querySelectorAll('.chip').forEach(el=>el.addEventListener('mousedown',()=>poolClick(el.dataset.stu)));}
+  if(_sSc&&_sKeep)_sSc.scrollTop=_sKeep;   // 픽스91
 }
 function bindSeatClicks(){
   document.querySelectorAll('#seatHost .seat').forEach(el=>{
@@ -1602,8 +1712,11 @@ function updatePtTotal(){
 }
 function renderPoints(){
   const grid=document.getElementById('ptGrid');let students=getStudents();
+  // 픽스91: 스크롤이 생긴 뒤로는 재렌더 때 위치를 지켜야 한다.
+  // (여러 명 모드는 학생을 누를 때마다 전체 재렌더 → 안 지키면 아래쪽 학생을 영영 못 고른다)
+  const _sc=document.querySelector('#view-point .pt-scroll'),_keepTop=_sc?_sc.scrollTop:0;
   renderPtBulkBar(); // 벌크바 표시 여부(=pt-scroll 높이)부터 반영 후 fit
-  if(!students.length){grid.innerHTML='<div class="empty-hint"><span class="big">⭐</span>학생이 없어요.<br><b>⚙ 설정</b>에서 추가하세요.</div>';updatePtTotal();return;}
+  if(!students.length){grid.innerHTML=_emptyStudentsHTML('⭐');updatePtTotal();_syncPtMoreHint();return;}
   const pts=liteData.points;
   if(_ptSortByPoint)students=students.slice().sort((a,b)=>(pts[b.key]||0)-(pts[a.key]||0)||a.no-b.no);
   updatePtTotal();
@@ -1620,6 +1733,22 @@ function renderPoints(){
       <span class="pt-val" data-pv="${s.key}">${v}</span>
       <button class="pt-btn plus" onmousedown="addPoint('${s.key}',1)">＋</button></div>`;
   }).join('');
+  if(_sc&&_keepTop)_sc.scrollTop=_keepTop;   // 넘치지 않게 되면 브라우저가 알아서 0으로 잘라준다
+  _syncPtMoreHint();   // 픽스91: 렌더가 끝난 뒤에야 실제로 넘쳤는지 알 수 있다
+}
+// 픽스91: 한 화면에 못 담은 학생이 몇 명인지 실측해 알린다.
+// 스크롤 위치와 무관하게 "한 번에 보이는 수"를 빼므로 숫자가 스크롤 중에 흔들리지 않는다.
+function _syncPtMoreHint(){
+  const el=document.getElementById('ptMoreHint'),sc=document.querySelector('#view-point .pt-scroll');
+  const g=document.getElementById('ptGrid');if(!el||!sc||!g)return;
+  const cards=[...g.children];
+  if(!cards.length||sc.scrollHeight<=sc.clientHeight+1){el.style.display='none';return;}
+  const scR=sc.getBoundingClientRect();
+  const seen=cards.filter(c=>{const r=c.getBoundingClientRect();return r.top>=scR.top-0.5&&r.bottom<=scR.bottom+0.5;}).length;
+  const hidden=cards.length-seen;
+  if(hidden<=0){el.style.display='none';return;}
+  el.style.display='';
+  el.textContent=IS_APP_ENV?`⬇ ${hidden}명 더 (스크롤)`:`⚠ ${hidden}명 안 보임`;
 }
 function addPoint(key,d){
   const sig=key+'|'+(d>0?'+':'-'),now=Date.now();           // 더블클릭 가드(같은 학생·같은 부호 300ms)
@@ -2277,7 +2406,7 @@ async function saveSettings(){
   liteData.manual=parseManual(manual);liteData.seats.cols=cols;liteData.seats.rows=rows;
   saveLite();   // liteData는 로컬에만 저장 (시트 쓰기 없음). URL은 명렬표 읽기 용도로만 사용.
   document.getElementById('settingsStatus').textContent='✅ 저장되었습니다';updateSyncChip();
-  if(sheetMode())loadRoster();else{_rosterLoaded=false;ROSTER={};}renderAll();
+  if(sheetMode()){_rosterRetry=0;loadRoster();}else{_rosterLoaded=false;ROSTER={};}renderAll();   // 픽스94: 재시도 횟수 초기화
   setTimeout(()=>{closeModal('settingsModal');document.getElementById('settingsStatus').textContent='';},700);
 }
 async function clearData(what){const names={seats:'자리',points:'포인트',jobs:'역할'};if(!await _uiConfirm(`${names[what]} 데이터를 초기화할까요?`,{title:'🗑 데이터 초기화',danger:true,okText:'초기화'}))return;
@@ -2290,7 +2419,16 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 let _toastT=null;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(()=>el.classList.remove('show'),1900);}
 function setSync(t,busy){document.getElementById('syncTxt').textContent=t;document.getElementById('syncChip').classList.toggle('busy',!!busy);}
-function updateSyncChip(){setSync(sheetMode()?'명렬표 연결됨 · 로컬 저장':'로컬 저장',false);}
+function updateSyncChip(){
+  const chip=document.getElementById('syncChip');
+  const bad=sheetMode()&&_rosterFail;
+  const busy=sheetMode()&&_rosterLoading;
+  if(chip){chip.classList.toggle('warn',!!bad);chip.title=bad?(_rosterFail+' — 눌러서 다시 시도'):'';}
+  if(busy){ setSync('명렬표 불러오는 중…'+(_rosterRetry>0?' ('+(_rosterRetry+1)+')':''),true); return; }
+  // 오류 전문은 title에 두고 칩에는 짧게 — 칩이 툴바를 밀어내면 안 된다(실측으로 잡음).
+  const brief=String(_rosterFail||'');
+  setSync(bad?('⚠️ '+(brief.length>30?brief.slice(0,30)+'…':brief)+' · 눌러서 다시'):(sheetMode()?'명렬표 연결됨 · 로컬 저장':'로컬 저장'),false);
+}
 function installDropGuard(){if(window._dg)return;window._dg=true;const isFile=e=>{try{return Array.from(e.dataTransfer?.types||[]).includes('Files');}catch{return false;}};
   document.addEventListener('dragover',e=>{if(isFile(e))e.preventDefault();});document.addEventListener('drop',e=>{if(isFile(e))e.preventDefault();});}
 
@@ -2756,10 +2894,21 @@ async function init(){
   // 사운드 버튼 상태
   const sb=document.getElementById('sndBtn');if(sb){sb.textContent=_muted?'🔇':'🔊';sb.classList.toggle('off',_muted);}
   updateRandomBtn();
-  if(sheetMode())await loadRoster();   // 시트는 명렬표 읽기에만 사용 (liteData는 로컬 전용)
+  // 🔴 픽스93: 클래스는 **본체보다 3초 늦게** 출발한다.
+  //   본체와 클래스는 별개 프로세스(별개 WebView2)라 큐를 공유할 수 없는데, 부팅 때
+  //   둘이 같은 Apps Script를 동시에 두드리면 서버가 직렬화해 뒤에 선 쪽이 20~54초를 기다린다
+  //   (실측 2026-09-22). 시차를 두는 것만으로 겹침이 크게 준다.
+  //   그동안 화면은 "불러오는 중"을 보여준다 — 빈 화면을 보여주면 고장으로 읽히기 때문이다.
+  if(sheetMode()){ _rosterLoading=true; renderAll(); setTimeout(()=>loadRoster(false), 3000); }
   window.addEventListener('resize',()=>{if(!_shuffling&&!_picking)renderCurrent();});
 }
 init();
+
+/* 🔴 §2: 네트워크에서 받아 화면을 채우는 값에는 "자가 치유"를 함께 둔다.
+   본체(쌤보드)는 명렬표·캘린더·날씨에 10분 인터벌이 있어 부팅 때 실패해도 최대 10분이면 알아서 낫는데,
+   클래스엔 그게 없어서 같은 실패가 **앱을 다시 켤 때까지 학생이 사라진 채로 굳었다**(09-18 사건).
+   한 번 실패하면 끝인 경로를 남겨두지 않는다. */
+setInterval(()=>{ if(sheetMode()) loadRoster(true); }, 600000);
 
 /* =========================================================================
    픽스43 (v1.2): 업데이트 알림 — 본체(쌤보드)와 독립 체크
@@ -2770,7 +2919,7 @@ init();
    · 닫은 버전 기억 = S 독립 키 'updateDismissedVerClass' (로컬 전용)
    · 임베드(iframe) 실행 시 자동 알림 끔 — 구버전 본체 내장 실행과의 중복 방지
    ========================================================================= */
-const CLASS_APP_VERSION='1.11';
+const CLASS_APP_VERSION='1.15';
 const VERSION_CHECK_URL='https://ppaksaem-vibecoding.pages.dev/version.json'; // 비우면 체크 비활성
 function _isEmbedded(){try{return window.parent!==window;}catch(e){return true;}}
 function _verNewer(a,b){ // a가 b보다 최신인가 — "1.10" > "1.9" 되도록 숫자 비교 (앞의 v는 무시)

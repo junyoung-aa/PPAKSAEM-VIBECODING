@@ -1,10 +1,10 @@
 {
-  "latest": "2.46",
-  "note": "🙋 출결 기록 · ⏰ 학교 일과 시간 · 🧩 화면 배치 · 📷 사진 액자가 새로 생겼어요 — 앱 쓰시는 분은 ⚙️설정 → ⬆️업데이트에서 바로 받으세요",
+  "latest": "2.51",
+  "note": "구글시트 연결이 더 안정적이고, 누가기록 저장이 안 되면 알려드려요 · 출결 현황 창이 저절로 닫히지 않아요 — 앱 쓰시는 분은 ⚙️설정 → ⬆️업데이트에서 바로 받으세요",
   "url": "https://ppaksaem-vibecoding.pages.dev/guide/update.html",
   "mainHtmlUrl": "https://ppaksaem-vibecoding.pages.dev/boards/%EC%8C%A4%EB%B3%B4%EB%93%9C",
-  "classLatest": "1.11",
-  "classNote": "알림장을 메모장처럼 한 번에 쓰고 글씨 크기도 조절해요 · 할 일엔 복사·복제 버튼 — 앱 쓰시는 분은 ⚙️설정 → ⬆️업데이트에서 바로 받으세요",
+  "classLatest": "1.15",
+  "classNote": "학생이 많아도 스크롤로 모두 보여요 · 명렬표를 더 안정적으로 불러와요 — 앱 쓰시는 분은 ⚙️설정 → ⬆️업데이트에서 바로 받으세요",
   "classUrl": "https://ppaksaem-vibecoding.pages.dev/guide/update.html",
   "classHtmlUrl": "https://ppaksaem-vibecoding.pages.dev/boards/%EC%8C%A4%EB%B3%B4%EB%93%9C%ED%81%B4%EB%9E%98%EC%8A%A4"
 }
