@@ -680,7 +680,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
 
       <div class="section-title">준비물</div>
       <ul class="bullets">
-        <li><span class="mono red">쌤보드_Setup_v1.0.exe</span> — 메일로 보내드린 설치 파일</li>
+        <li><span class="bold red">쌤보드 설치 파일</span> — 메일로 보내드린 <span class="bold">다운로드 링크</span>에서 받으시면 됩니다</li>
         <li><span class="bold">구글 계정</span> — 명렬표 · 내선번호 · 누가기록을 담을 구글시트와 캘린더 연동에 씁니다</li>
         <li>구글 시트 사본 링크 — 4장에서 안내합니다</li>
       </ul>
@@ -722,7 +722,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
       <div class="box box-new mt8">
         <div class="box-title">🚀 3줄 요약</div>
         <ul class="bullets" style="padding-left:18px;margin:6px 0 0;">
-          <li><span class="mono">쌤보드_Setup_v1.0.exe</span>를 더블클릭하고 <span class="accent">기본값 그대로</span> 넘어가면 끝.</li>
+          <li>메일 링크에서 받은 <span class="bold">설치 파일</span>을 더블클릭하고 <span class="accent">기본값 그대로</span> 넘어가면 끝.</li>
           <li>중간에 뜨는 <span class="accent">경고창(윈도우 · 안랩)은 정상</span>입니다 — 아래 안내대로 [실행] · [허용].</li>
           <li><span class="accent">관리자 권한이 필요 없어서</span> 학교 PC에서도 그냥 설치됩니다.</li>
         </ul>
@@ -770,7 +770,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
       </table>
 
       <div class="box box-tip mt8">
-        <div class="box-title">💡 파일 이름이 <span class="mono">쌤보드_Setup_v1.0.tmp</span>로 보여요</div>
+        <div class="box-title">💡 파일 이름 끝이 <span class="mono">.tmp</span>로 보여요</div>
         정상입니다. 설치 프로그램이 잠시 임시 파일로 풀려서 실행되기 때문에 <span class="mono">.tmp</span>로 보이는 것뿐이에요.
       </div>
 
@@ -784,7 +784,7 @@ p { margin:0 0 14px; font-size:15px; line-height:1.85; }
       <ol class="steps">
         <li>
           <div class="step-num">1</div>
-          <div class="step-content">메일로 받으신 <span class="mono red">쌤보드_Setup_v1.0.exe</span>를 <span class="red">더블클릭</span>합니다.</div>
+          <div class="step-content">메일의 <span class="bold">다운로드 링크</span>에서 받으신 <span class="bold red">설치 파일</span>을 <span class="red">더블클릭</span>합니다.</div>
         </li>
         <li>
           <div class="step-num">2</div>
@@ -1732,7 +1732,7 @@ function sheetToCsv(sh, rowsOverride){
           <li><span class="mono">📅 캘린더</span> — 구글 캘린더 iCal URL 연동, 색상·필터 설정</li>
           <li><span class="mono">🏫 학교 정보</span> — 학교명/날씨/내 학년 (NEIS 학교 검색)</li>
           <li><span class="mono">🤖 AI</span> — AI 키 상태 확인 (키 이미 박혀있어 별도 설정 불필요)</li>
-          <li><span class="mono">📊 구글시트 연동</span> — Apps Script URL 입력, 연동 진단</li>
+          <li><span class="mono">📊 구글시트 연동</span> — Apps Script URL 입력, 저장하면 연동 상태를 바로 확인해 줍니다</li>
           <li><span class="mono">📱 모바일</span> — 핸드폰 연동 QR 코드 (<a href="#ch-mobile" class="accent">핸드폰 연동 챕터</a>)</li>
           <li><span class="mono">💾 백업</span> — 설정파일 내보내기/가져오기, 클라우드 백업</li>
         </ul>
@@ -2914,6 +2914,8 @@ function sheetToCsv(sh, rowsOverride){
         <li><span class="accent">개근인 학생은 표에서 빠집니다</span> — 볼 것만 남겨요.</li>
         <li>아래 날짜별 목록에서 <span class="accent">항목을 누르면 그 날짜 기록이 바로 열립니다.</span></li>
         <li><span class="red">[📋 표 복사]</span>를 누르면 아무 시트에나 그대로 붙여넣어집니다.</li>
+        <li>이 창은 <span class="bold">✕ 또는 ESC로만 닫힙니다.</span> 달을 옮기다 보면 표 길이가 확 바뀌는데,
+        바깥쪽 클릭으로도 닫히게 두면 <span class="accent">달을 넘기자마자 창이 닫혀버리기</span> 때문이에요.</li>
       </ul>
 
       <div class="section-title mt16">3. 구글시트에 함께 남기기</div>
@@ -2926,6 +2928,9 @@ function sheetToCsv(sh, rowsOverride){
           <li>시트에 실려 가는 건 <span class="bold">오늘 것만</span>입니다. 지난 날짜를 고친 내용은 프로그램 안에만 남아요.</li>
           <li>출결을 해제하면 시트에는 <span class="mono">[출석]</span>으로 <span class="bold">덮어써서</span> 정정을 표시합니다 —
           구글시트 쪽에서 줄 자체를 지우는 기능이 없기 때문입니다.</li>
+          <li>📤 저장 뒤 <span class="bold">결과 문구를 한 번 봐주세요.</span>
+          <span class="mono">✅ 저장 완료</span>가 아니라 <span class="red">⚠️ 저장 실패 … 📤 다시 눌러 주세요</span>가 뜨면
+          <span class="bold">아직 시트에 안 들어간 것</span>이니 꼭 다시 눌러 주세요.</li>
         </ul>
       </div>
 
@@ -3168,7 +3173,19 @@ function sheetToCsv(sh, rowsOverride){
       </div>
       <div class="faq-item">
         <div class="faq-q">명렬표·내선번호가 안 불러와져요.</div>
-        <div class="faq-a">설정 → 📊 구글시트 연동 탭에서 <span class="red">"🔍 연동 진단"</span>을 클릭해 오류 내용을 확인하세요. 구글 시트 탭 이름(<span class="red mono">학생 명렬표</span>, <span class="red mono">내선번호</span>)이 정확한지 확인하세요.</div>
+        <div class="faq-a"><span class="bold">먼저 화면 오른쪽 아래를 보세요.</span> 구글시트에서 못 받아온 게 있으면
+          <span class="red">⚠️ 구글시트에서 못 받은 게 있어요</span> 쪽지가 뜨고, 그 아래에 <span class="bold">무엇이 왜 안 됐는지</span>가 적힙니다.
+          쪽지를 <span class="accent">한 번 누르면 즉시 다시 시도</span>하고, 안 눌러도 잠시 뒤 스스로 다시 시도해 성공하면 쪽지는 사라집니다.<br>
+          쪽지에 <span class="mono">「학생 명렬표」 탭 첫 줄에 학년·번호·이름 칸 제목이 있는지 확인해 주세요</span>가 뜬다면 시트의 <span class="bold">머리글(첫 줄)</span> 문제입니다.<br>
+          그래도 안 되면 설정 → 📊 구글시트 연동 탭에서 <span class="red">[💾 저장 &amp; 연동 확인]</span>을 다시 눌러 보세요 — 버튼 아래에 진단 결과가 바로 나옵니다.
+          구글 시트 탭 이름(<span class="red mono">학생 명렬표</span>, <span class="red mono">내선번호</span>)이 정확한지도 확인해 주세요.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">켜자마자 학생 명렬표가 비어 있어요 / 구글시트가 느려요.</div>
+        <div class="faq-a">구글시트(Apps Script)는 <span class="bold">같은 시각에 여러 요청이 몰리면 느려집니다.</span> 특히 컴퓨터를 켜고 처음 실행할 때 그렇습니다.
+          그래서 지금은 오른쪽 아래에 <span class="accent">📡 명렬표를 불러오는 중이에요…</span> 쪽지가 떠서 <span class="bold">"고장이 아니라 기다리는 중"</span>임을 알려줍니다 —
+          <span class="red">조금만 기다려 주세요.</span><br>
+          한 번 실패해도 <span class="bold">스스로 몇 번 더 두드리고, 그 뒤로도 10분마다 다시 시도</span>합니다. 앱을 껐다 켜지 않으셔도 대개 저절로 돌아옵니다.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">껐다 켰더니 설정이 초기화됐어요.</div>
@@ -3185,7 +3202,10 @@ function sheetToCsv(sh, rowsOverride){
       </div>
       <div class="faq-item">
         <div class="faq-q">학생 메모가 다음 날 사라졌어요.</div>
-        <div class="faq-a"><span class="red">자정이 넘어가면 작성 중이던 메모가 자동으로 초기화</span>돼요 (의도된 동작 — "오늘 기록" 의미를 살리기 위함). 단 <span class="red">"저장" 버튼을 누른 메모만</span> 구글 시트 <span class="mono">누가기록</span> 탭에 영구 저장됩니다. 저장 안 한 typo·잘못 입력 메모는 자정에 함께 사라져요. 다음 날엔 새 빈 메모로 시작.</div>
+        <div class="faq-a"><span class="red">자정이 넘어가면 작성 중이던 메모가 자동으로 초기화</span>돼요 (의도된 동작 — "오늘 기록" 의미를 살리기 위함). 단 <span class="red">"저장" 버튼을 누른 메모만</span> 구글 시트 <span class="mono">누가기록</span> 탭에 영구 저장됩니다. 저장 안 한 typo·잘못 입력 메모는 자정에 함께 사라져요. 다음 날엔 새 빈 메모로 시작.<br>
+          <span class="bold">📤 저장을 눌렀을 때 결과 문구를 한 번 봐주세요.</span>
+          <span class="red">⚠️ 저장 실패 … 📤 다시 눌러 주세요</span>가 뜨면 <span class="bold">아직 시트에 안 들어간 것</span>이라 꼭 다시 눌러야 합니다 —
+          그대로 두면 자정에 로컬 메모까지 지워져 그날 기록이 남지 않습니다. (실패 문구는 저절로 사라지지 않으니 놓칠 걱정은 없어요.)</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">급식을 받는 학교가 따로 있어요 (비조리교).</div>
@@ -3311,7 +3331,7 @@ function sheetToCsv(sh, rowsOverride){
         </li>
         <li>
           <div class="step-num">2</div>
-          <div class="step-content"><a href="#ch2" class="accent">2장</a>대로 <span class="mono">쌤보드_Setup_v1.0.exe</span>를 설치합니다.</div>
+          <div class="step-content"><a href="#ch2" class="accent">2장</a>대로 <span class="bold">설치 파일</span>을 설치합니다.</div>
         </li>
         <li>
           <div class="step-num">3</div>
