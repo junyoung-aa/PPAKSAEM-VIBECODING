@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  © 2026 팍쌤  ·  ppaksaem-vibecoding.pages.dev
+  "팍쌤의 바이브코딩 저장소" — 교사를 위한 도구
+
+  이 프로그램의 저작권은 팍쌤에게 있습니다.
+  · 동료 교사의 교육 목적 사용은 자유입니다.
+  · 무단 재배포·판매·출처 삭제·본인 창작물처럼 사용하는 것은 금지합니다.
+  · 이용약관: https://ppaksaem-vibecoding.pages.dev/terms.html
+  ============================================================
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="author" content="팍쌤">
+<meta name="copyright" content="© 2026 팍쌤 (ppaksaem-vibecoding.pages.dev) — 무단 재배포·판매 금지">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="이지에듀·스쿨마스터 연간시간표를 나이스 학기별 시간표에 자동으로 입력하는 크롬 확장 프로그램 '나이스 시간표 입력기' 설치·사용 가이드">
+<title>나이스 시간표 입력기 설치 가이드 — 팍쌤의 바이브코딩 저장소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg: #F2F2F7;
+  --surface: #FFFFFF;
+  --border: #E5E5EA;
+  --text: #1C1C1E;
+  --sub: #8E8E93;
+  --accent: #2F6B45;
+  --accent-dark: #1E4A30;
+  --accent-soft: #EAF4ED;
+  --accent-em: #CFE7D6;
+  --yellow-soft: #FFFAEB;
+  --red-soft: #FFF1F0;
+  --font: 'Inter', -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --r: 16px;
+  --r-sm: 12px;
+}
+
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+/* topbar */
+.topbar { background: rgba(255,255,255,.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: .85rem 1.5rem; display: flex; align-items: center; gap: .5rem; position: sticky; top: 0; z-index: 200; }
+.topbar a { font-size: .82rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+.topbar a:hover { color: var(--accent-dark); }
+.topbar-sep { color: var(--border); font-size: .9rem; }
+.topbar-title { font-size: .82rem; font-weight: 600; color: var(--text); }
+
+/* cover */
+.cover { background: linear-gradient(160deg, #10271A 0%, #2F6B45 55%, #3E8A5A 100%); color: #fff; padding: 3rem 1.5rem 2.5rem; text-align: center; }
+.cover-chip { display: inline-flex; align-items: center; gap: .3rem; background: rgba(255,255,255,.18); border-radius: 999px; padding: .25rem .9rem; font-size: .72rem; font-weight: 700; letter-spacing: 1.5px; color: rgba(255,255,255,.9); margin-bottom: 1.1rem; }
+.cover-title { font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 900; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: .6rem; }
+.cover-sub { font-size: .85rem; color: rgba(255,255,255,.7); }
+.cover-btn { display: inline-block; margin-top: 1.4rem; background: #fff; color: var(--accent-dark); font-weight: 800; font-size: .88rem; text-decoration: none; padding: .7rem 1.4rem; border-radius: 999px; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+.cover-btn:hover { background: var(--accent-soft); }
+
+/* tab nav */
+.tab-wrap { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.25rem; overflow-x: auto; scrollbar-width: none; position: sticky; top: 49px; z-index: 100; }
+.tab-wrap::-webkit-scrollbar { display: none; }
+.tab-nav { display: inline-flex; min-width: max-content; }
+.tab-btn { flex-shrink: 0; padding: .85rem .9rem .75rem; border: none; border-bottom: 2.5px solid transparent; background: none; color: var(--sub); font-family: var(--font); font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; margin-bottom: -1px; }
+.tab-btn:hover { color: var(--accent); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* layout */
+.content { max-width: 680px; margin: 0 auto; padding: 1.75rem 1.25rem 5rem; }
+.chapter { display: none; }
+.chapter.active { display: block; }
+
+/* chapter header */
+.ch-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.ch-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .95rem; font-weight: 800; flex-shrink: 0; }
+.ch-tag { font-size: .68rem; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: .15rem; }
+.ch-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -.5px; }
+
+/* groups */
+.group { background: var(--surface); border-radius: var(--r); overflow: hidden; margin-bottom: 1rem; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 2px 12px rgba(0,0,0,.05); }
+.group-label { font-size: .7rem; font-weight: 700; color: var(--sub); letter-spacing: 1.5px; text-transform: uppercase; padding: 1.1rem 1.25rem .4rem; }
+
+/* steps */
+.step { display: flex; gap: 1rem; padding: .9rem 1.25rem; align-items: flex-start; border-top: 1px solid var(--border); }
+.group > .step:first-of-type { border-top: none; }
+.step-num { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: #fff; font-size: .75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: .1rem; }
+.step-body { flex: 1; }
+.step-title { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+.step-text { font-size: .84rem; color: #3C3C43; line-height: 1.75; }
+
+/* inline */
+.em { font-weight: 700; background: var(--accent-em); color: var(--accent-dark); padding: 0 4px; border-radius: 4px; font-size: .9em; }
+.code { font-family: 'Consolas', 'SFMono-Regular', monospace; background: #F2F2F7; border: 1px solid #D1D1D6; color: #1C1C1E; padding: 1px 5px; border-radius: 5px; font-size: .82em; }
+
+/* notices */
+.notice { display: flex; gap: .7rem; align-items: flex-start; border-radius: var(--r-sm); padding: .85rem 1rem; margin: .75rem 0; font-size: .84rem; line-height: 1.75; }
+.notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
+.notice-title { font-weight: 700; margin-bottom: .15rem; }
+.notice-tip { background: var(--accent-soft); border: 1px solid var(--accent-em); }
+.notice-tip .notice-title { color: var(--accent-dark); }
+.notice-warn { background: var(--yellow-soft); border: 1px solid #FDE68A; }
+.notice-warn .notice-title { color: #7D4000; }
+.notice-danger { background: var(--red-soft); border: 1px solid #FFCCC7; }
+.notice-danger .notice-title { color: #C0392B; }
+
+/* images */
+.img-wrap { margin: 1rem 0; }
+.img-wrap img { width: 100%; border-radius: var(--r-sm); border: 1px solid var(--border); display: block; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+.img-wrap.img-half img { max-width: 380px; margin: 0 auto; }
+.img-cap { font-size: .73rem; color: var(--sub); margin-top: .35rem; text-align: center; }
+
+/* legend table */
+.legend-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.legend-table td { padding: .55rem 1.25rem; border-top: 1px solid var(--border); color: #3C3C43; vertical-align: top; }
+.legend-table tr:first-child td { border-top: none; }
+.legend-table td:first-child { width: 7.5rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+/* faq */
+.faq-group { background: var(--surface); border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 2px 12px rgba(0,0,0,.05); }
+.faq-item { border-top: 1px solid var(--border); }
+.faq-item:first-child { border-top: none; }
+.faq-btn { width: 100%; background: none; border: none; padding: 1rem 1.25rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; text-align: left; font-family: var(--font); transition: background .15s; }
+.faq-btn:hover { background: #F9F9F9; }
+.faq-q-badge { background: var(--accent); color: #fff; font-size: .68rem; font-weight: 800; width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.faq-q-text { font-size: .875rem; font-weight: 600; color: var(--text); flex: 1; }
+.faq-arrow { color: var(--sub); font-size: .7rem; flex-shrink: 0; transition: transform .2s; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a { display: none; padding: .15rem 1.25rem 1rem; font-size: .84rem; color: #3C3C43; line-height: 1.8; }
+.faq-item.open .faq-a { display: block; }
+
+/* misc */
+p { font-size: .875rem; color: #3C3C43; margin-bottom: .6rem; }
+.section-gap { margin-top: 1.5rem; }
+
+/* footer */
+footer { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; border-top: 1px solid var(--border); }
+footer p { font-size: .78rem; color: var(--sub); margin: 0; }
+footer a { font-size: .8rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+footer a:hover { color: var(--accent-dark); }
+.copyright { text-align: center; padding: 12px 16px 24px; font-size: 12px; opacity: .55; color: #444; }
+.copyright a { color: inherit; }
+
+@media (max-width: 600px) {
+  .cover { padding: 2.5rem 1.25rem 2rem; }
+  .content { padding: 1.25rem 1rem 5rem; }
+  footer { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/">← 목록으로</a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">나이스 시간표 입력기 설치 가이드</span>
+</div>
+
+<div class="cover">
+  <div class="cover-chip">🧩 CHROME EXTENSION</div>
+  <div class="cover-title">나이스 시간표 입력기<br>설치 가이드</div>
+  <div class="cover-sub">이지에듀 · 스쿨마스터 → 나이스 학기별 시간표 &nbsp;·&nbsp; ver 0.4.0</div>
+  <a class="cover-btn" href="https://github.com/junyoung-aa/PPAKSAEM-VIBECODING/releases/download/v0.4.0_NeisTimetable/NEIS-Timetable_v0.4.0.zip">⬇ 다운로드 (v0.4.0)</a>
+</div>
+
+<div class="tab-wrap">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-ch="ch1">1. 파일 준비</button>
+    <button class="tab-btn" data-ch="ch2">2. 확장 설치</button>
+    <button class="tab-btn" data-ch="ch3">3. 처음 설정</button>
+    <button class="tab-btn" data-ch="ch4">4. 입력하기</button>
+    <button class="tab-btn" data-ch="ch5">FAQ</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- 1장 -->
+<div class="chapter active" id="ch1">
+  <div class="ch-header">
+    <div class="ch-icon">1</div>
+    <div>
+      <div class="ch-tag">Chapter 1</div>
+      <div class="ch-title">파일 준비</div>
+    </div>
+  </div>
+
+  <p>이지에듀나 스쿨마스터에서 재구성한 <b>연간시간표</b>를 읽어서, 나이스 <b>학기별 시간표 관리</b> 화면에 <b>다른 칸만</b> 자동으로 입력해 주는 크롬 확장 프로그램이에요. 선생님이 하던 "칸 우클릭 → 과목 선택"을 대신 눌러 줍니다.</p>
+
+  <div class="group">
+    <div class="group-label">다운로드 및 압축 해제</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">다운로드</div>
+        <div class="step-text">위의 <span class="em">⬇ 다운로드</span> 버튼(또는 목록 페이지의 다운로드 버튼)으로 zip 파일을 받습니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">압축 해제</div>
+        <div class="step-text">zip 파일을 <span class="em">우클릭 → 모두 압축 풀기</span>. 문서 폴더처럼 지우지 않을 곳에 풀어 주세요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">파일 확인</div>
+        <div class="step-text"><span class="code">나이스시간표입력기_v0.4.0</span> 폴더 안에 <span class="code">manifest.json</span> 파일이 있으면 정상입니다. 설치 방법을 적은 <span class="code">설치방법.txt</span>도 함께 들어 있어요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice notice-danger">
+    <div class="notice-icon">⚠️</div>
+    <div>
+      <div class="notice-title">폴더를 삭제하거나 이동하지 마세요</div>
+      압축을 푼 폴더는 크롬이 확장 프로그램으로 계속 참조합니다. 폴더를 옮기거나 지우면 확장이 작동하지 않아요.
+    </div>
+  </div>
+</div>
+
+<!-- 2장 -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-icon">2</div>
+    <div>
+      <div class="ch-tag">Chapter 2</div>
+      <div class="ch-title">확장 설치</div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">크롬에 불러오기 (처음 한 번)</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">확장 프로그램 관리 열기</div>
+        <div class="step-text">크롬 주소창에 <span class="code">chrome://extensions</span>를 입력합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">개발자 모드 켜기</div>
+        <div class="step-text">오른쪽 위의 <span class="em">개발자 모드</span> 스위치를 켭니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">압축해제된 확장 프로그램 로드</div>
+        <div class="step-text">왼쪽 위 <span class="em">압축해제된 확장 프로그램을 로드</span>를 누르고, 1장에서 푼 <span class="code">나이스시간표입력기_v0.4.0</span> 폴더를 선택합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">툴바에 고정</div>
+        <div class="step-text">툴바의 퍼즐(🧩) 아이콘을 눌러 <span class="em">나이스 시간표 입력기</span> 옆의 핀(📌)을 누르면 아이콘이 항상 보여요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice notice-tip">
+    <div class="notice-icon">💡</div>
+    <div>
+      <div class="notice-title">엣지(Edge)에서도 쓸 수 있어요</div>
+      엣지 주소창에 <span class="code">edge://extensions</span>를 입력하고 같은 방법으로 불러오면 됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- 3장 -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-icon">3</div>
+    <div>
+      <div class="ch-tag">Chapter 3</div>
+      <div class="ch-title">처음 설정</div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">나이스 화면 준비</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">시간표 프로그램에서 저장</div>
+        <div class="step-text">이지에듀나 스쿨마스터에서 연간시간표를 고쳤다면 먼저 <span class="em">저장</span>을 눌러 주세요. 확장은 저장된 파일을 읽어요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">나이스 학기별 시간표 열기</div>
+        <div class="step-text">나이스 로그인 → 학급담임 → <span class="em">학급시간표 관리</span> → <span class="em">[학기별시간표관리]</span> 팝업을 열고 <span class="em">[조회]</span>를 누릅니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">패널 열기</div>
+        <div class="step-text">툴바의 <span class="em">나이스 시간표 입력기</span> 아이콘을 누르면 오른쪽에 패널이 열리고, 나이스 화면을 자동으로 읽어요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">쓰는 프로그램 고르기 · 폴더 연결 (처음 한 번)</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">프로그램 고르기</div>
+        <div class="step-text">패널의 <span class="em">시간표 프로그램</span>에서 학교에서 쓰는 <b>이지에듀</b> 또는 <b>스쿨마스터</b>를 고릅니다. 한 번 고르면 기억해요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">폴더 연결</div>
+        <div class="step-text"><span class="em">📁 폴더 연결</span>을 누르고 아래 폴더를 고른 뒤, 크롬이 "파일 보기"를 물으면 허용합니다.<br>
+          · 이지에듀: <span class="code">C:\EasyeduTogether</span><br>
+          · 스쿨마스터: <span class="code">C:\Schoolmaster 2026</span><br>
+          다음부터는 나이스의 학년도·학기·학년·반에 맞는 파일을 알아서 찾아 읽어요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/neis-timetable/01-program.png" alt="시간표 프로그램 고르기와 폴더 연결 화면" loading="lazy"/>
+    <div class="img-cap">쓰는 프로그램을 고르고 폴더를 연결해요</div>
+  </div>
+
+  <div class="notice notice-tip">
+    <div class="notice-icon">💡</div>
+    <div>
+      <div class="notice-title">크롬을 다시 켜면</div>
+      브라우저 규칙상 <span class="em">🔓 폴더 읽기 허용</span> 버튼이 한 번 더 나올 수 있어요. 누르기만 하면 됩니다. 폴더 연결이 어려우면 <b>파일 직접 고르기</b>로 <span class="code">.dat</span>(이지에듀) · <span class="code">year_table.mdb</span>(스쿨마스터)를 골라도 돼요.
+    </div>
+  </div>
+</div>
+
+<!-- 4장 -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-icon">4</div>
+    <div>
+      <div class="ch-tag">Chapter 4</div>
+      <div class="ch-title">입력하기</div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">미리보기 확인</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">바뀌는 칸 보기</div>
+        <div class="step-text">패널이 나이스와 시간표 파일을 비교해서 <b>다른 칸만</b> 골라 보여줘요. 주를 넘기며 확인하고, 칸을 누르면 나이스 표에서 그 칸으로 이동해 깜빡여요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/neis-timetable/02-preview.png" alt="주별 미리보기 화면" loading="lazy"/>
+    <div class="img-cap">주별 미리보기 (예시 화면)</div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">미리보기 표 읽는 법</div>
+    <table class="legend-table">
+      <tr><td><span class="sw" style="background:#DCEFE2"></span>초록</td><td>바뀔 칸 (오른쪽 위 작은 글자가 원래 과목)</td></tr>
+      <tr><td><span class="sw" style="background:#FBE7E6"></span>빨강</td><td>비울 칸 (수업이 없어지는 칸)</td></tr>
+      <tr><td><span class="sw" style="background:#E4EDF9"></span>파랑</td><td>이번에 입력한 칸</td></tr>
+      <tr><td><span class="sw" style="box-shadow:inset 0 0 0 2px #F59E0B"></span>주황 테두리</td><td>확인 필요 (헷갈릴 수 있는 칸)</td></tr>
+      <tr><td><span class="sw" style="background:#3B6FD8;border-radius:50%;width:8px;height:8px"></span>파란 점</td><td>전담 선생님 수업</td></tr>
+    </table>
+  </div>
+
+  <div class="group">
+    <div class="group-label">입력 · 확인 · 저장</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">나이스에 입력하기</div>
+        <div class="step-text">아래 <span class="em">나이스에 N칸 입력하기</span>를 누릅니다. 처음에는 왼쪽 <b>입력 범위</b>에서 한 주만 골라 시험해 봐도 좋아요. 한 학기도 몇 초면 끝나요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">확인 필요 살펴보기</div>
+        <div class="step-text">멈추지 않고 끝까지 넣은 뒤, 헷갈릴 수 있는 칸만 <b>날짜·교시</b>로 모아 보여줘요. 전담 과목이 새 자리에 들어간 칸은 버튼으로 선생님을 바로 바꿀 수 있어요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">저장하고 확인하기</div>
+        <div class="step-text">나이스 팝업의 <span class="em">[저장]</span>을 직접 누른 뒤, 패널의 <span class="em">✓ 저장 확인</span>을 누르면 나이스에 저장된 시간표가 파일과 같은지 검사해 줘요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/neis-timetable/03-flags.png" alt="확인 필요 화면" loading="lazy"/>
+    <div class="img-cap">확인 필요 — 전담 과목 칸은 선생님을 골라요 (예시 이름)</div>
+  </div>
+
+  <div class="img-wrap img-half">
+    <img src="/images/guide/neis-timetable/04-after.png" alt="입력 후 화면" loading="lazy"/>
+    <div class="img-cap">입력 후 — 저장 전이면 [원래대로]로 되돌릴 수 있어요</div>
+  </div>
+
+  <div class="notice notice-warn">
+    <div class="notice-icon">🔒</div>
+    <div>
+      <div class="notice-title">저장은 선생님이 직접</div>
+      확장은 나이스 화면 안에서 선생님의 클릭만 대신하고, 나이스 서버에 직접 요청을 보내지 않아요. 인증서 로그인과 [저장]은 언제나 선생님이 직접 합니다. 저장하기 전에는 <span class="em">↩ 원래대로</span>로 입력 전 상태로 돌아갈 수 있어요.
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-icon">Q</div>
+    <div>
+      <div class="ch-tag">FAQ</div>
+      <div class="ch-title">자주 묻는 질문</div>
+    </div>
+  </div>
+
+  <div class="faq-group">
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">선생님(담임·전담)은 어떻게 정해서 넣나요?</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">과목이 그대로인 칸은 건드리지 않아요. 바뀌는 칸은 <b>기초시간표의 같은 자리·같은 과목이면 그 선생님</b>, 아니면 <b>담임</b>으로 넣어요. 기초시간표는 나이스 학기 시간표에서 요일·교시마다 가장 많이 나오는 과목·선생님으로 알아내며, 패널의 <span class="em">교사 기준</span> 탭에서 볼 수 있어요. 헷갈리는 칸은 <span class="em">확인 필요</span>에서 칸마다(또는 한꺼번에) 선생님을 고를 수 있고, 고른 건 기억해요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">입력 직후 나이스 위쪽 '편차' 숫자가 이상해요.</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">나이스의 [수업삭제]는 위쪽 편차 표를 바로 다시 계산하지 않는 나이스 쪽 표시 문제가 있어요. 실제 데이터는 정확하니 저장한 뒤 다시 조회하면 맞게 나와요. 패널의 <span class="em">시수</span> 탭은 칸 수를 직접 센 값이라 늘 정확해요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">폴더를 연결했는데 "맞지 않아요"라고 나와요.</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">다른 반 시간표가 잘못 들어가지 않도록, 나이스에서 조회한 학급과 연결한 폴더의 학급·학년도가 다르면 이유를 알려주고 막아요. 나이스 팝업에서 학년·반을 확인하거나 맞는 폴더(이지에듀 <span class="code">C:\EasyeduTogether</span>, 스쿨마스터 <span class="code">C:\Schoolmaster 2026</span>)를 연결해 주세요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">나이스는 휴업일인데 시간표 파일엔 수업이 있어요.</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">나이스의 행사·휴업일 칸은 건드리지 않고 <span class="em">확인 필요 → 건너뛴 칸</span>에 모아 알려줘요. 학사일정이 서로 다른 것이니 나이스 학사일정이나 시간표 프로그램 쪽을 확인해 주세요.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">시간표 파일이 외부로 전송되나요?</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">아니요. 시간표 파일은 선생님 컴퓨터 안에서만 읽고, 외부로 보내지 않아요. 나이스 화면도 선생님의 브라우저 안에서만 읽고 입력합니다.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn">
+        <span class="faq-q-badge">Q</span>
+        <span class="faq-q-text">업데이트하면 다시 설치해야 하나요?</span>
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a">새 버전 zip을 받아 같은 폴더에 파일을 덮어쓴 뒤, <span class="code">chrome://extensions</span>에서 확장 카드의 <span class="em">새로고침(↺)</span>을 누르면 재설치 없이 업데이트돼요. 연결한 폴더와 설정은 그대로 남아요.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <p>팍쌤의 나이스 시간표 입력기 설치 가이드 · ver 0.4.0 · 2026</p>
+  <a href="/">← 바이브코딩 저장소로 돌아가기</a>
+</footer>
+
+<div class="copyright">
+  © 2026 팍쌤 · 무단 재배포·판매 금지 · <a href="https://ppaksaem-vibecoding.pages.dev/terms.html">이용약관</a>
+</div>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.ch).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+document.querySelectorAll('.faq-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
