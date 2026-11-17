@@ -346,19 +346,35 @@
     {
       "id": "Hangul-Survival",
       "title": "한글 서바이벌",
-      "description": "국어 공부를 게임으로 쉽고 재미있게!",
-      "status": "in_development",
+      "description": "몰려오는 몬스터를 한글 자음 무기로 물리치는 3학년 국어 학습 게임이에요. 국어 문제를 풀어 코인을 모으고, 그 코인으로 모험을 떠나요. (베타 — 기록은 사용한 기기에 저장돼요)",
+      "status": "completed",
       "tags": [
-        "학습도구"
+        "게이미피케이션",
+        "국어",
+        "3학년"
       ],
       "google_form_url": "",
-      "site_url": "",
+      "site_url": "https://hanguelsurvival.jykwak1213.workers.dev/",
+      "site_url_note": "설치 없이 PC·태블릿에서 바로 실행돼요.\n기록은 사용한 기기(브라우저)에 저장됩니다.",
       "download_url": "",
-      "thumbnail": "/images/pasted-image-1779969042571.png",
-      "version": "",
-      "release_date": "",
-      "order": 7,
-      "changelog": []
+      "thumbnail": "/images/hangul-survival-thumb.png",
+      "version": "0.9",
+      "version_label": "베타",
+      "release_date": "2026-11-17",
+      "order": 8,
+      "changelog": [
+        {
+          "version": "0.9 베타",
+          "date": "2026-11-17",
+          "changes": [
+            "베타 공개 — 3학년 국어 10개 영역 277문제 (2022 개정 교과서 기준)",
+            "한글 자음 무기 10종 · 캐릭터 6종 · 전장 2곳 · 보스전 국어 퀴즈",
+            "PC(마우스)와 태블릿(터치 조이스틱) 모두 지원 — 설치 없이 바로 실행",
+            "학생별 프로필(반·번호·별명) — 실명은 저장하지 않아요",
+            "하루 게임 3판 · 보상 학습 5세트 제한으로 과몰입을 막아요"
+          ]
+        }
+      ]
     }
   ]
 }
