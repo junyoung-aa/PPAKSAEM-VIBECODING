@@ -157,7 +157,7 @@
       "thumbnail": "/images/neis-timetable-thumb.png",
       "version": "0.4.0",
       "release_date": "2026-09-30",
-      "order": 3,
+      "order": 4,
       "changelog": [
         {
           "version": "0.4.0",
@@ -188,7 +188,7 @@
       "thumbnail": "/images/스크린샷 2026-04-22 191447.png",
       "version": "1.2",
       "release_date": "2026-04-28",
-      "order": 4,
+      "order": 5,
       "changelog": [
         {
           "version": "1.2",
@@ -225,7 +225,7 @@
       "thumbnail": "/images/스크린샷 2026-05-16 011956.png",
       "version": "1.2",
       "release_date": "2026-05-01",
-      "order": 5,
+      "order": 6,
       "changelog": [
         {
           "version": "1.1",
@@ -262,7 +262,7 @@
       "thumbnail": "/images/lm-확장프로그램-사진.png",
       "version": "1.2",
       "release_date": "2026-06-24",
-      "order": 6,
+      "order": 7,
       "changelog": [
         {
           "version": "1.2",
@@ -304,7 +304,7 @@
       "thumbnail": "/images/스크린샷 2026-05-16 011950.png",
       "version": "1.0",
       "release_date": "2026-05-16",
-      "order": 7,
+      "order": 8,
       "changelog": [
         {
           "version": "1.0",
@@ -361,7 +361,7 @@
       "version": "0.9",
       "version_label": "베타",
       "release_date": "2026-11-17",
-      "order": 8,
+      "order": 3,
       "changelog": [
         {
           "version": "0.9 베타",
